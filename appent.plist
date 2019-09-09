@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>platform-application</key>
+	<true/>
+	<key>com.apple.private.skip-library-validation</key>
+	<true/>
+	<key>com.apple.private.security.no-container</key>
+	<true/>
+	<key>com.apple.hid.manager.user-access-device</key>
+	<true/>
+	<key>com.apple.BTServer.allowRestrictedServices</key>
+	<true/>
+	<key>com.apple.BTServer.appleMfgDataScanner</key>
+	<true/>
+	<key>com.apple.BTServer.programmaticPairing</key>
+	<true/>
+	<key>com.apple.BTServer.supportsPairing</key>
+	<true/>
+	<key>com.apple.private.externalaccessory.showallaccessories</key>
+	<true/>
+	<key>com.apple.private.externalaccessory.showallaccessories - 2</key>
+	<true/>
+	<key>com.apple.system.diagnostics.iokit-properties</key>
+	<true/>
+</dict>
+</plist>
