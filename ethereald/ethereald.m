@@ -22,11 +22,26 @@ typedef enum : NSUInteger {
 
 @interface etherealHelper: NSObject
 
+@property (nonatomic, strong) SFAirDropDiscoveryController *discoveryController;
 + (id)sharedHelper;
 - (void)adr:(NSNotification *)note;
 @end
 
 @implementation etherealHelper
+
+- (void)disableAirDrop {
+    
+    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
+    [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeOff];
+}
+
+- (void)setupAirDrop {
+   
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:[etherealHelper sharedHelper] selector:@selector(adr:) name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
+    self.discoveryController = [[SFAirDropDiscoveryController alloc] init] ;
+    [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeEveryone];
+    
+}
 
 - (void)adr:(NSNotification *)n {
     
@@ -50,11 +65,23 @@ typedef enum : NSUInteger {
     if (![[self approvedExtensions] containsObject:[path pathExtension].lowercaseString]){
         return;
     }
-    NSString *fileName = path.lastPathComponent;
-    NSString *attemptCopy = [@"/var/mobile/Documents" stringByAppendingPathComponent:fileName];
-    DLog(@"attempted path: %@", attemptCopy);
+    
+    //NSFileOwnerAccountName
+    //NSFileGroupOwnerAccountName
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSDictionary *folderAttrs = @{NSFileGroupOwnerAccountName: @"staff",NSFileOwnerAccountName: @"mobile"};
     NSError *error = nil;
-    [[NSFileManager defaultManager] moveItemAtPath:path toPath:attemptCopy error:&error];
+    NSString *etherealFolder = @"/var/mobile/Documents/Ethereal";
+    if (![man fileExistsAtPath:etherealFolder]){
+        [man createDirectoryAtPath:etherealFolder withIntermediateDirectories:YES attributes:folderAttrs error:&error];
+        DLog(@"error: %@", error);
+    }
+    
+    NSString *fileName = path.lastPathComponent;
+    NSString *attemptCopy = [etherealFolder stringByAppendingPathComponent:fileName];
+    DLog(@"attempted path: %@", attemptCopy);
+  
+    [man moveItemAtPath:path toPath:attemptCopy error:&error];
     DLog(@"etherealHelper opening ethereal");
     [self openApp:@"com.nito.Ethereal"];
     
@@ -118,10 +145,9 @@ int main(int argc, char* argv[])
 {
     DLog(@"\ethereald: science bro\n\n");
     
-    NSDistributedNotificationCenter *center = [NSDistributedNotificationCenter defaultCenter];
-    DLog(@"center: %@", center);
-    [center addObserver:[etherealHelper sharedHelper] selector:@selector(adr:) name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
-    
+    etherealHelper *helper = [etherealHelper sharedHelper];
+  
+    [helper setupAirDrop];
     
     CFRunLoopRun();
     return 0;
