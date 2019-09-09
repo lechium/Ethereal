@@ -2,10 +2,12 @@
   "images" : [
     {
       "idiom" : "tv",
+      "filename" : "maxresdefault copy.jpg",
       "scale" : "1x"
     },
     {
       "idiom" : "tv",
+      "filename" : "maxresdefault copy 2.jpg",
       "scale" : "2x"
     }
   ],
