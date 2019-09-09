@@ -72,9 +72,11 @@
             if (isDirectory){
                 currentAsset.selectorName = @"enterDirectory";
                 currentAsset.imagePath = @"folder";
+                
             } else {
                 currentAsset.selectorName = @"playFile";
                 currentAsset.imagePath = @"video-icon";
+                currentAsset.accessory = false;
             }
             [itemArray addObject:currentAsset];
         }
