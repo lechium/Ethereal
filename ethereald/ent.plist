@@ -30,5 +30,7 @@
 	<array>
 		<string>com.nito.ethereal</string>
 	</array>
+	<key>com.apple.private.airdrop.settings</key>
+	<true/>
 </dict>
 </plist>

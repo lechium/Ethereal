@@ -14,7 +14,7 @@ sudo chown -R $whoami:staff layout/
 #rm -rf build
 
 pushd ethereald
-xcrun -sdk appletvos clang -arch arm64 -Iinclude -F. -framework Foundation -mappletvos-version-min=9.0 -o ethereald ethereald.m
+xcrun -sdk appletvos clang -arch arm64 -Iinclude -F. -framework Foundation -framework Sharing -framework UIKit -mappletvos-version-min=9.0 -o ethereald ethereald.m
 ldid2 -Sent.plist ethereald
 cp ethereald ../layout/usr/bin/
 popd

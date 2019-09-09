@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
+#import <UIKit/UIKit.h>
 
 @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (id)defaultCenter;
@@ -7,7 +8,18 @@
 - (void)postNotificationName:(id)arg1 object:(id)arg2 userInfo:(id)arg3;
 @end
 
+typedef enum : NSUInteger {
+    SDAirDropDiscoverableModeOff,
+    SDAirDropDiscoverableModeContactsOnly,
+    SDAirDropDiscoverableModeEveryone,
+} SDAirDropDiscoverableMode;
+
+@interface SFAirDropDiscoveryController: UIViewController
+- (void)setDiscoverableMode:(NSInteger)mode;
+@end;
+
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
+
 @interface etherealHelper: NSObject
 
 + (id)sharedHelper;

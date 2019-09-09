@@ -53,6 +53,7 @@
 		327D406E23265DFB000EC3C1 /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D406C23265DFA000EC3C1 /* UIColor+Additions.m */; };
 		327D407023266C9C000EC3C1 /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D406F23266C9C000EC3C1 /* folder.png */; };
 		327D407223266DA6000EC3C1 /* video-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D407123266DA6000EC3C1 /* video-icon.png */; };
+		327D40752326D995000EC3C1 /* Sharing.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D40742326D995000EC3C1 /* Sharing.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -154,6 +155,12 @@
 		327D406D23265DFB000EC3C1 /* UIColor+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Additions.h"; sourceTree = "<group>"; };
 		327D406F23266C9C000EC3C1 /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder.png; sourceTree = "<group>"; };
 		327D407123266DA6000EC3C1 /* video-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "video-icon.png"; sourceTree = "<group>"; };
+		327D40742326D995000EC3C1 /* Sharing.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = Sharing.tbd; sourceTree = SOURCE_ROOT; };
+		327D40772326DA35000EC3C1 /* aappent.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = aappent.plist; sourceTree = "<group>"; };
+		327D40792326DA35000EC3C1 /* ent.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ent.plist; sourceTree = "<group>"; };
+		327D407A2326DA35000EC3C1 /* ethereald */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ethereald; sourceTree = "<group>"; };
+		327D407B2326DA35000EC3C1 /* ethereald.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ethereald.m; sourceTree = "<group>"; };
+		327D407C2326DA35000EC3C1 /* make.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = make.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +171,7 @@
 				327D3FF52324E5EE000EC3C1 /* libcrypto.a in Frameworks */,
 				327D3FFC2324FC5C000EC3C1 /* tvOSAVPlayerTouch.framework in Frameworks */,
 				327D3FF62324E5EE000EC3C1 /* libssl.a in Frameworks */,
+				327D40752326D995000EC3C1 /* Sharing.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +181,7 @@
 		327D3FD12324E512000EC3C1 = {
 			isa = PBXGroup;
 			children = (
+				327D40762326DA35000EC3C1 /* ethereald */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
 				327D3FDB2324E512000EC3C1 /* Products */,
 			);
@@ -208,6 +217,7 @@
 				327D405D23265DB0000EC3C1 /* angle-mask@3x.png */,
 				327D3FE82324E515000EC3C1 /* Info.plist */,
 				327D3FE92324E515000EC3C1 /* main.m */,
+				327D40742326D995000EC3C1 /* Sharing.tbd */,
 			);
 			path = Ethereal;
 			sourceTree = "<group>";
@@ -334,6 +344,18 @@
 			name = SVProgressHUD;
 			path = Ethereal/SVProgressHUD;
 			sourceTree = SOURCE_ROOT;
+		};
+		327D40762326DA35000EC3C1 /* ethereald */ = {
+			isa = PBXGroup;
+			children = (
+				327D40772326DA35000EC3C1 /* aappent.plist */,
+				327D40792326DA35000EC3C1 /* ent.plist */,
+				327D407A2326DA35000EC3C1 /* ethereald */,
+				327D407B2326DA35000EC3C1 /* ethereald.m */,
+				327D407C2326DA35000EC3C1 /* make.sh */,
+			);
+			path = ethereald;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -613,6 +635,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
+					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.Ethereal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -640,6 +663,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
+					"$(PROJECT_DIR)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.Ethereal;
 				PRODUCT_NAME = "$(TARGET_NAME)";

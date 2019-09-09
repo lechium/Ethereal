@@ -13,6 +13,17 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "NSObject+Additions.h"
+typedef enum : NSUInteger {
+    SDAirDropDiscoverableModeOff,
+    SDAirDropDiscoverableModeContactsOnly,
+    SDAirDropDiscoverableModeEveryone,
+} SDAirDropDiscoverableMode;
+
+@interface SFAirDropDiscoveryController: UIViewController
+- (void)setDiscoverableMode:(NSInteger)mode;
+@end;
+
+
 
 @interface InternalLicense: NSObject
 
@@ -34,9 +45,23 @@
 
 @interface AppDelegate ()
 
+@property (nonatomic, strong) SFAirDropDiscoveryController *discoveryController;
+
 @end
 
 @implementation AppDelegate
+
+- (void)disableAirDrop {
+    
+    [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeOff];
+    
+}
+
+- (void)setupAirDrop {
+    self.discoveryController = [[SFAirDropDiscoveryController alloc] init] ;
+    [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeEveryone];
+}
+
 
 - (void)airDropReceived:(NSNotification *)n {
     

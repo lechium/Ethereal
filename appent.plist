@@ -24,5 +24,7 @@
 	<true/>
 	<key>com.apple.system.diagnostics.iokit-properties</key>
 	<true/>
+	<key>com.apple.private.airdrop.settings</key>
+	<true/>
 </dict>
 </plist>
