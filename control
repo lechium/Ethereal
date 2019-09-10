@@ -9,4 +9,5 @@ Pre-Depends: cy+model.appletv
 Description: AirDrop video files straight to your device for immediate playback
 Name: ethereal
 Author: Kevin Bradley
+Depiction: https://nitosoft.com/ATV4/eth/eth.json
 

@@ -1,0 +1,14 @@
+{
+	"LongDescription": "AirDrop video files and links to your AppleTV in a variety of formats.\nIs video is currently playing back an alert will appear about the video being transferred and available for viewing later.",
+	"MainTextColor": "FFFFFF",
+	"FlowcaseIconURL": "https://nitosoft.com/ATV4/eth/banner.jpg",
+	"AppIconURL": "https://nitosoft.com/ATV4/eth/icon.jpg",
+	"BackgroundImageURL": "https://nitosoft.com/ATV4/eth/background.png",
+	"ShowTopScreenshot": true,
+	"Screenshots": [
+		"https://nitosoft.com/ATV4/eth/eth_01.jpg",
+		"https://nitosoft.com/ATV4/eth/eth_02.jpg",
+		"https://nitosoft.com/ATV4/eth/eth_03.jpg",
+		"https://nitosoft.com/ATV4/eth/eth_04.jpg"
+	]
+}

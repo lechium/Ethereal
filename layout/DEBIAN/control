@@ -3,10 +3,11 @@ Priority: extra
 Section: Utilities
 Maintainer: Kevin Bradley
 Architecture: appletvos-arm64
-Version: 1.0-54
+Version: 1.0-56
 Depends: firmware (>= 9.0), com.nito.breezy (>= 1.3-2)
 Pre-Depends: cy+model.appletv
 Description: AirDrop video files straight to your device for immediate playback
 Name: ethereal
 Author: Kevin Bradley
+Depiction: https://nitosoft.com/ATV4/eth/eth.json
 
