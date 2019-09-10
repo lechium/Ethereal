@@ -87,7 +87,6 @@
                 FFAVParser *mp = [[FFAVParser alloc] init];
                 UIImage *thumbnails = nil;
                 if ([mp openMedia:[NSURL fileURLWithPath:fullPath] withOptions:nil]) {
-                    NSLog(@"open media success?!?!?");
                     thumbnails = [mp thumbnailAtTime:fminf(20, mp.duration/2.0)];
                     if (thumbnails){
                         
@@ -113,9 +112,7 @@
                         }
                         [FFAVParser showFormats];
                         mp = nil;
-                    } else {
-                        NSLog(@"open media fail?!?!?");
-                    }
+                    } 
                     
                     currentAsset.selectorName = @"playFile";
                     currentAsset.imagePath = @"video-icon";
