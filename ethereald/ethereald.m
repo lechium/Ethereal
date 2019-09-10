@@ -2,8 +2,15 @@
 #import <objc/runtime.h>
 #import <UIKit/UIKit.h>
 #import "../MediaRemote/MediaRemote.h"
-
-@interface NSDistributedNotificationCenter : NSNotificationCenter
+#import "TVSPreferences.h"
+/*
+@interface TVSPreferences : NSObject
++(id)preferencesWithDomain:(id)arg1;
++(id)addObserverForDomain:(id)arg1 withDistributedSynchronizationHandler:(void (^)(id object))arg1;
+ 
+@end
+*/
+ @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (id)defaultCenter;
 - (void)addObserver:(id)arg1 selector:(SEL)arg2 name:(id)arg3 object:(id)arg4;
 - (void)postNotificationName:(id)arg1 object:(id)arg2 userInfo:(id)arg3;
@@ -20,24 +27,54 @@ typedef enum : NSUInteger {
 @end;
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
+#define APPLICATION_IDENTIFIER "com.nito.Ethereal"
 
 @interface etherealHelper: NSObject
 
+@property (nonatomic, strong) NSDictionary *settings;
 @property (nonatomic, strong) SFAirDropDiscoveryController *discoveryController;
+
 + (id)sharedHelper;
 - (void)adr:(NSNotification *)note;
 @end
 
 @implementation etherealHelper
 
+- (void)reloadSettings {
+    // Reload settings.
+    NSLog(@"*** [ethereald] :: Reloading settings");
+
+    
+    CFPreferencesAppSynchronize(CFSTR(APPLICATION_IDENTIFIER));
+    
+    CFArrayRef keyList = CFPreferencesCopyKeyList(CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+    
+    if (!keyList) {
+        self.settings = [NSMutableDictionary dictionary];
+    } else {
+        CFDictionaryRef dictionary = CFPreferencesCopyMultiple(keyList, CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+        
+        self.settings = [(__bridge NSDictionary *)dictionary copy];
+        NSLog(@"settings: %@", self.settings);
+        CFRelease(dictionary);
+        CFRelease(keyList);
+    }
+}
+
+- (id)getPreferenceKey:(NSString*)key {
+    return [self.settings objectForKey:key];
+}
+
 - (void)disableAirDrop {
     
+    DLog(@"AirDrop Disabled!");
     [[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
     [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeOff];
 }
 
 - (void)setupAirDrop {
    
+    DLog(@"AirDrop Enabled!");
     [[NSDistributedNotificationCenter defaultCenter] addObserver:[etherealHelper sharedHelper] selector:@selector(adr:) name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
     self.discoveryController = [[SFAirDropDiscoveryController alloc] init] ;
     [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeEveryone];
@@ -139,6 +176,28 @@ typedef enum : NSUInteger {
     });
 }
 
+- (void)preferencesUpdated {
+    
+    NSString *stateKey = @"airdropServerState";
+    TVSPreferences *prefs = [TVSPreferences preferencesWithDomain:@"com.nito.Ethereal"];
+    NSLog(@"prefs: %@", prefs);
+    BOOL serverRunning = [prefs boolForKey:stateKey];
+    if (serverRunning){
+        [self setupAirDrop];
+    } else {
+        [self disableAirDrop];
+    }
+}
+
+- (void)setupListener {
+    
+    [TVSPreferences addObserverForDomain:@"com.nito.Ethereal" withDistributedSynchronizationHandler:^(id object) {
+        [self preferencesUpdated];
+        //NSLog(@"inside hot block");
+        //NSLog(@"block inside addObserverForDomain: %@", object);
+    }];
+    
+}
 
 - (void)openApp:(NSString *)bundleID {
     
@@ -176,6 +235,9 @@ typedef enum : NSUInteger {
     {
         dispatch_once(&onceToken, ^{
             shared = [[etherealHelper alloc] init];
+            [shared setupListener];
+            [shared reloadSettings];
+            [shared preferencesUpdated];
         });
     }
     return shared;

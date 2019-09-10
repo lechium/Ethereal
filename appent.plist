@@ -20,11 +20,21 @@
 	<true/>
 	<key>com.apple.private.externalaccessory.showallaccessories</key>
 	<true/>
-	<key>com.apple.private.externalaccessory.showallaccessories - 2</key>
-	<true/>
 	<key>com.apple.system.diagnostics.iokit-properties</key>
 	<true/>
 	<key>com.apple.private.airdrop.settings</key>
 	<true/>
+	<key>application-identifier</key>
+	<string>BBBBBBBBBB.com.nito.Ethereal</string>
+	<key>com.apple.developer.team-identifier</key>
+	<string>BBBBBBBBBB</string>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.nito.Ethereal</string>
+	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>BBBBBBBBBB.com.nito.Ethereal</string>
+	</array>
 </dict>
 </plist>

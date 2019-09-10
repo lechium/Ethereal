@@ -12,11 +12,13 @@
 	<true/>
 	<key>Nice</key>
 	<integer>1</integer>
+	<key>UserName</key>
+	<string>mobile</string>
 	<key>KeepAlive</key>
 	<true/>
 	<key>StandardErrorPath</key>
-	<string>/Library/Logs/ethereald-error.log</string>
+	<string>/var/mobile/Library/Logs/ethereald-error.log</string>
 	<key>StandardOutPath</key>
-	<string>/Library/Logs/ethereald.log</string>
+	<string>/var/mobile/Library/Logs/ethereald.log</string>
 </dict>
 </plist>

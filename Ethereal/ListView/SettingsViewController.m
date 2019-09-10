@@ -348,6 +348,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.defaultImageName = @"folder";
     //self.tableView.remembersLastFocusedIndexPath = true;
     [self registerObservers];
     
@@ -397,6 +398,8 @@
     UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.name];
     if (currentImage){
         self.detailView.previewView.imageView.image = currentImage;
+    } else {
+        self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.defaultImageName];
     }
     [self.detailView.previewView updateAsset:currentAsset];
     
