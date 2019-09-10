@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+chown root:wheel /Library/LaunchDaemons/com.nito.ethereal.plist
+chown root:wheel /usr/bin/ethereald
+launchctl unload /Library/LaunchDaemons/com.nito.ethereal.plist
+launchctl load /Library/LaunchDaemons/com.nito.ethereal.plist
