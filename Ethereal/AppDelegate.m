@@ -98,13 +98,7 @@ typedef enum : NSUInteger {
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
 {
-    UIViewController *rvc = [[UIApplication sharedApplication]keyWindow].rootViewController;
-    
-    NSLog(@"rvc: %@", rvc);
-    
-    if ([rvc isKindOfClass:AVPlayerViewController.class]) {
-        [rvc dismissViewControllerAnimated:true completion:nil];
-    }
+    [[self topViewController] dismissViewControllerAnimated:true completion:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     
 }

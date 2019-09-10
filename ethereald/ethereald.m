@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 #import <UIKit/UIKit.h>
+#import "../MediaRemote/MediaRemote.h"
 
 @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (id)defaultCenter;
@@ -45,19 +46,26 @@ typedef enum : NSUInteger {
 
 - (void)adr:(NSNotification *)n {
     
-    NSDictionary *userInfo = [n userInfo];
-    NSArray <NSString *>*items = userInfo[@"Items"];
-    DLog(@"etherealHelper airdropped Items: %@", items);
-    if (items.count > 0){
-        [self processItemWithDelay:items[0]];
-        //[self showPlayerViewWithFile:items[0]];
-    }
-    
-     NSArray <NSString *>*URLS = userInfo[@"URLS"];
-    if (URLS.count > 0){
-        [self processURLWithDelay:URLS[0]];
-        //[self showPlayerViewWithFile:items[0]];
-    }
+    __block BOOL isPassive = FALSE;
+    MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef info) {
+        if (info != nil){
+            isPassive = true;
+            DLog(@"passive");
+        }
+        NSDictionary *userInfo = [n userInfo];
+        NSArray <NSString *>*items = userInfo[@"Items"];
+        DLog(@"etherealHelper airdropped Items: %@", items);
+        if (items.count > 0){
+            [self processItemWithDelay:items[0] passive:isPassive];
+            //[self showPlayerViewWithFile:items[0]];
+        }
+        
+        NSArray <NSString *>*URLS = userInfo[@"URLS"];
+        if (URLS.count > 0){
+            [self processURLWithDelay:URLS[0] passive:isPassive];
+            //[self showPlayerViewWithFile:items[0]];
+        }
+    });
     
 }
 
@@ -67,7 +75,7 @@ typedef enum : NSUInteger {
     
 }
 
-- (void)processURLWithDelay:(NSString *)path {
+- (void)processURLWithDelay:(NSString *)path passive:(BOOL)passive {
     
     NSLog(@"path ext: %@",[path pathExtension] );
     if (![[self approvedExtensions] containsObject:[path pathExtension].lowercaseString]){
@@ -86,7 +94,7 @@ typedef enum : NSUInteger {
     
 }
 
-- (void)processItemWithDelay:(NSString *)path {
+- (void)processItemWithDelay:(NSString *)path passive:(BOOL)passive {
     
     if (![[self approvedExtensions] containsObject:[path pathExtension].lowercaseString]){
         return;
@@ -106,12 +114,22 @@ typedef enum : NSUInteger {
     NSString *fileName = path.lastPathComponent;
     NSString *attemptCopy = [etherealFolder stringByAppendingPathComponent:fileName];
     DLog(@"attempted path: %@", attemptCopy);
-  
     [man moveItemAtPath:path toPath:attemptCopy error:&error];
+    
+    if (passive) {
+        
+        DLog(@"video is playing, passively show an alert");
+        NSDictionary *alertDict = @{@"message": [NSString stringWithFormat:@"%@ saved. You can view it in Ethereal when you are ready.",fileName], @"title":@"AirDrop Completed!", @"imageID": @"PBSSystemBulletinImageIDTV", @"delay": @4};
+        [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"com.nito.bulletinh4x/displayBulletin" object:nil userInfo:alertDict];
+        
+        return;
+        
+    }
+    
     DLog(@"etherealHelper opening ethereal");
     [self openApp:@"com.nito.Ethereal"];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         NSDictionary *userInfo = @{@"Items": @[attemptCopy]};
         

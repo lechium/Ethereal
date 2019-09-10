@@ -70,6 +70,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		327B3EA72327694B00377FAE /* makeLatest.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = makeLatest.sh; sourceTree = "<group>"; };
 		327D3FDA2324E512000EC3C1 /* Ethereal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ethereal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		327D3FDD2324E512000EC3C1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		327D3FDE2324E512000EC3C1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -181,6 +182,7 @@
 		327D3FD12324E512000EC3C1 = {
 			isa = PBXGroup;
 			children = (
+				327B3EA72327694B00377FAE /* makeLatest.sh */,
 				327D40762326DA35000EC3C1 /* ethereald */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
 				327D3FDB2324E512000EC3C1 /* Products */,
