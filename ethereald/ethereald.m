@@ -180,7 +180,6 @@ typedef enum : NSUInteger {
     
     NSString *stateKey = @"airdropServerState";
     TVSPreferences *prefs = [TVSPreferences preferencesWithDomain:@"com.nito.Ethereal"];
-    NSLog(@"prefs: %@", prefs);
     BOOL serverRunning = [prefs boolForKey:stateKey];
     if (serverRunning){
         [self setupAirDrop];
@@ -193,8 +192,6 @@ typedef enum : NSUInteger {
     
     [TVSPreferences addObserverForDomain:@"com.nito.Ethereal" withDistributedSynchronizationHandler:^(id object) {
         [self preferencesUpdated];
-        //NSLog(@"inside hot block");
-        //NSLog(@"block inside addObserverForDomain: %@", object);
     }];
     
 }
