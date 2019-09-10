@@ -42,6 +42,7 @@
 @property (nonatomic, strong) NSDictionary *metaDictionary;
 @property (nonatomic, strong) NSString *selectorName;
 @property (readwrite, assign) NSInteger tag;
+@property (nonatomic, strong) NSString *fullImagePath; //optional
 @property (readwrite, assign) BOOL accessory;
 
 - (SEL)ourSelector;

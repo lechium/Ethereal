@@ -52,11 +52,37 @@ typedef enum : NSUInteger {
         [self processItemWithDelay:items[0]];
         //[self showPlayerViewWithFile:items[0]];
     }
+    
+     NSArray <NSString *>*URLS = userInfo[@"URLS"];
+    if (URLS.count > 0){
+        [self processURLWithDelay:URLS[0]];
+        //[self showPlayerViewWithFile:items[0]];
+    }
+    
 }
 
 - (NSArray *)approvedExtensions {
     
     return @[@"mov", @"mp4", @"m4v", @"mkv", @"avi", @"mp3", @"vob", @"mpg", @"mpeg", @"flv", @"wmv", @"swf", @"asf", @"rmvb", @"rm"];
+    
+}
+
+- (void)processURLWithDelay:(NSString *)path {
+    
+    NSLog(@"path ext: %@",[path pathExtension] );
+    if (![[self approvedExtensions] containsObject:[path pathExtension].lowercaseString]){
+        return;
+    }
+    DLog(@"etherealHelper opening ethereal");
+    [self openApp:@"com.nito.Ethereal"];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        
+        NSDictionary *userInfo = @{@"URLS": @[path]};
+        
+        DLog(@"posting notifictation with userinfo: %@", userInfo);
+        [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"com.nito.Ethereal/airDropFileReceived" object:nil userInfo:userInfo];
+        
+    });
     
 }
 
@@ -85,7 +111,7 @@ typedef enum : NSUInteger {
     DLog(@"etherealHelper opening ethereal");
     [self openApp:@"com.nito.Ethereal"];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         NSDictionary *userInfo = @{@"Items": @[attemptCopy]};
         
@@ -143,7 +169,7 @@ typedef enum : NSUInteger {
 
 int main(int argc, char* argv[])
 {
-    DLog(@"\ethereald: science bro\n\n");
+    DLog(@"\ethereald: LOADED\n\n");
     
     etherealHelper *helper = [etherealHelper sharedHelper];
   

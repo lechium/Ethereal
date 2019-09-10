@@ -418,7 +418,23 @@
         }
     }
     
-    self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];
+    if (currentAsset.fullImagePath.length > 0){
+        
+         UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.fullImagePath];
+        if (!currentImage){
+            currentImage = [UIImage imageWithContentsOfFile:currentAsset.fullImagePath];
+            [[SDImageCache sharedImageCache] storeImage:currentImage forKey:currentAsset.imagePath];
+            self.detailView.previewView.imageView.image = currentImage;
+        } else {
+              self.detailView.previewView.imageView.image = currentImage;
+        }
+        [self.detailView.previewView updateAsset:currentAsset];
+        return;
+    } else {
+        self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];
+        
+    }
+    
     
     [self.detailView.previewView updateAsset:currentAsset];
 
@@ -548,7 +564,12 @@
         //cell.textLabel.textColor = [UIColor grayColor];
         //cell.detailTextLabel.textColor = [UIColor lightGrayColor];
     }
-  
+    /*
+    if (currentAsset.fullImagePath.length > 0){
+        self.detailView.previewView.imageView.image = [[UIImage alloc] initWithContentsOfFile:currentAsset.fullImagePath];
+        
+    }
+     */
     if (currentAsset.accessory){
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     } else {

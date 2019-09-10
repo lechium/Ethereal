@@ -48,6 +48,14 @@
     
 }
 
+- (void)itemDidFinishPlaying:(NSNotification *)n
+{
+    
+    [self dismissViewControllerAnimated:true completion:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
+    
+}
+
 - (NSArray *)approvedExtensions {
     
     return @[@"mov", @"mp4", @"m4v", @"mkv", @"avi", @"mp3", @"vob", @"mpg", @"mpeg", @"flv", @"wmv", @"swf", @"asf", @"rmvb", @"rm"];
@@ -69,18 +77,54 @@
         if ([[self approvedExtensions] containsObject:[obj pathExtension].lowercaseString] || isDirectory){
             MetaDataAsset *currentAsset = [MetaDataAsset new];
             currentAsset.name = obj;
+            
             if (isDirectory){
                 currentAsset.selectorName = @"enterDirectory";
                 currentAsset.imagePath = @"folder";
                 
             } else {
-                currentAsset.selectorName = @"playFile";
-                currentAsset.imagePath = @"video-icon";
-                currentAsset.accessory = false;
+                
+                FFAVParser *mp = [[FFAVParser alloc] init];
+                UIImage *thumbnails = nil;
+                if ([mp openMedia:[NSURL fileURLWithPath:fullPath] withOptions:nil]) {
+                    NSLog(@"open media success?!?!?");
+                    thumbnails = [mp thumbnailAtTime:fminf(20, mp.duration/2.0)];
+                    if (thumbnails){
+                        
+                        NSLog(@"thumbnails: %@", thumbnails);
+                        NSData *imageData = UIImagePNGRepresentation(thumbnails);;
+                        if (imageData){
+                            NSLog(@"has image data");
+                            
+                            NSString *newName = [[obj stringByDeletingPathExtension] stringByAppendingPathExtension:@"png"];
+                            NSString *png = [[self currentPath] stringByAppendingPathComponent:newName];
+                            [imageData writeToFile:png atomically:TRUE];
+                            currentAsset.fullImagePath = png;
+                            //dict[@"imageData"] = imageData;
+                        } else {
+                            imageData = UIImageJPEGRepresentation(thumbnails, 1.0);
+                            if (imageData){
+                                NSString *newName = [[obj stringByDeletingPathExtension] stringByAppendingPathExtension:@"png"];
+                                NSString *png = [[self currentPath] stringByAppendingPathComponent:newName];
+                                [imageData writeToFile:png atomically:TRUE];
+                                currentAsset.fullImagePath = png;
+                                
+                            }
+                        }
+                        [FFAVParser showFormats];
+                        mp = nil;
+                    } else {
+                        NSLog(@"open media fail?!?!?");
+                    }
+                    
+                    currentAsset.selectorName = @"playFile";
+                    currentAsset.imagePath = @"video-icon";
+                    currentAsset.accessory = false;
+                }
+                
             }
             [itemArray addObject:currentAsset];
         }
-        
         
     }];
     
@@ -109,8 +153,8 @@
     LOG_SELF;
     [self refreshList];
     if (self.shouldExit){
-     //   [[UIApplication sharedApplication] terminateWithSuccess];
-       // [self dismissViewControllerAnimated:true completion:nil];
+        //   [[UIApplication sharedApplication] terminateWithSuccess];
+        // [self dismissViewControllerAnimated:true completion:nil];
     }
 }
 
@@ -122,6 +166,7 @@
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
         AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
         self.shouldExit = true;
         [self presentViewController:playerView animated:YES completion:nil];
@@ -137,22 +182,68 @@
 }
 
 - (void)refreshList {
- 
+    
     self.items = [self currentItems];
     [[self tableView] reloadData];
+}
+
+- (void)editSettings:(id)sender {
+    
+    [self.tableView setEditing:!self.tableView.editing animated:true];
+    
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (![self.tableView isEditing]){
+        return UITableViewCellEditingStyleNone;
+    }
+    NSFileManager *man = [NSFileManager defaultManager];
+    MetaDataAsset  *mda = self.items[indexPath.row];
+    NSString *fullPath = [[self currentPath] stringByAppendingPathComponent:mda.name];
+    NSDictionary *attrs = [man attributesOfItemAtPath:fullPath error:nil];
+    BOOL isDirectory = [attrs[NSFileType] isEqual:NSFileTypeDirectory];
+    if (!isDirectory){
+        return UITableViewCellEditingStyleDelete;
+    }
+    return UITableViewCellEditingStyleNone;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    LOG_SELF;
+    NSLog(@"editingStyle : %li, indexPath: %@", (long)editingStyle, indexPath);
+    NSFileManager *man = [NSFileManager defaultManager];
+    MetaDataAsset  *mda = self.items[indexPath.row];
+    NSString *fullPath = [[self currentPath] stringByAppendingPathComponent:mda.name];
+    NSString *messageString = [NSString stringWithFormat:@"Are you sure you want to delete '%@'? This is permanent and cannot be undone.", mda.name];
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Delete Item?" message:messageString preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *action = [UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        
+        [man removeItemAtPath:fullPath error:nil];
+        [self refreshList];
+        //DLog(@"do it");
+    }];
+    
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
+    
+    [ac addAction: cancel];
+    [ac addAction:action];
+    [self presentViewController:ac animated:TRUE completion:nil];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     LOG_SELF;
     self.view.alpha = 1;
- 
+    
     if (self.currentPath == nil){
         self.currentPath = @"/var/mobile/Documents";
     }
     self.items = [self currentItems];
     self.title = self.currentPath.lastPathComponent;
-    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editSettings:)];
     // Do any additional setup after loading the view, typically from a nib.
 }
 

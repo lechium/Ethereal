@@ -67,10 +67,18 @@ typedef enum : NSUInteger {
     
     NSDictionary *userInfo = [n userInfo];
     NSArray <NSString *>*items = userInfo[@"Items"];
-    NSLog(@"airdropped Items: %@", items);
+    NSArray <NSString *>*URLs = userInfo[@"URLS"];
+
     if (items.count > 0){
-        [self showPlayerViewWithFile:items[0]];
+            NSLog(@"airdropped Items: %@", items);
+        [self showPlayerViewWithFile:items[0] isLocal:TRUE];
     }
+    
+    if (URLs.count > 0){
+            NSLog(@"airdropped Items: %@", URLs);
+        [self showPlayerViewWithFile:URLs[0] isLocal:FALSE];
+    }
+    
     /*
      [items enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
      
@@ -88,14 +96,33 @@ typedef enum : NSUInteger {
     
 }
 
-- (void)showPlayerViewWithFile:(NSString *)theFile {
+- (void)itemDidFinishPlaying:(NSNotification *)n
+{
+    UIViewController *rvc = [[UIApplication sharedApplication]keyWindow].rootViewController;
+    
+    NSLog(@"rvc: %@", rvc);
+    
+    if ([rvc isKindOfClass:AVPlayerViewController.class]) {
+        [rvc dismissViewControllerAnimated:true completion:nil];
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
+    
+}
+
+- (void)showPlayerViewWithFile:(NSString *)theFile isLocal:(BOOL)isLocal {
     
     if ([[self defaultCompatFiles] containsObject:theFile.pathExtension.lowercaseString]){
         
         NSLog(@"default compat files contains %@", theFile);
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-        AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
         
+        AVPlayerItem *singleItem = nil;
+        if (isLocal){
+            singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
+        } else {
+            singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
+        }
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
         [[self topViewController] presentViewController:playerView animated:YES completion:nil];
         [playerView.player play];
@@ -104,7 +131,15 @@ typedef enum : NSUInteger {
     }
     
     PlayerViewController *playerController = [PlayerViewController new];
-    playerController.mediaURL = [NSURL fileURLWithPath:theFile];
+    if (isLocal){
+         playerController.mediaURL = [NSURL fileURLWithPath:theFile];
+    } else {
+        playerController.mediaURL = [NSURL URLWithString:theFile];
+    }
+    
+    NSLog(@"playerController: %@", playerController);
+    
+    
     [[self topViewController] presentViewController:playerController animated:true completion:nil];
 }
 
@@ -112,14 +147,12 @@ typedef enum : NSUInteger {
     // Override point for customization after application launch.
     
     InternalLicense *shared = [InternalLicense sharedInstance];
-    
     [shared setIsDemoVersion:false];
     [shared setExpiredDate:[NSDate distantFuture]];
     [shared setCustomerName:@"JESUS"];
-    [shared setProductName:@"YAZ"];
-    NSLog(@"name: %@", shared.customerName);
-    NSLog(@"productName: %@", shared.productName);
-    NSLog(@"expired date: %@", shared.expiredDate);
+    [shared setProductName:@"YOZ"];
+    [shared expiredDate];
+    
     
     return YES;
 }

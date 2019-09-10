@@ -220,8 +220,9 @@
     // and pause the palyer to prepare for next playback.
     
     if ([self.mediaURL isFileURL]) {
-      [controller seekto:0];
-      [controller pause];
+      //[controller seekto:0];
+      //[controller pause];
+        [self dismissViewControllerAnimated:true completion:nil];
     }
   }
 }
