@@ -33,12 +33,10 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-
+    
     unfocusedBackgroundColor = [UIColor colorWithWhite:1 alpha:0.2];
     self = [super initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:reuseIdentifier];
-    //self.contentView.backgroundColor = unfocusedBackgroundColor;
-    //self.layer.cornerRadius = 5;
-    //self.layer.masksToBounds = true;
+
     return self;
 }
 
@@ -46,27 +44,9 @@
 {
     [super layoutSubviews];
     self.accessoryView.backgroundColor = unfocusedBackgroundColor;
-    //NSString *recursiveDesc = [self performSelector:@selector(recursiveDescription)];
-    //NSLog(@"%@", recursiveDesc);
-
-}
-/*
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
-    [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
     
-    [coordinator addCoordinatedAnimations:^{
-    
-         self.contentView.backgroundColor = self.focused ? [UIColor clearColor] : unfocusedBackgroundColor;
-         self.accessoryView.backgroundColor = self.focused ? [UIColor clearColor] : unfocusedBackgroundColor;
-        self.layer.masksToBounds = !self.focused;
-        
-    } completion:^{
-        
-    }];
-
 }
-*/
+
 - (void)awakeFromNib {
     // Initialization code
     [super awakeFromNib];
@@ -98,10 +78,7 @@
 
 - (void)updateConstraints{
     
-   // [NSLayoutConstraint deactivateConstraints:self.constraints];
-    
-    //[self.previewView autoMatchDimension:ALDimensionHeight toDimension:ALDimensionHeight ofView:self.superview];
-    //[self.previewView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.superview];
+
     [self.previewView autoCenterInSuperview];
     [super updateConstraints];
 }
@@ -109,7 +86,6 @@
 - (void)updateMetaColor
 {
     UIColor *newColor = [UIColor blackColor];
-    //if (self.backgroundColor == [UIColor blackColor])
     if ([self darkMode])
     {
         newColor = [UIColor whiteColor];
@@ -130,13 +106,13 @@
 #pragma mark •• bootstrap data, change here for base data layout.
 - (MetadataPreviewView *)previewView
 {
-  if (!_previewView) {
-  
-
-      //NOTE: this is a bit of a hack im not sure why its necessary right now, apparently even a blank imagePath prevents
-      //layout issues.
-    _previewView = [[MetadataPreviewView alloc] initWithMetadata:@{@"imagePath": @""}];
-      //_previewView.topOffset = self.metaTopOffset;
+    if (!_previewView) {
+        
+        
+        //NOTE: this is a bit of a hack im not sure why its necessary right now, apparently even a blank imagePath prevents
+        //layout issues.
+        _previewView = [[MetadataPreviewView alloc] initWithMetadata:@{@"imagePath": @""}];
+        //_previewView.topOffset = self.metaTopOffset;
     }
     return _previewView;
 }
@@ -168,7 +144,7 @@
 
 - (void)performLongPressActionForSelectedRow
 {
-
+    
 }
 
 - (void)loadView
@@ -190,11 +166,11 @@
 
 - (void)longPress:(UILongPressGestureRecognizer*)gesture {
     if ( gesture.state == UIGestureRecognizerStateBegan) {
-      
+        
         
     }
     else if ( gesture.state == UIGestureRecognizerStateEnded) {
-      
+        
         //NSLog(@"long press on cell: %@", gesture.view);
         [self performLongPressActionForSelectedRow];
     }
@@ -252,15 +228,15 @@
     //self.titleView.text = _backingTitle;
     [self registerObservers];
     //[[self tableView]reloadData];
-       // DLog(@"insets : %i", self.view.translatesAutoresizingMaskIntoConstraints);
+    // DLog(@"insets : %i", self.view.translatesAutoresizingMaskIntoConstraints);
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-   // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
-   // NSLog(@"%@", recursiveDesc);
-
+    // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
+    // NSLog(@"%@", recursiveDesc);
+    
 }
 
 //its necessary to create a title view in case you are the first view inside a navigation controller
@@ -338,7 +314,7 @@
         self.titleView.textColor = newValue;
     }
     
-
+    
 }
 
 
@@ -418,58 +394,12 @@
         }
     }
     
-    if (currentAsset.fullImagePath.length > 0){
-        
-         UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.fullImagePath];
-        if (!currentImage){
-            currentImage = [UIImage imageWithContentsOfFile:currentAsset.fullImagePath];
-            [[SDImageCache sharedImageCache] storeImage:currentImage forKey:currentAsset.imagePath];
-            self.detailView.previewView.imageView.image = currentImage;
-        } else {
-              self.detailView.previewView.imageView.image = currentImage;
-        }
-        [self.detailView.previewView updateAsset:currentAsset];
-        return;
-    } else {
-        self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];
-        
+    UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.name];
+    if (currentImage){
+        self.detailView.previewView.imageView.image = currentImage;
     }
-    
-    
     [self.detailView.previewView updateAsset:currentAsset];
-
-    if (![currentAsset.imagePath containsString:@"http"] )
-    {
-        if ([self darkMode] && (currentAsset.imagePathDark.length > 0)){
-            self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePathDark];
-        } else {
-            self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];
-        }
-        
-    } else {
-        
-    //    NSLog(@"imagePath: %@", currentAsset.imagePath);
-        
-        self.detailView.previewView.imageView.image = [UIImage imageNamed:self.defaultImageName];
-        UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.imagePath];
-      //  NSLog(@"currentImage %@", currentImage);
-        if (currentImage == nil)
-        {
-            SDWebImageManager *shared = [SDWebImageManager sharedManager];
-            [shared loadImageWithURL:[NSURL URLWithString:currentAsset.imagePath] options:SDWebImageAllowInvalidSSLCertificates progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
-                if (error == nil)
-                {
-                    [[SDImageCache sharedImageCache] storeImage:image forKey:currentAsset.imagePath];
-                    self.detailView.previewView.imageView.image = image;
-                }
-                
-            }];
-           
-        } else {
-            self.detailView.previewView.imageView.image = currentImage;
-        }
-      
-}
+    
 }
 
 
@@ -494,7 +424,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-   
+    
     self.savedIndexPath = indexPath;
     MetaDataAsset *currentAsset = self.items[indexPath.row];
     SEL assetSelector = [currentAsset ourSelector];
@@ -506,7 +436,7 @@
         NSLog(@"doesnt respond to selector: %@", currentAsset.selectorName);
     }
     
-
+    
     NSString *currentDetail = currentAsset.detail;
     if (currentDetail.length > 0)
     {
@@ -525,7 +455,7 @@
                 [self.tableView reloadData];
             }
         }
-
+        
     }
     
 }
@@ -537,47 +467,18 @@
     // Configure the cell...
     
     MetaDataAsset *currentAsset = self.items[indexPath.row];
-    //NSLog(@"tag: %lu", currentAsset.tag);
-    switch (currentAsset.tag) {
-        case 0: //update ntv
-            
-            break;
-            
-        case 2: //block update
-            
-            break;
-            
-        case 8: //toggle logs
-         
-            break;
-            
-        default:
-            break;
-    }
 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.textLabel.text = currentAsset.name;
     cell.detailTextLabel.text = currentAsset.detail;
-    //if (self.view.backgroundColor == [UIColor blackColor])
-    if ([self darkMode])
-    {
-        //cell.textLabel.textColor = [UIColor grayColor];
-        //cell.detailTextLabel.textColor = [UIColor lightGrayColor];
-    }
-    /*
-    if (currentAsset.fullImagePath.length > 0){
-        self.detailView.previewView.imageView.image = [[UIImage alloc] initWithContentsOfFile:currentAsset.fullImagePath];
-        
-    }
-     */
+    
     if (currentAsset.accessory){
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
-    //cell.printRecursiveDescription;
     
-  
+    
     return cell;
 }
 

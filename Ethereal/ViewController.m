@@ -11,7 +11,7 @@
 #import <tvOSAVPlayerTouch/tvOSAVPlayerTouch.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
-
+#import "SDWebImageManager.h"
 
 
 @interface ViewController ()
@@ -80,45 +80,35 @@
             
             if (isDirectory){
                 currentAsset.selectorName = @"enterDirectory";
-                currentAsset.imagePath = @"folder";
+                currentAsset.defaultImageName = @"folder";
                 
             } else {
                 
-                FFAVParser *mp = [[FFAVParser alloc] init];
-                UIImage *thumbnails = nil;
-                if ([mp openMedia:[NSURL fileURLWithPath:fullPath] withOptions:nil]) {
-                    thumbnails = [mp thumbnailAtTime:fminf(20, mp.duration/2.0)];
-                    if (thumbnails){
-                        
-                        NSLog(@"thumbnails: %@", thumbnails);
-                        NSData *imageData = UIImagePNGRepresentation(thumbnails);;
-                        if (imageData){
-                            NSLog(@"has image data");
-                            
-                            NSString *newName = [[obj stringByDeletingPathExtension] stringByAppendingPathExtension:@"png"];
-                            NSString *png = [[self currentPath] stringByAppendingPathComponent:newName];
-                            [imageData writeToFile:png atomically:TRUE];
-                            currentAsset.fullImagePath = png;
-                            //dict[@"imageData"] = imageData;
-                        } else {
-                            imageData = UIImageJPEGRepresentation(thumbnails, 1.0);
-                            if (imageData){
-                                NSString *newName = [[obj stringByDeletingPathExtension] stringByAppendingPathExtension:@"png"];
-                                NSString *png = [[self currentPath] stringByAppendingPathComponent:newName];
-                                [imageData writeToFile:png atomically:TRUE];
-                                currentAsset.fullImagePath = png;
-                                
+                __block UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.name];
+                
+                NSLog(@"image from cache: %@", currentImage);
+                
+                if (!currentImage){
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                       
+                        FFAVParser *mp = [[FFAVParser alloc] init];
+                        if ([mp openMedia:[NSURL fileURLWithPath:fullPath] withOptions:nil]) {
+                            currentImage = [mp thumbnailAtTime:fminf(20, mp.duration/2.0)];
+                            if (currentImage){
+                                NSLog(@"thumbnails: %@", currentImage);
+                                mp = nil;
                             }
+                            
+                            
                         }
-                        [FFAVParser showFormats];
-                        mp = nil;
-                    } 
-                    
-                    currentAsset.selectorName = @"playFile";
-                    currentAsset.imagePath = @"video-icon";
-                    currentAsset.accessory = false;
+                        // currentImage = [UIImage imageWithContentsOfFile:currentAsset.imagePath];
+                        [[SDImageCache sharedImageCache] storeImage:currentImage forKey:currentAsset.name];
+                    });
                 }
                 
+                currentAsset.selectorName = @"playFile";
+                currentAsset.defaultImageName = @"video-icon";
+                currentAsset.accessory = false;
             }
             [itemArray addObject:currentAsset];
         }

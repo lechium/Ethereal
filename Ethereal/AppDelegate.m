@@ -13,6 +13,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "NSObject+Additions.h"
+#import "SDWebImageManager.h"
+
 typedef enum : NSUInteger {
     SDAirDropDiscoverableModeOff,
     SDAirDropDiscoverableModeContactsOnly,
@@ -131,9 +133,7 @@ typedef enum : NSUInteger {
         playerController.mediaURL = [NSURL URLWithString:theFile];
     }
     
-    NSLog(@"playerController: %@", playerController);
-    
-    
+    //NSLog(@"playerController: %@", playerController);
     [[self topViewController] presentViewController:playerController animated:true completion:nil];
 }
 
@@ -143,11 +143,13 @@ typedef enum : NSUInteger {
     InternalLicense *shared = [InternalLicense sharedInstance];
     [shared setIsDemoVersion:false];
     [shared setExpiredDate:[NSDate distantFuture]];
-    [shared setCustomerName:@"JESUS"];
-    [shared setProductName:@"YOZ"];
+    //[shared setCustomerName:@"JESUS"];
+    //[shared setProductName:@"YOZ"];
     [shared expiredDate];
-    
-    
+    /*
+    [[SDImageCache sharedImageCache] cleanDisk];
+    [[SDImageCache sharedImageCache] clearMemory];
+    */
     return YES;
 }
 
