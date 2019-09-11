@@ -12,6 +12,7 @@
 */
  @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (id)defaultCenter;
+- (void)removeObserver:(id)observer;
 - (void)addObserver:(id)arg1 selector:(SEL)arg2 name:(id)arg3 object:(id)arg4;
 - (void)postNotificationName:(id)arg1 object:(id)arg2 userInfo:(id)arg3;
 @end
@@ -68,12 +69,14 @@ typedef enum : NSUInteger {
 - (void)disableAirDrop {
     
     DLog(@"AirDrop Disabled!");
-    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+    //[[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
     [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeOff];
 }
 
 - (void)setupAirDrop {
    
+    if ([self.discoveryController discoverableMode] == SDAirDropDiscoverableModeEveryone) return;
     DLog(@"AirDrop Enabled!");
     [[NSDistributedNotificationCenter defaultCenter] addObserver:[etherealHelper sharedHelper] selector:@selector(adr:) name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
     self.discoveryController = [[SFAirDropDiscoveryController alloc] init] ;

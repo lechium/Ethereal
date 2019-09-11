@@ -220,6 +220,12 @@
     [self presentViewController:ac animated:TRUE completion:nil];
 }
 
+- (void)settingsTest:(id)sender {
+    
+    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    [[UIApplication sharedApplication] openURL:url];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     LOG_SELF;
@@ -231,7 +237,9 @@
     self.items = [self currentItems];
     self.title = self.currentPath.lastPathComponent;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editSettings:)];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    UIImage *image = [UIImage imageNamed:@"gear-small"];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsTest:)];
 }
 
 

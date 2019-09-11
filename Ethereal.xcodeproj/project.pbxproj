@@ -14,8 +14,6 @@
 		327D3FEA2324E515000EC3C1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FE92324E515000EC3C1 /* main.m */; };
 		327D3FF52324E5EE000EC3C1 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D3FF22324E5ED000EC3C1 /* libcrypto.a */; };
 		327D3FF62324E5EE000EC3C1 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D3FF32324E5ED000EC3C1 /* libssl.a */; };
-		327D3FFC2324FC5C000EC3C1 /* tvOSAVPlayerTouch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D3FFB2324FC5C000EC3C1 /* tvOSAVPlayerTouch.framework */; };
-		327D3FFE2324FCB1000EC3C1 /* tvOSAVPlayerTouch.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 327D3FFB2324FC5C000EC3C1 /* tvOSAVPlayerTouch.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		327D40012324FCE1000EC3C1 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */; };
 		327D401123265A78000EC3C1 /* MetadataPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D400423265A78000EC3C1 /* MetadataPreviewView.m */; };
 		327D401223265A78000EC3C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D400623265A78000EC3C1 /* SettingsViewController.m */; };
@@ -54,6 +52,7 @@
 		327D407023266C9C000EC3C1 /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D406F23266C9C000EC3C1 /* folder.png */; };
 		327D407223266DA6000EC3C1 /* video-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D407123266DA6000EC3C1 /* video-icon.png */; };
 		327D40752326D995000EC3C1 /* Sharing.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D40742326D995000EC3C1 /* Sharing.tbd */; };
+		32AD39C12328A0100085F579 /* gear-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AD39C02328A0100085F579 /* gear-small.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,7 +62,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				327D3FFE2324FCB1000EC3C1 /* tvOSAVPlayerTouch.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,7 +158,6 @@
 		327D3FE92324E515000EC3C1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		327D3FF22324E5ED000EC3C1 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		327D3FF32324E5ED000EC3C1 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
-		327D3FFB2324FC5C000EC3C1 /* tvOSAVPlayerTouch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOSAVPlayerTouch.framework; path = Ethereal/tvOSAVPlayerTouch.framework; sourceTree = SOURCE_ROOT; };
 		327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
 		327D40002324FCE1000EC3C1 /* PlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
 		327D400323265A78000EC3C1 /* MetadataPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetadataPreviewView.h; sourceTree = "<group>"; };
@@ -240,6 +237,7 @@
 		327D407A2326DA35000EC3C1 /* ethereald */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ethereald; sourceTree = "<group>"; };
 		327D407B2326DA35000EC3C1 /* ethereald.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ethereald.m; sourceTree = "<group>"; };
 		327D407C2326DA35000EC3C1 /* make.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = make.sh; sourceTree = "<group>"; };
+		32AD39C02328A0100085F579 /* gear-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gear-small.png"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -248,7 +246,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				327D3FF52324E5EE000EC3C1 /* libcrypto.a in Frameworks */,
-				327D3FFC2324FC5C000EC3C1 /* tvOSAVPlayerTouch.framework in Frameworks */,
 				327D3FF62324E5EE000EC3C1 /* libssl.a in Frameworks */,
 				327D40752326D995000EC3C1 /* Sharing.tbd in Frameworks */,
 			);
@@ -493,6 +490,7 @@
 				327D40762326DA35000EC3C1 /* ethereald */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
 				327D3FDB2324E512000EC3C1 /* Products */,
+				32AD39C22328B66E0085F579 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -524,6 +522,7 @@
 				327D405E23265DB0000EC3C1 /* angle-mask.png */,
 				327D405C23265DB0000EC3C1 /* angle-mask@2x.png */,
 				327D405D23265DB0000EC3C1 /* angle-mask@3x.png */,
+				32AD39C02328A0100085F579 /* gear-small.png */,
 				327D3FE82324E515000EC3C1 /* Info.plist */,
 				327D3FE92324E515000EC3C1 /* main.m */,
 				327D40742326D995000EC3C1 /* Sharing.tbd */,
@@ -534,7 +533,6 @@
 		327D3FF02324E5ED000EC3C1 /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				327D3FFB2324FC5C000EC3C1 /* tvOSAVPlayerTouch.framework */,
 				327D3FF22324E5ED000EC3C1 /* libcrypto.a */,
 				327D3FF32324E5ED000EC3C1 /* libssl.a */,
 			);
@@ -667,6 +665,13 @@
 			path = ethereald;
 			sourceTree = "<group>";
 		};
+		32AD39C22328B66E0085F579 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -732,6 +737,7 @@
 				327D405F23265DB0000EC3C1 /* angle-mask@2x.png in Resources */,
 				327D407223266DA6000EC3C1 /* video-icon.png in Resources */,
 				327D406023265DB0000EC3C1 /* angle-mask@3x.png in Resources */,
+				32AD39C12328A0100085F579 /* gear-small.png in Resources */,
 				327D407023266C9C000EC3C1 /* folder.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -940,12 +946,16 @@
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					/Library/Frameworks,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
 					"$(PROJECT_DIR)",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					tvOSAVPlayerTouch,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.Ethereal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -968,12 +978,16 @@
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					/Library/Frameworks,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
 					"$(PROJECT_DIR)",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					tvOSAVPlayerTouch,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.Ethereal;
 				PRODUCT_NAME = "$(TARGET_NAME)";

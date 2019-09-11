@@ -1,0 +1,10 @@
+{
+	Filter = {
+		Executables = (
+			TVServices,
+			TVSettings,
+			PineBoard,
+			backboardd,
+		);
+	};
+}
