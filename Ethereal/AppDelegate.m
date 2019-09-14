@@ -143,8 +143,6 @@ typedef enum : NSUInteger {
     InternalLicense *shared = [InternalLicense sharedInstance];
     [shared setIsDemoVersion:false];
     [shared setExpiredDate:[NSDate distantFuture]];
-    //[shared setCustomerName:@"JESUS"];
-    //[shared setProductName:@"YOZ"];
     [shared expiredDate];
     /*
     [[SDImageCache sharedImageCache] cleanDisk];
