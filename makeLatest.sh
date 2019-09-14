@@ -26,7 +26,7 @@ make stage -C tweak
 /usr/bin/xcodebuild BUILD_ROOT=build | xcpretty
 rm layout/Applications/*.app/embedded.mobileprovision
 
-install_name_tool -change @rpath/tvOSAVPlayerTouch.framework/tvOSAVPlayerTouch /Library/Frameworks/tvOSAVPlayerTouch.framework/tvOSAVPlayerTouch layout/Applications/Ethereal.app/Ethereal
+#install_name_tool -change @rpath/tvOSAVPlayerTouch.framework/tvOSAVPlayerTouch /Library/Frameworks/tvOSAVPlayerTouch.framework/tvOSAVPlayerTouch layout/Applications/Ethereal.app/Ethereal
 #otool -L layout/Applications/Ethereal.app/Ethereal
 #exit 0
 bash package_v.sh -c ${CONTROL_FILE} > "$DPKG_DEBIAN_PATH"/control

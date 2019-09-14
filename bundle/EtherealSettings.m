@@ -4,17 +4,7 @@
 #import <TVSettingsKit/TSKTextInputSettingItem.h>
 #import <MobileCoreServices/LSApplicationWorkspace.h>
 #import <MobileCoreServices/LSApplicationProxy.h>
-
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <spawn.h>
-#include <sys/wait.h>
-
-#include <string.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/param.h>
+#import "NSTask.h"
 
 
 @interface LSApplicationProxy (More)
@@ -60,6 +50,12 @@
 }
 
 
+- (void)restartSharingd {
+    //+ (NSTask *)launchedTaskWithLaunchPath:(NSString *)path arguments:(NSArray *)arguments
+    [NSTask launchedTaskWithLaunchPath:@"/usr/bin/killall" arguments:@[@"-9", @"sharingd"]];
+    
+}
+
 - (void)openEthereal {
     
     LSApplicationWorkspace *ws = [LSApplicationWorkspace defaultWorkspace];
@@ -84,7 +80,8 @@
     //NSLog(@"created settings item: %@", settingsItem);
     
     TSKSettingItem *openItem = [TSKSettingItem actionItemWithTitle:@"Open Ethereal" description:@"A Shortcut to open Ethereal" representedObject:facade keyPath:@"" target:self action:@selector(openEthereal)];
-    TSKSettingGroup *group = [TSKSettingGroup groupWithTitle:nil settingItems:@[settingsItem, openItem]];
+    TSKSettingItem *restartSharingd = [TSKSettingItem actionItemWithTitle:@"Restart Sharingd" description:@"If AirDrop is rejecting your transfers, attempt to restart sharingd daemon." representedObject:facade keyPath:@"" target:self action:@selector(restartSharingd)];
+    TSKSettingGroup *group = [TSKSettingGroup groupWithTitle:nil settingItems:@[settingsItem, openItem, restartSharingd]];
     [_backingArray addObject:group];
     [self setValue:_backingArray forKey:@"_settingGroups"];
     

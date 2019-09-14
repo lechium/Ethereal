@@ -44,8 +44,6 @@ typedef enum : NSUInteger {
 - (void)reloadSettings {
     // Reload settings.
     NSLog(@"*** [ethereald] :: Reloading settings");
-
-    
     CFPreferencesAppSynchronize(CFSTR(APPLICATION_IDENTIFIER));
     
     CFArrayRef keyList = CFPreferencesCopyKeyList(CFSTR(APPLICATION_IDENTIFIER), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
@@ -70,7 +68,6 @@ typedef enum : NSUInteger {
     
     DLog(@"AirDrop Disabled!");
     [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-    //[[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
     [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeOff];
 }
 
@@ -97,13 +94,11 @@ typedef enum : NSUInteger {
         DLog(@"etherealHelper airdropped Items: %@", items);
         if (items.count > 0){
             [self processItemWithDelay:items[0] passive:isPassive];
-            //[self showPlayerViewWithFile:items[0]];
         }
         
         NSArray <NSString *>*URLS = userInfo[@"URLS"];
         if (URLS.count > 0){
             [self processURLWithDelay:URLS[0] passive:isPassive];
-            //[self showPlayerViewWithFile:items[0]];
         }
     });
     
@@ -119,7 +114,7 @@ typedef enum : NSUInteger {
     
     NSLog(@"path ext: %@",[path pathExtension] );
     if (![[self approvedExtensions] containsObject:[path pathExtension].lowercaseString]){
-        return;
+        //return;
     }
     DLog(@"etherealHelper opening ethereal");
     [self openApp:@"com.nito.Ethereal"];
@@ -202,7 +197,6 @@ typedef enum : NSUInteger {
 - (void)openApp:(NSString *)bundleID {
     
     id workspace = nil;
-    
     NSString *mcs = @"/System/Library/Frameworks/MobileCoreServices.framework/";
     NSBundle *bundle = [NSBundle bundleWithPath:mcs];
     NSError *theError = nil;
@@ -210,18 +204,14 @@ typedef enum : NSUInteger {
     DLog(@"the error: %@", theError);
     Class LSApplicationWorkspace_class = objc_getClass("LSApplicationWorkspace");
     if (!LSApplicationWorkspace_class) {
-        
         fprintf(stderr,"Unable to get Workspace class\n");
-        
     }
-    
     workspace = [LSApplicationWorkspace_class performSelector:@selector (defaultWorkspace)];
     if (!workspace) {fprintf(stderr,"Unable to get Workspace\n"); }
 
     if (workspace){
         [workspace performSelector:@selector(openApplicationWithBundleID:) withObject:(id) bundleID ];
     }
-    
     
 }
      
@@ -253,7 +243,7 @@ int main(int argc, char* argv[])
     
     etherealHelper *helper = [etherealHelper sharedHelper];
   
-    [helper setupAirDrop];
+    //[helper setupAirDrop];
     
     CFRunLoopRun();
     return 0;

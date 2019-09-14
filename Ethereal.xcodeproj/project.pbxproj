@@ -238,6 +238,7 @@
 		327D407B2326DA35000EC3C1 /* ethereald.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ethereald.m; sourceTree = "<group>"; };
 		327D407C2326DA35000EC3C1 /* make.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = make.sh; sourceTree = "<group>"; };
 		32AD39C02328A0100085F579 /* gear-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gear-small.png"; sourceTree = SOURCE_ROOT; };
+		32AD39C4232982270085F579 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -505,6 +506,7 @@
 		327D3FDC2324E512000EC3C1 /* Ethereal */ = {
 			isa = PBXGroup;
 			children = (
+				32AD39C4232982270085F579 /* NSTask.h */,
 				327D3FF02324E5ED000EC3C1 /* libs */,
 				327D3FDD2324E512000EC3C1 /* AppDelegate.h */,
 				327D3FDE2324E512000EC3C1 /* AppDelegate.m */,
