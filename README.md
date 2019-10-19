@@ -1,6 +1,6 @@
 # Ethereal
 
-Ethereal is a AirDrop based project based on #Breezy for jailbroken tvOS 11+
+Ethereal is a AirDrop based media player (video / audio / streaming URLs) project based on #Breezy for jailbroken tvOS 11+
 
 It is broken up into a few different pieces, there is the Ethereal Application that manages video playback and file browsing, the preference loader, a TVSettings application tweak, and a daemon.
 
