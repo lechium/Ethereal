@@ -31,25 +31,6 @@
 @implementation EtherealSettings
 
 
-
-- (void)sendBulletinWithMessage:(NSString *)message title:(NSString *)title {
-    
-    NSMutableDictionary *dict = [NSMutableDictionary new];
-    dict[@"message"] = message;
-    dict[@"title"] = title;
-    dict[@"timeout"] = @2;
-    
-    NSString *imagePath = [[NSBundle bundleForClass:self.class] pathForResource:@"icon" ofType:@"jpg"];
-    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
-    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
-    if (imageData){
-        dict[@"imageData"] = imageData;
-    }
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"com.nito.bulletinh4x/displayBulletin" object:nil userInfo:dict];
-    
-}
-
-
 - (void)restartSharingd {
     //+ (NSTask *)launchedTaskWithLaunchPath:(NSString *)path arguments:(NSArray *)arguments
     [NSTask launchedTaskWithLaunchPath:@"/usr/bin/killall" arguments:@[@"-9", @"sharingd"]];

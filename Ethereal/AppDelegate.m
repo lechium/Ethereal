@@ -26,7 +26,6 @@ typedef enum : NSUInteger {
 @end;
 
 
-
 @interface InternalLicense: NSObject
 
 - (BOOL)isExpired;
