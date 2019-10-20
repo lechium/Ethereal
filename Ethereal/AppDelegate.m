@@ -109,18 +109,23 @@ typedef enum : NSUInteger {
     if ([[self defaultCompatFiles] containsObject:theFile.pathExtension.lowercaseString]){
         
         NSLog(@"default compat files contains %@", theFile);
-        AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
         
-        AVPlayerItem *singleItem = nil;
-        if (isLocal){
-            singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
-        } else {
-            singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
-        }
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-        playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-        [[self topViewController] presentViewController:playerView animated:YES completion:nil];
-        [playerView.player play];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
+            
+            AVPlayerItem *singleItem = nil;
+            if (isLocal){
+                singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
+            } else {
+                singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
+            }
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
+            
+            playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+            [[self topViewController] presentViewController:playerView animated:YES completion:nil];
+            [playerView.player play];
+        });
+     
         
         return;
     }
@@ -136,6 +141,19 @@ typedef enum : NSUInteger {
     [[self topViewController] presentViewController:playerController animated:true completion:nil];
 }
 
+-(BOOL) application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    
+    NSLog(@"url: %@ app identifier: %@", url.host, url.path.lastPathComponent);
+    return YES;
+}
+
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
+{
+    NSLog(@"url: %@ app identifier: %@", url.host, url.path.lastPathComponent);
+    return YES;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
@@ -147,6 +165,12 @@ typedef enum : NSUInteger {
     [[SDImageCache sharedImageCache] cleanDisk];
     [[SDImageCache sharedImageCache] clearMemory];
     */
+    
+    NSURL *url = (NSURL *)[launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
+    NSLog(@"URL: %@", url);
+    if (url != nil){
+        [self showPlayerViewWithFile:url.path isLocal:TRUE];
+    }
     return YES;
 }
 

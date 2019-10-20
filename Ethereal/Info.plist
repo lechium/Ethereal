@@ -4,6 +4,99 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array/>
+			<key>CFBundleTypeName</key>
+			<string>Video Files</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.audiovisual-content</string>
+				<string>public.movie</string>
+				<string>public.video</string>
+				<string>public.avi</string>
+				<string>com.microsoft.advanced-systems-format</string>
+				<string>com.microsoft.windows-media-wmv</string>
+				<string>public.3gpp</string>
+				<string>public.3gpp2</string>
+				<string>public.mpeg-4</string>
+				<string>public.mpeg</string>
+				<string>com.microsoft.windows-media-wm</string>
+				<string>com.microsoft.windows-media-wmv</string>
+				<string>com.real.realmedia</string>
+				<string>com.apple.quicktime-movie</string>
+				<string>public.mpeg4</string>
+				<string>org.videolan.mxg</string>
+				<string>org.videolan.webm</string>
+				<string>org.videolan.mxf</string>
+				<string>org.matroska.mkv</string>
+				<string>com.divx.divx</string>
+				<string>org.xiph.ogv</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array/>
+			<key>CFBundleTypeName</key>
+			<string>Audio Files</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.audio</string>
+				<string>public.mp3</string>
+				<string>public.mpeg-4-audio</string>
+				<string>public.ulaw-audio</string>
+				<string>public.aifc-audio</string>
+				<string>public.aiff-audio</string>
+				<string>com.microsoft.waveform-​audio</string>
+				<string>com.microsoft.windows-​media-wma</string>
+				<string>com.real.realaudio</string>
+				<string>org.videolan.vlc</string>
+				<string>org.videolan.w64</string>
+				<string>org.videolan.oma</string>
+				<string>org.videolan.caf</string>
+				<string>org.videolan.opus</string>
+				<string>org.videolan.flac</string>
+				<string>org.xiph.oga</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array/>
+			<key>CFBundleTypeName</key>
+			<string>Subtitles Files</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.videolan.srt</string>
+				<string>org.videolan.sub</string>
+				<string>org.videolan.cdg</string>
+				<string>org.videolan.idx</string>
+				<string>public.utf</string>
+				<string>org.videolan.ass</string>
+				<string>org.videolan.ssa</string>
+				<string>org.videolan.aqt</string>
+				<string>org.videolan.jss</string>
+				<string>org.videolan.psb</string>
+				<string>org.videolan.rt</string>
+				<string>org.videolan.smi</string>
+				<string>org.videolan.smil</string>
+				<string>com.real.smil</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

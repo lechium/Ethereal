@@ -97,6 +97,7 @@
                 
             case UIPressTypeMenu:
                 
+                
                 NSLog(@"ETHEREAL: terminate with success!!");
                 [[UIApplication sharedApplication] terminateWithSuccess];
                 /*
