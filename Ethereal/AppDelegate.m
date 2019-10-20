@@ -151,6 +151,7 @@ typedef enum : NSUInteger {
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
     NSLog(@"url: %@ app identifier: %@", url.host, url.path.lastPathComponent);
+    [self showPlayerViewWithFile:url.path isLocal:TRUE];
     return YES;
 }
 
@@ -167,9 +168,10 @@ typedef enum : NSUInteger {
     */
     
     NSURL *url = (NSURL *)[launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
-    NSLog(@"URL: %@", url);
     if (url != nil){
-        [self showPlayerViewWithFile:url.path isLocal:TRUE];
+        //NSLog(@"URL: %@", url);
+        
+        //[self showPlayerViewWithFile:url.path isLocal:TRUE];
     }
     return YES;
 }
