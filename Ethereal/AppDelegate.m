@@ -46,7 +46,7 @@ typedef enum : NSUInteger {
 
 @interface AppDelegate ()
 
-@property (nonatomic, strong) SFAirDropDiscoveryController *discoveryController;
+@property (nonatomic, strong) id discoveryController;
 
 @end
 
@@ -59,7 +59,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)setupAirDrop {
-    self.discoveryController = [[SFAirDropDiscoveryController alloc] init] ;
+    self.discoveryController = [[NSClassFromString(@"SFAirDropDiscoveryController") alloc] init] ;
     [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeEveryone];
 }
 
@@ -106,7 +106,7 @@ typedef enum : NSUInteger {
 
 - (void)showPlayerViewWithFile:(NSString *)theFile isLocal:(BOOL)isLocal {
     
-    if ([[self defaultCompatFiles] containsObject:theFile.pathExtension.lowercaseString]){
+    if ([[self defaultCompatFiles] containsObject:theFile.pathExtension.lowercaseString] && isLocal){
         
         NSLog(@"default compat files contains %@", theFile);
         
@@ -150,8 +150,15 @@ typedef enum : NSUInteger {
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    NSLog(@"url: %@ app identifier: %@", url.host, url.path.lastPathComponent);
-    [self showPlayerViewWithFile:url.path isLocal:TRUE];
+    NSLog(@"host: %@ path: %@", url.host, url.path);
+    
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *newPath = [NSString stringWithFormat:@"/var/mobile/Documents/Ethereal/%@", url.path.lastPathComponent];
+    NSString *originalPath = url.path;
+    NSError *error = nil;
+    [man moveItemAtPath:originalPath toPath:newPath error:&error];
+    NSLog(@"error: %@", error);
+    [self showPlayerViewWithFile:newPath isLocal:TRUE];
     return YES;
 }
 

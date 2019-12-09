@@ -3,8 +3,8 @@ Priority: extra
 Section: Utilities
 Maintainer: Kevin Bradley
 Architecture: appletvos-arm64
-Version: 1.0.1-16
-Depends: firmware (>= 9.0), com.nito.breezy (>= 1.3-2), com.imore.tvosavplayer (>= 1.0-2)
+Version: 1.0.1-30
+Depends: firmware (>= 9.0), com.nito.breezy (>= 2.1), com.imore.tvosavplayer (>= 1.0-2)
 Pre-Depends: cy+model.appletv
 Description: AirDrop video files straight to your device for immediate playback
 Name: ethereal

@@ -10,6 +10,8 @@
  
 @end
 */
+
+
  @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (id)defaultCenter;
 - (void)removeObserver:(id)observer;
@@ -33,13 +35,15 @@ typedef enum : NSUInteger {
 @interface etherealHelper: NSObject
 
 @property (nonatomic, strong) NSDictionary *settings;
-@property (nonatomic, strong) SFAirDropDiscoveryController *discoveryController;
+@property (nonatomic, strong) id discoveryController;
 
 + (id)sharedHelper;
 - (void)adr:(NSNotification *)note;
 @end
 
 @implementation etherealHelper
+
+
 
 - (void)reloadSettings {
     // Reload settings.
@@ -73,10 +77,15 @@ typedef enum : NSUInteger {
 
 - (void)setupAirDrop {
    
+    NSString *suf = @"/System/Library/PrivateFrameworks/SharingUI.framework";
+    if ([[NSFileManager defaultManager] fileExistsAtPath:suf]){
+        NSBundle *sharingUI = [NSBundle bundleWithPath:suf];
+        [sharingUI load];
+    }
     if ([self.discoveryController discoverableMode] == SDAirDropDiscoverableModeEveryone) return;
     DLog(@"AirDrop Enabled!");
     [[NSDistributedNotificationCenter defaultCenter] addObserver:[etherealHelper sharedHelper] selector:@selector(adr:) name:@"com.nito.AirDropper/airDropFileReceived" object:nil];
-    self.discoveryController = [[SFAirDropDiscoveryController alloc] init] ;
+    self.discoveryController = [[NSClassFromString(@"SFAirDropDiscoveryController") alloc] init] ;
     [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeEveryone];
     
 }

@@ -1,7 +1,5 @@
 #!/bin/bash
 
+mkdir /var/mobile/Documents/Ethereal
+chown -R mobile:mobile /var/mobile/Documents/Ethereal
 
-chown root:wheel /Library/LaunchDaemons/com.nito.ethereal.plist
-chown root:wheel /usr/bin/ethereald
-launchctl unload /Library/LaunchDaemons/com.nito.ethereal.plist
-launchctl load /Library/LaunchDaemons/com.nito.ethereal.plist
