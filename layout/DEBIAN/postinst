@@ -1,5 +1,13 @@
 #!/bin/bash
 
-mkdir /var/mobile/Documents/Ethereal
-chown -R mobile:mobile /var/mobile/Documents/Ethereal
+if [ ! -d "/var/mobile/Documents/Ethereal" ]; then
+	mkdir /var/mobile/Documents/Ethereal
+	chown -R mobile:mobile /var/mobile/Documents/Ethereal
+fi
+
+if [ ! -d "/Library/Caches/com.nito.Ethereal" ]; then
+
+	mkdir /Library/Caches/com.nito.Ethereal
+	chown -R mobile:admin /Library/Caches/com.nito.Ethereal
+fi
 

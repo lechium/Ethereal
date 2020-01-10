@@ -15,16 +15,6 @@
 #import "NSObject+Additions.h"
 #import "SDWebImageManager.h"
 
-typedef enum : NSUInteger {
-    SDAirDropDiscoverableModeOff,
-    SDAirDropDiscoverableModeContactsOnly,
-    SDAirDropDiscoverableModeEveryone,
-} SDAirDropDiscoverableMode;
-
-@interface SFAirDropDiscoveryController: UIViewController
-- (void)setDiscoverableMode:(NSInteger)mode;
-@end;
-
 
 @interface InternalLicense: NSObject
 
@@ -46,55 +36,35 @@ typedef enum : NSUInteger {
 
 @interface AppDelegate ()
 
-@property (nonatomic, strong) id discoveryController;
-
 @end
 
 @implementation AppDelegate
 
-- (void)disableAirDrop {
-    
-    [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeOff];
-    
-}
-
-- (void)setupAirDrop {
-    self.discoveryController = [[NSClassFromString(@"SFAirDropDiscoveryController") alloc] init] ;
-    [self.discoveryController setDiscoverableMode:SDAirDropDiscoverableModeEveryone];
-}
-
-
-- (void)airDropReceived:(NSNotification *)n {
-    
-    NSDictionary *userInfo = [n userInfo];
-    NSArray <NSString *>*items = userInfo[@"Items"];
-    NSArray <NSString *>*URLs = userInfo[@"URLS"];
-
-    if (items.count > 0){
-            NSLog(@"airdropped Items: %@", items);
-        [self showPlayerViewWithFile:items[0] isLocal:TRUE];
-    }
-    
-    if (URLs.count > 0){
-            NSLog(@"airdropped Items: %@", URLs);
-        [self showPlayerViewWithFile:URLs[0] isLocal:FALSE];
-    }
-    
-    /*
-     [items enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-     
-     //[self processPath:obj];
-     [self showPlayerViewWithFile:obj];
-     
-     }];
-     
-     */
-}
 
 - (NSArray *)defaultCompatFiles {
     
     return @[@"mp4", @"mpeg4", @"m4v", @"mov"];
     
+}
+
+- (NSString *)movedFileToCache:(NSString *)fileName {
+    
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *cache = @"/var/mobile/Documents/Ethereal";
+    NSString *newPath = [cache stringByAppendingPathComponent:fileName.lastPathComponent];
+    NSError *error = nil;
+    
+    if ([man fileExistsAtPath:newPath]){
+        [man removeItemAtPath:fileName error:nil];
+        return newPath;
+    }
+    if ([man copyItemAtPath:fileName toPath:newPath error:&error]){
+        if(!error){
+            [man removeItemAtPath:fileName error:nil];
+            return newPath;
+        }
+    }
+    return nil;
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
@@ -141,23 +111,18 @@ typedef enum : NSUInteger {
     [[self topViewController] presentViewController:playerController animated:true completion:nil];
 }
 
--(BOOL) application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    
-    NSLog(@"url: %@ app identifier: %@", url.host, url.path.lastPathComponent);
-    return YES;
-}
 
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    NSLog(@"host: %@ path: %@", url.host, url.path);
+    NSLog(@"[Ethereal] host: %@ path: %@", url.host, url.path);
     
     NSFileManager *man = [NSFileManager defaultManager];
     NSString *newPath = [NSString stringWithFormat:@"/var/mobile/Documents/Ethereal/%@", url.path.lastPathComponent];
     NSString *originalPath = url.path;
     NSError *error = nil;
     [man moveItemAtPath:originalPath toPath:newPath error:&error];
-    NSLog(@"error: %@", error);
+    NSLog(@"[Ethereal] error: %@", error);
     [self showPlayerViewWithFile:newPath isLocal:TRUE];
     return YES;
 }
@@ -180,6 +145,8 @@ typedef enum : NSUInteger {
         
         //[self showPlayerViewWithFile:url.path isLocal:TRUE];
     }
+    
+    
     return YES;
 }
 
@@ -204,7 +171,7 @@ typedef enum : NSUInteger {
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-       [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(airDropReceived:) name:@"com.nito.Ethereal/airDropFileReceived" object:nil];
+ 
 }
 
 

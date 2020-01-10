@@ -225,7 +225,7 @@
     NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
     [[UIApplication sharedApplication] openURL:url];
 }
-
+//url = [NSURL URLWithString:app-settings:]
 - (NSString *)cachesFolder {
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     return [paths objectAtIndex:0];
@@ -249,8 +249,8 @@
     self.title = self.currentPath.lastPathComponent;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editSettings:)];
     
-    //UIImage *image = [UIImage imageNamed:@"gear-small"];
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsTest:)];
+//    UIImage *image = [UIImage imageNamed:@"gear-small"];
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsTest:)];
 }
 
 
