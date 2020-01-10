@@ -31,21 +31,10 @@
 - (NSString *)licenseString;
 - (id)expiredDate;
 + (id)sharedInstance;
-
 @end
-
 @interface AppDelegate ()
-
 @end
-
 @implementation AppDelegate
-
-
-- (NSArray *)defaultCompatFiles {
-    
-    return @[@"mp4", @"mpeg4", @"m4v", @"mov"];
-    
-}
 
 - (NSString *)movedFileToCache:(NSString *)fileName {
     
@@ -53,7 +42,6 @@
     NSString *cache = @"/var/mobile/Documents/Ethereal";
     NSString *newPath = [cache stringByAppendingPathComponent:fileName.lastPathComponent];
     NSError *error = nil;
-    
     if ([man fileExistsAtPath:newPath]){
         [man removeItemAtPath:fileName error:nil];
         return newPath;
@@ -67,63 +55,69 @@
     return nil;
 }
 
-- (void)itemDidFinishPlaying:(NSNotification *)n
-{
+- (void)itemDidFinishPlaying:(NSNotification *)n {
     [[self topViewController] dismissViewControllerAnimated:true completion:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
+}
+
+//never fires.. how the hell do u check for errors or file compat?? yeesh.
+- (void)itemReceivedError:(NSNotification *)n {
+  NSLog(@"[Ethereal] itemReceivedError: %@", [n userInfo]);
+}
+
+//test video
+//https://api.air.tv/v1/portal/hls/EYBAG1FeSbeVhmVEomo6kA
+
+- (void)checkPlabackStatus:(AVPlayerItem *)singleItem withFile:(NSString *)theFile isLocal:(BOOL)isLocal {
     
+    if (singleItem.error != nil){
+        NSLog(@"[Ethereal] %@", [singleItem error]);
+        [[self topViewController] dismissViewControllerAnimated:true completion:^{
+            PlayerViewController *playerController = [PlayerViewController new];
+            if (isLocal){
+                playerController.mediaURL = [NSURL fileURLWithPath:theFile];
+            } else {
+                playerController.mediaURL = [NSURL URLWithString:theFile];
+            }
+             [[self topViewController] presentViewController:playerController animated:true completion:nil];
+        }];
+    }
 }
 
 - (void)showPlayerViewWithFile:(NSString *)theFile isLocal:(BOOL)isLocal {
     
-    if ([[self defaultCompatFiles] containsObject:theFile.pathExtension.lowercaseString] && isLocal){
-        
-        NSLog(@"default compat files contains %@", theFile);
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-            
-            AVPlayerItem *singleItem = nil;
-            if (isLocal){
-                singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
-            } else {
-                singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
-            }
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-            
-            playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-            [[self topViewController] presentViewController:playerView animated:YES completion:nil];
-            [playerView.player play];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        AVPlayerItem *singleItem = nil;
+        if (isLocal){
+            singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
+        } else {
+            singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
+        }
+        AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemReceivedError:) name:AVPlayerItemNewErrorLogEntryNotification object:singleItem];
+        playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+        [[self topViewController] presentViewController:playerView animated:YES completion:nil];
+        [playerView.player play];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self checkPlabackStatus:singleItem withFile:theFile isLocal:isLocal];
         });
-     
-        
-        return;
-    }
-    
-    PlayerViewController *playerController = [PlayerViewController new];
-    if (isLocal){
-         playerController.mediaURL = [NSURL fileURLWithPath:theFile];
-    } else {
-        playerController.mediaURL = [NSURL URLWithString:theFile];
-    }
-    
-    //NSLog(@"playerController: %@", playerController);
-    [[self topViewController] presentViewController:playerController animated:true completion:nil];
+    });
 }
 
-
-
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
-{
-    NSLog(@"[Ethereal] host: %@ path: %@", url.host, url.path);
-    
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *newPath = [NSString stringWithFormat:@"/var/mobile/Documents/Ethereal/%@", url.path.lastPathComponent];
-    NSString *originalPath = url.path;
-    NSError *error = nil;
-    [man moveItemAtPath:originalPath toPath:newPath error:&error];
-    NSLog(@"[Ethereal] error: %@", error);
-    [self showPlayerViewWithFile:newPath isLocal:TRUE];
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
+    NSLog(@"[Ethereal] URL: %@", url);
+    if ([url isFileURL]){
+        NSFileManager *man = [NSFileManager defaultManager];
+        NSString *newPath = [NSString stringWithFormat:@"/var/mobile/Documents/Ethereal/%@", url.path.lastPathComponent];
+        NSString *originalPath = url.path;
+        NSError *error = nil;
+        [man moveItemAtPath:originalPath toPath:newPath error:&error];
+        NSLog(@"[Ethereal] error: %@", error);
+        [self showPlayerViewWithFile:newPath isLocal:TRUE];
+    } else {
+        [self showPlayerViewWithFile:url.absoluteString isLocal:false];
+    }
     return YES;
 }
 
@@ -138,15 +132,7 @@
     [[SDImageCache sharedImageCache] cleanDisk];
     [[SDImageCache sharedImageCache] clearMemory];
     */
-    
-    NSURL *url = (NSURL *)[launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
-    if (url != nil){
-        //NSLog(@"URL: %@", url);
-        
-        //[self showPlayerViewWithFile:url.path isLocal:TRUE];
-    }
-    
-    
+
     return YES;
 }
 
