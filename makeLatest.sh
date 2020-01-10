@@ -14,21 +14,6 @@ sudo rm -rf layout/Applications/
 sudo chown -R $whoami:staff layout/
 #rm -rf build
 
-# build the Daemon
-#echo -e "Building the daemon...\n"
-#pushd ethereald
-#FRAMEWORKS="-framework Foundation -framework Sharing -framework UIKit -framework MediaRemote -framework TVServices"
-#xcrun -sdk appletvos clang -arch arm64 -Iinclude -I. -F. $FRAMEWORKS -mappletvos-version-min=9.0 -o ethereald ethereald.m -v
-#echo -s "Signing the Daemon...\n"
-#ldid2 -Sent.plist ethereald
-#cp ethereald ../layout/usr/bin/
-#popd
-
-#echo -s "Making the Preference bundle...\n"
-#make stage -C bundle
-#echo -s "Making the Tweak...\n"
-#make stage -C tweak
-
 echo -s "Making the Application...\n"
 /usr/bin/xcodebuild BUILD_ROOT=build | xcpretty
 rm layout/Applications/*.app/embedded.mobileprovision
@@ -46,8 +31,6 @@ sudo ldid2 -Sappent.plist layout/Applications/Ethereal.app/Ethereal
 
 echo -s "Updating owners & permissions...\n"
 sudo chown -R root:wheel layout/Applications
-#sudo chown -R root:wheel layout/usr
-#sudo chown -R root:wheel layout/Library
 sudo rm -rf layout/Applications/*.app/_CodeSignature
 
 echo -s "Creating deb...\n"
