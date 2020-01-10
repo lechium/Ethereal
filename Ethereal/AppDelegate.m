@@ -36,25 +36,6 @@
 @end
 @implementation AppDelegate
 
-- (NSString *)movedFileToCache:(NSString *)fileName {
-    
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *cache = @"/var/mobile/Documents/Ethereal";
-    NSString *newPath = [cache stringByAppendingPathComponent:fileName.lastPathComponent];
-    NSError *error = nil;
-    if ([man fileExistsAtPath:newPath]){
-        [man removeItemAtPath:fileName error:nil];
-        return newPath;
-    }
-    if ([man copyItemAtPath:fileName toPath:newPath error:&error]){
-        if(!error){
-            [man removeItemAtPath:fileName error:nil];
-            return newPath;
-        }
-    }
-    return nil;
-}
-
 - (void)itemDidFinishPlaying:(NSNotification *)n {
     [[self topViewController] dismissViewControllerAnimated:true completion:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
