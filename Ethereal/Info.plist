@@ -135,5 +135,30 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Automatic</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>org.matroska.mkv</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>matroska file</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeIdentifier</key>
+			<string>org.matroska.mkv</string>
+			<key>UTTypeReferenceURL</key>
+			<string>https://nito.tv</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ipa</string>
+					<string>IPA</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
