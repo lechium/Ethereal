@@ -596,8 +596,8 @@
         [self.descriptionConstraints autoRemoveConstraints];
         [self.noDescriptionConstraints autoInstallConstraints];
     }
-    //[self updateConstraintsIfNeeded];
-    //[self updateConstraints];
+    [self updateConstraintsIfNeeded];
+    [self updateConstraints];
    // [self layoutIfNeeded];
 }
 

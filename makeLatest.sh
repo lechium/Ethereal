@@ -9,7 +9,7 @@ CONTROL_FILE=control
 DPKG_DEBIAN_PATH="$LAYOUT"/DEBIAN
 
 #you can quite likely comment this line out.
-sudo xcode-select -s ~/Desktop/Xcode.app/Contents/Developer/
+#sudo xcode-select -s ~/Desktop/Xcode.app/Contents/Developer/
 sudo rm -rf layout/Applications/
 sudo chown -R $whoami:staff layout/
 #rm -rf build

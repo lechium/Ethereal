@@ -73,17 +73,28 @@
         NSString *fullPath = [self.currentPath stringByAppendingPathComponent:obj];
         NSDictionary *attrs = [man attributesOfItemAtPath:fullPath error:nil];
         BOOL isDirectory = [attrs[NSFileType] isEqual:NSFileTypeDirectory];
-        
+        BOOL isLink = [attrs[NSFileType] isEqual:NSFileTypeSymbolicLink];
+        NSError *linkError = nil;
+        if (isLink){
+            [man contentsOfDirectoryAtPath:fullPath error:&linkError];
+            if (linkError){
+                NSLog(@"there was a link error: %@", linkError);
+            } else {
+                isDirectory = true;
+            }
+        }
         if ([[self approvedExtensions] containsObject:[obj pathExtension].lowercaseString] || isDirectory){
             MetaDataAsset *currentAsset = [MetaDataAsset new];
             currentAsset.name = obj;
-            
             if (isDirectory){
                 currentAsset.selectorName = @"enterDirectory";
                 currentAsset.defaultImageName = @"folder";
                 
             } else {
-                
+                unsigned long long fileSize = [attrs[NSFileSize] unsignedLongLongValue];
+                NSDate *creationDate = attrs[NSFileCreationDate];
+                NSString *fileSizeString = [NSString stringWithFormat:@"%lld MB", fileSize/1024/1024];
+                currentAsset.metaDictionary = @{@"File Size": fileSizeString, @"Created": creationDate.description};
                 __block UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.name];
                 
                 NSLog(@"image from cache: %@", currentImage);
