@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "SDWebImageManager.h"
-
+#import "SGPlayerViewController.h"
 
 @interface ViewController ()
 
@@ -35,17 +35,12 @@
 }
 
 - (void)playFile {
-    
     LOG_SELF;
-    
     NSIndexPath *ip = [self savedIndexPath];
     MetaDataAsset  *mda = self.items[ip.row];
     NSString *fullPath = [[self currentPath] stringByAppendingPathComponent:mda.name];
     NSLog(@"fullPath: %@", fullPath);
     [self showPlayerViewWithFile:fullPath];
-    
-    
-    
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
@@ -172,7 +167,7 @@
         
         return;
     }
-    
+    //SGPlayerViewController *playerController = [[SGPlayerViewController alloc] initWithMediaURL:[NSURL fileURLWithPath:theFile]];
     PlayerViewController *playerController = [PlayerViewController new];
     playerController.mediaURL = [NSURL fileURLWithPath:theFile];
     [self presentViewController:playerController animated:true completion:nil];

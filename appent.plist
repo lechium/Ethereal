@@ -36,5 +36,23 @@
 	<array>
 		<string>BBBBBBBBBB.com.nito.Ethereal</string>
 	</array>
+	<key>com.apple.security.iokit-user-client-class</key>
+	<array>
+		<string>AGXCommandQueue</string>
+		<string>AGXDevice</string>
+		<string>AGXDeviceUserClient</string>
+		<string>AGXSharedUserClient</string>
+		<string>AppleJPEGDriverUserClient</string>
+		<string>IOAccelContext</string>
+		<string>IOAccelContext2</string>
+		<string>IOAccelDevice</string>
+		<string>IOAccelDevice2</string>
+		<string>IOAccelSharedUserClient</string>
+		<string>IOAccelSharedUserClient2</string>
+		<string>IOAccelSubmitter2</string>
+		<string>IOMobileFramebufferUserClient</string>
+		<string>IOSurfaceAcceleratorClient</string>
+		<string>IOSurfaceRootUserClient</string>
+	</array>
 </dict>
 </plist>

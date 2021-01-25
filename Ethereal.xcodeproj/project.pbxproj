@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3247C3A925BBB550007FE21A /* KBSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3247C3A725BBB550007FE21A /* KBSlider.m */; };
+		3247C3AB25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */; };
 		327D3FDF2324E512000EC3C1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FDE2324E512000EC3C1 /* AppDelegate.m */; };
 		327D3FE22324E512000EC3C1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FE12324E512000EC3C1 /* ViewController.m */; };
 		327D3FE52324E512000EC3C1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 327D3FE32324E512000EC3C1 /* Main.storyboard */; };
 		327D3FE72324E515000EC3C1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 327D3FE62324E515000EC3C1 /* Assets.xcassets */; };
 		327D3FEA2324E515000EC3C1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FE92324E515000EC3C1 /* main.m */; };
-		327D3FF52324E5EE000EC3C1 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D3FF22324E5ED000EC3C1 /* libcrypto.a */; };
-		327D3FF62324E5EE000EC3C1 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D3FF32324E5ED000EC3C1 /* libssl.a */; };
 		327D40012324FCE1000EC3C1 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */; };
 		327D401123265A78000EC3C1 /* MetadataPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D400423265A78000EC3C1 /* MetadataPreviewView.m */; };
 		327D401223265A78000EC3C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D400623265A78000EC3C1 /* SettingsViewController.m */; };
@@ -51,8 +51,16 @@
 		327D406E23265DFB000EC3C1 /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D406C23265DFA000EC3C1 /* UIColor+Additions.m */; };
 		327D407023266C9C000EC3C1 /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D406F23266C9C000EC3C1 /* folder.png */; };
 		327D407223266DA6000EC3C1 /* video-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D407123266DA6000EC3C1 /* video-icon.png */; };
-		327D40752326D995000EC3C1 /* Sharing.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 327D40742326D995000EC3C1 /* Sharing.tbd */; };
 		32AD39C12328A0100085F579 /* gear-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AD39C02328A0100085F579 /* gear-small.png */; };
+		32C584E025BE5FE30021C9FC /* SGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */; };
+		32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */; };
+		32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E525BE6AF10021C9FC /* AVFoundation.framework */; };
+		32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E725BE6AF80021C9FC /* libz.tbd */; };
+		32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E925BE6B020021C9FC /* libiconv.tbd */; };
+		32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */; };
+		32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584ED25BE6B130021C9FC /* libbz2.tbd */; };
+		32C5850725BE7D240021C9FC /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; };
+		32C5850825BE7D240021C9FC /* SGPlayer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,12 +70,16 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				32C5850825BE7D240021C9FC /* SGPlayer.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3247C3A725BBB550007FE21A /* KBSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBSlider.m; sourceTree = "<group>"; };
+		3247C3A825BBB550007FE21A /* KBSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBSlider.h; sourceTree = "<group>"; };
+		3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOSAVPlayerTouch.framework; path = "com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks/tvOSAVPlayerTouch.framework"; sourceTree = "<group>"; };
 		327B3EA72327694B00377FAE /* makeLatest.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = makeLatest.sh; sourceTree = "<group>"; };
 		327D3FDA2324E512000EC3C1 /* Ethereal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ethereal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		327D3FDD2324E512000EC3C1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -156,6 +168,15 @@
 		327D40742326D995000EC3C1 /* Sharing.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = Sharing.tbd; sourceTree = SOURCE_ROOT; };
 		32AD39C02328A0100085F579 /* gear-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gear-small.png"; sourceTree = SOURCE_ROOT; };
 		32AD39C4232982270085F579 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = SOURCE_ROOT; };
+		32C584DC25BE5F760021C9FC /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = "<group>"; };
+		32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerViewController.h; sourceTree = "<group>"; };
+		32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlayerViewController.m; sourceTree = "<group>"; };
+		32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		32C584E525BE6AF10021C9FC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		32C584E725BE6AF80021C9FC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		32C584E925BE6B020021C9FC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		32C584ED25BE6B130021C9FC /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,9 +184,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				327D3FF52324E5EE000EC3C1 /* libcrypto.a in Frameworks */,
-				327D3FF62324E5EE000EC3C1 /* libssl.a in Frameworks */,
-				327D40752326D995000EC3C1 /* Sharing.tbd in Frameworks */,
+				32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */,
+				32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */,
+				32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */,
+				32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */,
+				32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */,
+				32C5850725BE7D240021C9FC /* SGPlayer.framework in Frameworks */,
+				32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */,
+				3247C3AB25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				327B3EA72327694B00377FAE /* makeLatest.sh */,
+				3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
 				327D3FDB2324E512000EC3C1 /* Products */,
 				32AD39C22328B66E0085F579 /* Frameworks */,
@@ -199,8 +226,12 @@
 				327D3FDE2324E512000EC3C1 /* AppDelegate.m */,
 				327D3FE02324E512000EC3C1 /* ViewController.h */,
 				327D3FE12324E512000EC3C1 /* ViewController.m */,
+				32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */,
+				32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */,
 				327D40002324FCE1000EC3C1 /* PlayerViewController.h */,
 				327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */,
+				3247C3A825BBB550007FE21A /* KBSlider.h */,
+				3247C3A725BBB550007FE21A /* KBSlider.m */,
 				327D404F23265BA3000EC3C1 /* Categories */,
 				327D400223265A78000EC3C1 /* ListView */,
 				327D400723265A78000EC3C1 /* PureLayout */,
@@ -344,6 +375,13 @@
 		32AD39C22328B66E0085F579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				32C584ED25BE6B130021C9FC /* libbz2.tbd */,
+				32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */,
+				32C584E925BE6B020021C9FC /* libiconv.tbd */,
+				32C584E725BE6AF80021C9FC /* libz.tbd */,
+				32C584E525BE6AF10021C9FC /* AVFoundation.framework */,
+				32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */,
+				32C584DC25BE5F760021C9FC /* SGPlayer.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -436,7 +474,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#exit 0\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atv.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$DPKG_BUILD_PATH\"/Applications\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n\n\nexit 0\n";
+			shellScript = "#exit 0\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atv.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$DPKG_BUILD_PATH\"/Applications\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -448,6 +486,7 @@
 				327D404923265AEB000EC3C1 /* UIImage+GIF.m in Sources */,
 				327D401123265A78000EC3C1 /* MetadataPreviewView.m in Sources */,
 				327D404723265AEB000EC3C1 /* SDWebImagePrefetcher.m in Sources */,
+				32C584E025BE5FE30021C9FC /* SGPlayerViewController.m in Sources */,
 				327D403E23265AEB000EC3C1 /* MKAnnotationView+WebCache.m in Sources */,
 				327D403D23265AEB000EC3C1 /* FLAnimatedImageView+WebCache.m in Sources */,
 				327D3FE22324E512000EC3C1 /* ViewController.m in Sources */,
@@ -458,6 +497,7 @@
 				327D405223265BA3000EC3C1 /* UIViewController+Additions.m in Sources */,
 				327D401323265A78000EC3C1 /* ALView+PureLayout.m in Sources */,
 				327D404223265AEB000EC3C1 /* SDWebImageCompat.m in Sources */,
+				3247C3A925BBB550007FE21A /* KBSlider.m in Sources */,
 				327D401423265A78000EC3C1 /* NSArray+PureLayout.m in Sources */,
 				327D404A23265AEB000EC3C1 /* UIImage+MultiFormat.m in Sources */,
 				327D406E23265DFB000EC3C1 /* UIColor+Additions.m in Sources */,
@@ -618,11 +658,14 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
 					"$(PROJECT_DIR)/Ethereal",
+					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					/Library/Frameworks,
+					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -650,11 +693,14 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
 					"$(PROJECT_DIR)/Ethereal",
+					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					/Library/Frameworks,
+					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
