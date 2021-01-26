@@ -139,7 +139,7 @@
 - (BOOL)_isVisible {
     NSArray *_views = [self _viewsToAdjust];
     if (_views.count >0){
-        UIView *first = [_views firstObject];
+        UIView *first = [_views lastObject];
         return first.alpha == 1.0;
     }
     return false;
@@ -272,6 +272,7 @@
     [self updateStateDependantViews];
     if (sliderMode == KBSliderModeDefault){
         [self fadeInIfNecessary];
+        [self stopFadeOutTimer];
         self.stepValue = _defaultStepValue;
     } else {
         self.stepValue = 10;
@@ -709,6 +710,10 @@
 
 - (void)fadeInIfNecessary {
     if (self.sliderMode == KBSliderModeTransport){
+        if (![self _isVisible]){
+            [self fadeIn];
+        }
+    } else {
         if (![self _isVisible]){
             [self fadeIn];
         }
