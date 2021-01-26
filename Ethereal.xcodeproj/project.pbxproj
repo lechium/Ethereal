@@ -52,7 +52,6 @@
 		327D407023266C9C000EC3C1 /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D406F23266C9C000EC3C1 /* folder.png */; };
 		327D407223266DA6000EC3C1 /* video-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D407123266DA6000EC3C1 /* video-icon.png */; };
 		32AD39C12328A0100085F579 /* gear-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AD39C02328A0100085F579 /* gear-small.png */; };
-		32C584E025BE5FE30021C9FC /* SGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */; };
 		32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */; };
 		32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E525BE6AF10021C9FC /* AVFoundation.framework */; };
 		32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E725BE6AF80021C9FC /* libz.tbd */; };
@@ -60,21 +59,7 @@
 		32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */; };
 		32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584ED25BE6B130021C9FC /* libbz2.tbd */; };
 		32C5850725BE7D240021C9FC /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; };
-		32C5850825BE7D240021C9FC /* SGPlayer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		327D3FFD2324FCA6000EC3C1 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				32C5850825BE7D240021C9FC /* SGPlayer.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3247C3A725BBB550007FE21A /* KBSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBSlider.m; sourceTree = "<group>"; };
@@ -396,7 +381,6 @@
 				327D3FD62324E512000EC3C1 /* Sources */,
 				327D3FD72324E512000EC3C1 /* Frameworks */,
 				327D3FD82324E512000EC3C1 /* Resources */,
-				327D3FFD2324FCA6000EC3C1 /* CopyFiles */,
 				327D40732326D6F6000EC3C1 /* ShellScript */,
 			);
 			buildRules = (
@@ -486,7 +470,6 @@
 				327D404923265AEB000EC3C1 /* UIImage+GIF.m in Sources */,
 				327D401123265A78000EC3C1 /* MetadataPreviewView.m in Sources */,
 				327D404723265AEB000EC3C1 /* SDWebImagePrefetcher.m in Sources */,
-				32C584E025BE5FE30021C9FC /* SGPlayerViewController.m in Sources */,
 				327D403E23265AEB000EC3C1 /* MKAnnotationView+WebCache.m in Sources */,
 				327D403D23265AEB000EC3C1 /* FLAnimatedImageView+WebCache.m in Sources */,
 				327D3FE22324E512000EC3C1 /* ViewController.m in Sources */,

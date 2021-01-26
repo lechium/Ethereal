@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "SDWebImageManager.h"
-#import "SGPlayerViewController.h"
+//#import "SGPlayerViewController.h"
 
 @interface ViewController ()
 
