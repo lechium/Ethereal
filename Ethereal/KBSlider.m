@@ -108,6 +108,8 @@
     
 }
 
+#pragma mark KBSliderModeTransport exclusives
+
 - (void)_startFadeOutTimer {
     [self stopFadeOutTimer];
     _fadeOutTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 repeats:false block:^(NSTimer * _Nonnull timer) {
@@ -156,20 +158,42 @@
 - (void)fadeOut {
     [UIView animateWithDuration:3.0 animations:^{
         [self _toggleVisibleViews:true];
-        //self.hidden = true;
-        //self.enabled = false;
-        //[self setNeedsFocusUpdate];
     }];
 }
 
 - (void)fadeIn {
     [UIView animateWithDuration:0.1 animations:^{
         [self _toggleVisibleViews:false];
-        //self.hidden = false;
         [self _startFadeOutTimer];
-        //self.enabled = true;
-        //[self setNeedsFocusUpdate];
     }];
+}
+
+- (void)_updateFormatters {
+    if (self.sliderMode == KBSliderModeDefault) return;
+    if (self.currentTime >= 3600){
+        [KBSlider elapsedTimeFormatter].allowedUnits = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+    } else {
+        [KBSlider elapsedTimeFormatter].allowedUnits =  NSCalendarUnitMinute | NSCalendarUnitSecond;
+    }
+    if (fabs(self.remainingTime) >= 3600){
+        [KBSlider sharedTimeFormatter].allowedUnits = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+    } else {
+        [KBSlider sharedTimeFormatter].allowedUnits =  NSCalendarUnitMinute | NSCalendarUnitSecond;
+    }
+}
+
++ (NSDateComponentsFormatter *)elapsedTimeFormatter {
+    static dispatch_once_t minOnceToken;
+    static NSDateComponentsFormatter *elapsedTimer = nil;
+    if(elapsedTimer == nil) {
+        dispatch_once(&minOnceToken, ^{
+            elapsedTimer = [[NSDateComponentsFormatter alloc] init];
+            elapsedTimer.unitsStyle = NSDateComponentsFormatterUnitsStylePositional;
+            elapsedTimer.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorPad;
+            elapsedTimer.allowedUnits = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+        });
+    }
+    return elapsedTimer;
 }
 
 + (NSDateComponentsFormatter *)sharedTimeFormatter {
@@ -179,6 +203,8 @@
         dispatch_once(&minOnceToken, ^{
             sharedTime = [[NSDateComponentsFormatter alloc] init];
             sharedTime.unitsStyle = NSDateComponentsFormatterUnitsStylePositional;
+            sharedTime.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorPad;
+            sharedTime.allowedUnits = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
         });
     }
     return sharedTime;
@@ -192,8 +218,9 @@
     return [[KBSlider sharedTimeFormatter] stringFromTimeInterval:self.remainingTime];
 }
 
+
 - (NSString *)elapsedTimeFormatted {
-    return [[KBSlider sharedTimeFormatter] stringFromTimeInterval:self.currentTime];
+    return [[KBSlider elapsedTimeFormatter] stringFromTimeInterval:self.currentTime];
 }
 
 - (NSTimeInterval)totalDuration {
@@ -203,6 +230,7 @@
 - (void)setTotalDuration:(NSTimeInterval)totalDuration {
     _totalDuration = totalDuration;
     [self setMaximumValue:totalDuration];
+    [self _updateFormatters];
     if (durationLabel){
         durationLabel.text = [self remainingTimeFormatted];
     }
@@ -215,6 +243,7 @@
 - (void)setCurrentTime:(NSTimeInterval)currentTime {
     _currentTime = currentTime;
     [self setValue:currentTime];
+    [self _updateFormatters];
     if (currentTimeLabel){
         currentTimeLabel.text = [self elapsedTimeFormatted];
     }
@@ -229,6 +258,8 @@
         }
     }
 }
+
+#pragma mark End KBSliderModeTransport exclusive
 
 - (KBSliderMode)sliderMode {
     return _sliderMode;
@@ -295,7 +326,7 @@
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     [super pressesEnded:presses withEvent:event];
     for (UIPress *item in presses) {
-        KBSLog(@"pressedEnded type: %ld", item.type);
+        //KBSLog(@"pressedEnded type: %ld", item.type);
         if (item.type == UIPressTypeSelect){
         }
         
@@ -440,13 +471,13 @@
 
 - (void)removeTransportViewsIfNecessary {
     if (currentTimeLabel){
-           [currentTimeLabel removeFromSuperview];
-           currentTimeLabel = nil;
-       }
-       if (durationLabel){
-           [durationLabel removeFromSuperview];
-           durationLabel = nil;
-       }
+        [currentTimeLabel removeFromSuperview];
+        currentTimeLabel = nil;
+    }
+    if (durationLabel){
+        [durationLabel removeFromSuperview];
+        durationLabel = nil;
+    }
 }
 
 - (void)setUpTransportViews {
@@ -463,7 +494,7 @@
     [currentTimeLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:5].active = true;
     currentTimeLabel.text = [self elapsedTimeFormatted];
     [durationLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:5].active = true;
-    [durationLabel.centerXAnchor constraintEqualToAnchor:self.trackView.trailingAnchor].active = true;
+    [durationLabel.trailingAnchor constraintEqualToAnchor:self.trackView.trailingAnchor].active = true;
     durationLabel.text = [NSString stringWithFormat:@"%.0f", _totalDuration];
 }
 
@@ -576,13 +607,13 @@
     CGFloat threshold = 0.7;
     micro.reportsAbsoluteDpadValues = true;
     micro.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
-      if (xValue < -threshold){
-          self.dPadState = DPadStateLeft;
-      } else if (xValue > threshold){
-          self.dPadState = DPadStateRight;
-      } else {
-          self.dPadState = DPadStateSelect;
-      }
+        if (xValue < -threshold){
+            self.dPadState = DPadStateLeft;
+        } else if (xValue > threshold){
+            self.dPadState = DPadStateRight;
+        } else {
+            self.dPadState = DPadStateSelect;
+        }
     };
 }
 
@@ -623,7 +654,6 @@
 
 - (void)panGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
     
-    LOG_SELF;
     if (self.sliderMode == KBSliderModeTransport){
         if (![self _isVisible]){
             [self fadeIn];
@@ -655,7 +685,6 @@
         case UIGestureRecognizerStateCancelled:
             _thumbViewCenterXConstraintConstant = _thumbViewCenterXConstraint.constant;
             if (fabs(velocity) > _fineTunningVelocityThreshold){
-                // let direction: Float = velocity > 0 ? 1 : -1
                 CGFloat direction = velocity > 0 ? 1 : -1;
                 _deceleratingVelocity = fabs(velocity) > _decelerationMaxVelocity ? _decelerationMaxVelocity * direction : velocity;
                 _deceleratingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(handleDeceleratingTimer:) userInfo:nil repeats:true];

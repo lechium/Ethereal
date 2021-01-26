@@ -162,6 +162,7 @@
 		32C584E925BE6B020021C9FC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		32C584ED25BE6B130021C9FC /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		32C9CCE025C049D000E0C4FF /* File */ = {isa = PBXFileReference; lastKnownFileType = text; name = File; path = ../../../../Desktop/File; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +214,7 @@
 				327D3FE12324E512000EC3C1 /* ViewController.m */,
 				32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */,
 				32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */,
+				32C9CCE025C049D000E0C4FF /* File */,
 				327D40002324FCE1000EC3C1 /* PlayerViewController.h */,
 				327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */,
 				3247C3A825BBB550007FE21A /* KBSlider.h */,
