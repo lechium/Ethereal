@@ -38,6 +38,7 @@
         options[AVOptionNameAVFormatName] = self.avFormatName;
     }
     
+    [self createAVPlayerIfNecessary];
     //  _avplayController.enableBuiltinSubtitleRender = NO;
     [_avplayController openMedia:self.mediaURL withOptions:options];
 }
@@ -92,18 +93,27 @@
     }
 }
 
+
+//loading order might be weird based on setting the asset URL and viewDidLoad being triggered, initialize as needed.
+
+- (void)createAVPlayerIfNecessary {
+    if (!_avplayController) {
+        _avplayController = [[FFAVPlayerController alloc] init];
+        _avplayController.delegate = self;
+        _avplayController.allowBackgroundPlayback = YES;
+        _avplayController.shouldAutoPlay = YES;
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     LOG_SELF;
     // New and initialize FFAVPlayerController instance to prepare for playback
-    _avplayController = [[FFAVPlayerController alloc] init];
-    _avplayController.delegate = self;
-    _avplayController.allowBackgroundPlayback = YES;
-    _avplayController.shouldAutoPlay = YES;
-    
+    [self createAVPlayerIfNecessary];
+    /*
     if (_mediaURL) {
         self.mediaURL = _mediaURL;
-    }
+    }*/
     //[[100,950],[1700,55.649999999999999]]
    
    /*
@@ -138,8 +148,14 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     _wasPlaying = false;
-     _transportSlider = [[KBSlider alloc] initWithFrame:CGRectMake(100, 950, 1700, 55)];
-    [_transportSlider addTarget:self action:@selector(sliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [self createSliderIfNecessary];
+}
+
+- (void)createSliderIfNecessary {
+    if (!_transportSlider) {
+        _transportSlider = [[KBSlider alloc] initWithFrame:CGRectMake(100, 950, 1700, 55)];
+       [_transportSlider addTarget:self action:@selector(sliderMoved:) forControlEvents:UIControlEventValueChanged];
+    }
 }
 
 - (void)sliderMoved:(KBSlider *)slider {
@@ -169,18 +185,12 @@
     [super pressesBegan:presses withEvent:event];
 }
 
-
-- (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event
-{
-    
-    //NSLog(@"[Ethereal] pressesEnded: %@", presses);
+- (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    NSLog(@"[Ethereal] pressesEnded: %@", presses);
     AVPlayerState currentState = _avplayController.playerState;
-    
-    for (UIPress *press in presses)
-    {
-        
+    for (UIPress *press in presses) {
+        NSLog(@"[Ethereal] presstype: %lu", press.type);
         switch (press.type){
-                
             case UIPressTypePlayPause:
             case UIPressTypeSelect:
                 
@@ -193,51 +203,22 @@
                 break;
                 
             case UIPressTypeUpArrow:
-                
+                NSLog(@"[Ethereal] up");
                 //[self upTouch];
                 break;
                 
             case UIPressTypeDownArrow:
-                
+                NSLog(@"[Ethereal] down");
                 //[self downTouch];
                 break;
                 
-            case UIPressTypeLeftArrow:
-                
-                //[self.transportSlider setCurrentTime:self.transportSlider.currentTime+10];
-                [self rewindDidTouch:nil];
-                break;
-                
-            case UIPressTypeRightArrow:
-                //[self.transportSlider setCurrentTime:self.transportSlider.currentTime-10];
-                [self forwardDidTouch:nil];
-                break;
-                
-            case UIPressTypeMenu:
-                
-                
-                NSLog(@"[Ethereal] terminate with success!!");
-                [[UIApplication sharedApplication] terminateWithSuccess];
-                /*
-                 [self dismissViewControllerAnimated:true completion:^{
-                 [self dismissViewControllerAnimated:true completion:^{
-                 //no-op
-                 }];
-                 }];
-                 */
-                //[super pressesEnded:presses withEvent:event];
+            default:
+                NSLog(@"[Ethereal] unhandled type: %lu", press.type);
                 break;
                 
         }
         
-        if (press.type == UIPressTypePlayPause)
-        {
-            
-            
-            
-        } else {
-            [super pressesEnded:presses withEvent:event];
-        }
+        [super pressesEnded:presses withEvent:event];
     }
 }
 
@@ -324,6 +305,7 @@
             _glView.autoresizingMask =
             UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             [self.view insertSubview:_glView atIndex:0];
+            [self createSliderIfNecessary];
             [_glView addSubview:_transportSlider];
             [_transportSlider setSliderMode:KBSliderModeTransport];
             [_transportSlider setCurrentTime:0];

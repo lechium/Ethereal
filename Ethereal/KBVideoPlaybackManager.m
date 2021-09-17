@@ -74,6 +74,7 @@
 - (void)itemDidFinishPlaying:(NSNotification *)n {
     NSLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd));
     //[self dismissViewControllerAnimated:true completion:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     NSInteger nextIndex = self.playbackIndex+1;
     NSLog(@"[Ethereal] currentIndex: %lu media count: %lu nextIndex: %lu", self.playbackIndex, self.media.count, nextIndex);
     BOOL hasMore = false;
