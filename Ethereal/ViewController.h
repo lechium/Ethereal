@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SettingsViewController.h"
+#import "KBMediaAsset.h"
 
 @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (id)defaultCenter;

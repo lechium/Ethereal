@@ -12,6 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "SDWebImageManager.h"
+#import "KBVideoPlaybackManager.h"
 //#import "SGPlayerViewController.h"
 
 @interface ViewController ()
@@ -36,8 +37,20 @@
 
 - (void)playFile {
     LOG_SELF;
+    KBVideoPlaybackManager *man = [KBVideoPlaybackManager defaultManager];
+    [man setPlaybackIndex:self.savedIndexPath.row];
+    UIViewController *playerController = [man playerForCurrentIndex];
+    [KBVideoPlaybackManager defaultManager].videoDidFinishPlaying = ^(BOOL moreLeft) {
+        NSLog(@"video did finish playing! more left: %d", moreLeft);
+        if (!moreLeft) {
+            [self dismissViewControllerAnimated:true completion:nil];
+        }
+    };
+    [self presentViewController:playerController animated:true completion:nil];
+    return;
+    
     NSIndexPath *ip = [self savedIndexPath];
-    MetaDataAsset  *mda = self.items[ip.row];
+    KBMediaAsset  *mda = self.items[ip.row];
     NSString *fullPath = [[self currentPath] stringByAppendingPathComponent:mda.name];
     NSLog(@"fullPath: %@", fullPath);
     [self showPlayerViewWithFile:fullPath];
@@ -79,13 +92,20 @@
             }
         }
         if ([[self approvedExtensions] containsObject:[obj pathExtension].lowercaseString] || isDirectory){
-            MetaDataAsset *currentAsset = [MetaDataAsset new];
+            KBMediaAsset *currentAsset = [KBMediaAsset new];
+            currentAsset.filePath = fullPath;
             currentAsset.name = obj;
             if (isDirectory){
                 currentAsset.selectorName = @"enterDirectory";
                 currentAsset.defaultImageName = @"folder";
+                currentAsset.assetType = KBMediaAssetTypeDirectory;
                 
             } else {
+                if ([[self defaultCompatFiles] containsObject:[obj pathExtension].lowercaseString]) {
+                    currentAsset.assetType = KBMediaAssetTypeVideoDefault;
+                } else {
+                    currentAsset.assetType = KBMediaAssetTypeVideoCustom;
+                }
                 unsigned long long fileSize = [attrs[NSFileSize] unsignedLongLongValue];
                 NSDate *creationDate = attrs[NSFileCreationDate];
                 NSString *fileSizeString = [NSString stringWithFormat:@"%lld MB", fileSize/1024/1024];
@@ -177,6 +197,7 @@
 - (void)refreshList {
     
     self.items = [self currentItems];
+    [[KBVideoPlaybackManager defaultManager] setMedia:[self.items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"assetType != %lu", KBMediaAssetTypeDirectory]]];
     [[self tableView] reloadData];
 }
 

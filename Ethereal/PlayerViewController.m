@@ -14,11 +14,36 @@
 
 @interface PlayerViewController () <FFAVPlayerControllerDelegate>
 @property KBSlider *transportSlider;
+@property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
 @end
 
 @implementation PlayerViewController {
     FFAVPlayerController *_avplayController;
     UIView *_glView;
+    NSURL *_mediaURL;
+}
+
+- (void)setMediaURL:(NSURL *)mediaURL {
+    LOG_SELF;
+    _mediaURL = mediaURL;
+    NSMutableDictionary *options = [NSMutableDictionary new];
+    
+    if (!self.mediaURL.isFileURL) {
+        options[AVOptionNameAVProbeSize] = @(256*1024); // 256kb, default is 5Mb
+        options[AVOptionNameAVAnalyzeduration] = @(1);  // default is 5 seconds
+        options[AVOptionNameHttpUserAgent] = @"Mozilla/5.0";
+    }
+    
+    if (self.avFormatName) {
+        options[AVOptionNameAVFormatName] = self.avFormatName;
+    }
+    
+    //  _avplayController.enableBuiltinSubtitleRender = NO;
+    [_avplayController openMedia:self.mediaURL withOptions:options];
+}
+
+- (NSURL *)mediaURL {
+    return _mediaURL;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
@@ -75,6 +100,10 @@
     _avplayController.delegate = self;
     _avplayController.allowBackgroundPlayback = YES;
     _avplayController.shouldAutoPlay = YES;
+    
+    if (_mediaURL) {
+        self.mediaURL = _mediaURL;
+    }
     //[[100,950],[1700,55.649999999999999]]
    
    /*
@@ -87,6 +116,7 @@
     // Uncomment below line code, avplayer will only play audio stream.
     // _avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
     
+    /*
     NSMutableDictionary *options = [NSMutableDictionary new];
     
     if (!self.mediaURL.isFileURL) {
@@ -101,19 +131,32 @@
     
     //  _avplayController.enableBuiltinSubtitleRender = NO;
     [_avplayController openMedia:self.mediaURL withOptions:options];
+     */
     
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    _wasPlaying = false;
      _transportSlider = [[KBSlider alloc] initWithFrame:CGRectMake(100, 950, 1700, 55)];
     [_transportSlider addTarget:self action:@selector(sliderMoved:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)sliderMoved:(KBSlider *)slider {
+    BOOL isPlaying = _avplayController.playerState == kAVPlayerStatePlaying;
+    if (!_wasPlaying) {
+        _wasPlaying = isPlaying;
+    }
+    if (isPlaying) {
+        [_avplayController pause];
+    }
     NSLog(@"[Ethereal] slider value: %.02f duration: %f", slider.value, _avplayController.duration);
     if (slider.value < _avplayController.duration) {
         [_avplayController seekto:slider.value];
+    }
+    if (_wasPlaying) {
+        [_avplayController resume];
+        _wasPlaying = false;
     }
 }
 
@@ -304,12 +347,13 @@
         
         // For local media file source
         // If playback reached to end, we return to begin of the media file,
-        // and pause the palyer to prepare for next playback.
+        // and pause the player to prepare for next playback.
         
         if ([self.mediaURL isFileURL]) {
             //[controller seekto:0];
             //[controller pause];
-            [self dismissViewControllerAnimated:true completion:nil];
+            //[self dismissViewControllerAnimated:true completion:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:AVPlayerItemDidPlayToEndTimeNotification object:self];
         }
     }
 }

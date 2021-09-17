@@ -58,6 +58,8 @@
 		32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E925BE6B020021C9FC /* libiconv.tbd */; };
 		32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */; };
 		32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584ED25BE6B130021C9FC /* libbz2.tbd */; };
+		32DFF9A326F49605004071B3 /* KBVideoPlaybackManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32DFF9A226F49605004071B3 /* KBVideoPlaybackManager.m */; };
+		32DFF9A726F4985B004071B3 /* KBMediaAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 32DFF9A626F4985B004071B3 /* KBMediaAsset.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -162,6 +164,10 @@
 		32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		32C584ED25BE6B130021C9FC /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		32C9CCE025C049D000E0C4FF /* File */ = {isa = PBXFileReference; lastKnownFileType = text; name = File; path = ../../../../Desktop/File; sourceTree = "<group>"; };
+		32DFF9A126F49605004071B3 /* KBVideoPlaybackManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBVideoPlaybackManager.h; sourceTree = "<group>"; };
+		32DFF9A226F49605004071B3 /* KBVideoPlaybackManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBVideoPlaybackManager.m; sourceTree = "<group>"; };
+		32DFF9A526F4985B004071B3 /* KBMediaAsset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBMediaAsset.h; sourceTree = "<group>"; };
+		32DFF9A626F4985B004071B3 /* KBMediaAsset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBMediaAsset.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +216,10 @@
 				327D3FDE2324E512000EC3C1 /* AppDelegate.m */,
 				327D3FE02324E512000EC3C1 /* ViewController.h */,
 				327D3FE12324E512000EC3C1 /* ViewController.m */,
+				32DFF9A526F4985B004071B3 /* KBMediaAsset.h */,
+				32DFF9A626F4985B004071B3 /* KBMediaAsset.m */,
+				32DFF9A126F49605004071B3 /* KBVideoPlaybackManager.h */,
+				32DFF9A226F49605004071B3 /* KBVideoPlaybackManager.m */,
 				32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */,
 				32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */,
 				32C9CCE025C049D000E0C4FF /* File */,
@@ -471,6 +481,7 @@
 				327D401123265A78000EC3C1 /* MetadataPreviewView.m in Sources */,
 				327D404723265AEB000EC3C1 /* SDWebImagePrefetcher.m in Sources */,
 				327D403E23265AEB000EC3C1 /* MKAnnotationView+WebCache.m in Sources */,
+				32DFF9A726F4985B004071B3 /* KBMediaAsset.m in Sources */,
 				327D403D23265AEB000EC3C1 /* FLAnimatedImageView+WebCache.m in Sources */,
 				327D3FE22324E512000EC3C1 /* ViewController.m in Sources */,
 				327D40012324FCE1000EC3C1 /* PlayerViewController.m in Sources */,
@@ -494,6 +505,7 @@
 				327D404423265AEB000EC3C1 /* SDWebImageDownloader.m in Sources */,
 				327D404C23265AEB000EC3C1 /* UIImageView+HighlightedWebCache.m in Sources */,
 				327D404323265AEB000EC3C1 /* SDWebImageDecoder.m in Sources */,
+				32DFF9A326F49605004071B3 /* KBVideoPlaybackManager.m in Sources */,
 				327D404B23265AEB000EC3C1 /* UIImage+WebP.m in Sources */,
 				327D404623265AEB000EC3C1 /* SDWebImageManager.m in Sources */,
 				327D403F23265AEB000EC3C1 /* NSData+ImageContentType.m in Sources */,
