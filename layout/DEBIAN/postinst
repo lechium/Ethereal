@@ -11,7 +11,7 @@ if [ ! -d "/Library/Caches/com.nito.Ethereal" ]; then
 	chown -R mobile:admin /Library/Caches/com.nito.Ethereal
 fi
 
-if [ ! -e "/var/mobile/Documents/ScreenRecording" ]; then
+if [ ! -L "/var/mobile/Documents/ScreenRecording" ]; then
     
     ln -s /var/mobile/Media/DCIM/100APPLE /var/mobile/Documents/ScreenRecording
 fi

@@ -58,7 +58,6 @@
 		32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E925BE6B020021C9FC /* libiconv.tbd */; };
 		32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */; };
 		32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584ED25BE6B130021C9FC /* libbz2.tbd */; };
-		32C5850725BE7D240021C9FC /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,7 +174,6 @@
 				32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */,
 				32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */,
 				32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */,
-				32C5850725BE7D240021C9FC /* SGPlayer.framework in Frameworks */,
 				32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */,
 				3247C3AB25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework in Frameworks */,
 			);
