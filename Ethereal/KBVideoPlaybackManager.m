@@ -44,14 +44,8 @@
                     _currentPlayer = [[AVPlayerViewController alloc] init];
             }
         }
-        //AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-        AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-        _currentPlayer.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-        //[self presentViewController:playerView animated:YES completion:nil];
-        [_currentPlayer.player play];
-        
+        [_currentPlayer setMediaURL:[NSURL fileURLWithPath:theFile]];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:_currentPlayer.player.currentItem];
         return _currentPlayer;
     } 
     //SGPlayerViewController *playerController = [[SGPlayerViewController alloc] initWithMediaURL:[NSURL fileURLWithPath:theFile]];

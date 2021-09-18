@@ -40,11 +40,20 @@
     
     [self createAVPlayerIfNecessary];
     //  _avplayController.enableBuiltinSubtitleRender = NO;
-    [_avplayController openMedia:self.mediaURL withOptions:options];
+    BOOL open = [_avplayController openMedia:self.mediaURL withOptions:options];
+    if (open) {
+        NSLog(@"[Ethereal] opened successfully");
+    } else {
+        NSLog(@"[Ethereal] failed to load file");
+    }
 }
 
 - (NSURL *)mediaURL {
     return _mediaURL;
+}
+
+- (id<KBVideoPlayerProtocol>)player {
+    return _avplayController;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
@@ -102,47 +111,19 @@
         _avplayController.delegate = self;
         _avplayController.allowBackgroundPlayback = YES;
         _avplayController.shouldAutoPlay = YES;
+        //_avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
     }
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    LOG_SELF;
+    //LOG_SELF;
     // New and initialize FFAVPlayerController instance to prepare for playback
     [self createAVPlayerIfNecessary];
-    /*
-    if (_mediaURL) {
-        self.mediaURL = _mediaURL;
-    }*/
-    //[[100,950],[1700,55.649999999999999]]
-   
-   /*
-    UITapGestureRecognizer *menuRecog = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuTapped:)];
-     menuRecog.allowedPressTypes = @[@(UIPressTypePlayPause), @(UIPressTypeMenu)];
-     menuRecog.delegate = self;
-    [self.view addGestureRecognizer:menuRecog];
-    */
-    // You can disable audio or video stream of av resource, default is kAVStreamDiscardOptionNone.
-    // Uncomment below line code, avplayer will only play audio stream.
-    // _avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
-    
-    /*
-    NSMutableDictionary *options = [NSMutableDictionary new];
-    
-    if (!self.mediaURL.isFileURL) {
-        options[AVOptionNameAVProbeSize] = @(256*1024); // 256kb, default is 5Mb
-        options[AVOptionNameAVAnalyzeduration] = @(1);  // default is 5 seconds
-        options[AVOptionNameHttpUserAgent] = @"Mozilla/5.0";
-    }
-    
-    if (self.avFormatName) {
-        options[AVOptionNameAVFormatName] = self.avFormatName;
-    }
-    
-    //  _avplayController.enableBuiltinSubtitleRender = NO;
-    [_avplayController openMedia:self.mediaURL withOptions:options];
-     */
-    
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -166,7 +147,7 @@
     if (isPlaying) {
         [_avplayController pause];
     }
-    NSLog(@"[Ethereal] slider value: %.02f duration: %f", slider.value, _avplayController.duration);
+    //NSLog(@"[Ethereal] slider value: %.02f duration: %f", slider.value, _avplayController.duration);
     if (slider.value < _avplayController.duration) {
         [_avplayController seekto:slider.value];
     }
@@ -186,15 +167,15 @@
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    NSLog(@"[Ethereal] pressesEnded: %@", presses);
+    //NSLog(@"[Ethereal] pressesEnded: %@", presses);
     AVPlayerState currentState = _avplayController.playerState;
     for (UIPress *press in presses) {
-        NSLog(@"[Ethereal] presstype: %lu", press.type);
+        //NSLog(@"[Ethereal] presstype: %lu", press.type);
         switch (press.type){
             case UIPressTypePlayPause:
             case UIPressTypeSelect:
                 
-                NSLog(@"[Ethereal] play pause");
+                //NSLog(@"[Ethereal] play pause");
                 if (currentState == kAVPlayerStatePaused) {
                     [_avplayController resume];
                 } else {
@@ -203,13 +184,13 @@
                 break;
                 
             case UIPressTypeUpArrow:
-                NSLog(@"[Ethereal] up");
+                //NSLog(@"[Ethereal] up");
                 //[self upTouch];
                 break;
                 
             case UIPressTypeDownArrow:
                 NSLog(@"[Ethereal] down");
-                //[self downTouch];
+                [self downTouch];
                 break;
                 
             default:
@@ -229,9 +210,11 @@
 }
 
 - (void)downTouch {
+    /*
     if (_avplayController.playbackSpeed > 0.5) {
         [_avplayController setPlaybackSpeed:_avplayController.playbackSpeed-0.25];
-    }
+    }*/
+    _avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
 }
 
 - (void)forwardDidTouch:(id)sender {

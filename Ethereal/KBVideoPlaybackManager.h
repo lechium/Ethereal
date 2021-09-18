@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "KBMediaAsset.h"
+#import "KBVideoPlaybackProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSInteger playbackIndex;
 - (NSArray *)approvedExtensions;
 - (NSArray *)defaultCompatFiles;
--(AVPlayerViewController *)playerForCurrentIndex;
+- (AVPlayerViewController *)playerForCurrentIndex;
 @property (nonatomic, copy) void (^videoDidFinishPlaying)(BOOL moreLeft);
 @end
 
