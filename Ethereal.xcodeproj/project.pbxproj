@@ -53,6 +53,7 @@
 		327D407223266DA6000EC3C1 /* video-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D407123266DA6000EC3C1 /* video-icon.png */; };
 		328B5FCC26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */; };
 		328B5FD126F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FD026F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m */; };
+		328B5FD726F6746300303CE2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328B5FD626F6746200303CE2 /* IOKit.framework */; };
 		32AD39C12328A0100085F579 /* gear-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AD39C02328A0100085F579 /* gear-small.png */; };
 		32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */; };
 		32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E525BE6AF10021C9FC /* AVFoundation.framework */; };
@@ -159,6 +160,7 @@
 		328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "FFAVPlayerController+ProtocolAdherence.m"; path = "Ethereal/FFAVPlayerController+ProtocolAdherence.m"; sourceTree = SOURCE_ROOT; };
 		328B5FCF26F5CD8D00303CE2 /* AVPlayerViewController+Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVPlayerViewController+Protocol.h"; sourceTree = "<group>"; };
 		328B5FD026F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerViewController+Protocol.m"; sourceTree = "<group>"; };
+		328B5FD626F6746200303CE2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = IOKit.framework; sourceTree = "<group>"; };
 		32AD39C02328A0100085F579 /* gear-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gear-small.png"; sourceTree = SOURCE_ROOT; };
 		32AD39C4232982270085F579 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = SOURCE_ROOT; };
 		32C584DC25BE5F760021C9FC /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */,
+				328B5FD726F6746300303CE2 /* IOKit.framework in Frameworks */,
 				32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */,
 				32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */,
 				32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */,
@@ -382,6 +385,7 @@
 		32AD39C22328B66E0085F579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				328B5FD626F6746200303CE2 /* IOKit.framework */,
 				32C584ED25BE6B130021C9FC /* libbz2.tbd */,
 				32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */,
 				32C584E925BE6B020021C9FC /* libiconv.tbd */,
@@ -670,6 +674,7 @@
 					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
 					"$(PROJECT_DIR)",
 				);
+				HEADER_SEARCH_PATHS = "$SRCROOT/include/**";
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -705,6 +710,7 @@
 					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
 					"$(PROJECT_DIR)",
 				);
+				HEADER_SEARCH_PATHS = "$SRCROOT/include/**";
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

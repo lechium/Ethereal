@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(instancetype)defaultManager;
 @property NSArray <KBMediaAsset *> *media;
 @property NSInteger playbackIndex;
+- (void)killCurrentPlayer;
 - (NSArray *)approvedExtensions;
 - (NSArray *)defaultCompatFiles;
 - (AVPlayerViewController *)playerForCurrentIndex;

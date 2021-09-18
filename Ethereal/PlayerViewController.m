@@ -9,6 +9,7 @@
 #import "PlayerViewController.h"
 #import "ViewController.h"
 #import "KBSlider.h"
+#import "KBVideoPlaybackManager.h"
 
 @import tvOSAVPlayerTouch;
 
@@ -124,6 +125,11 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [[KBVideoPlaybackManager defaultManager] killCurrentPlayer];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

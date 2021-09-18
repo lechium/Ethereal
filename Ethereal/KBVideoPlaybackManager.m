@@ -9,6 +9,8 @@
 #import "KBVideoPlaybackManager.h"
 #import "PlayerViewController.h"
 #import "NSObject+Additions.h"
+#include <IOKit/pwr_mgt/IOPMLib.h>
+
 @interface AVPlayerViewController (hax)
 @property (nonatomic, strong) NSURL *mediaURL;
 @end
@@ -21,6 +23,29 @@
 
 @end
 @implementation KBVideoPlaybackManager
+
+- (void)killCurrentPlayer {
+    _currentPlayer = nil;
+}
+
+- (void)killIdleSleep {
+    IOPMAssertionID assertionID;
+    IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep,
+                                        kIOPMAssertionLevelOn, CFSTR("Playing Video"), &assertionID);
+    if (success == kIOReturnSuccess)
+    {
+
+        //Add the work you need to do without
+        //  the system sleeping here.
+        do {
+            ///zzz
+        } while (_currentPlayer != nil);
+        NSLog(@"[Ethereal] player done, can sleep again");
+        success = IOPMAssertionRelease(assertionID);
+        //The system will be able to sleep again.
+    }
+}
+
 
 - (NSArray *)approvedExtensions {
     
@@ -52,11 +77,11 @@
     if (!_currentPlayer) {
         _currentPlayer = (AVPlayerViewController*)[PlayerViewController new];
     } else {
-        if (![_currentPlayer isKindOfClass:PlayerViewController.class]) {
+        //if (![_currentPlayer isKindOfClass:PlayerViewController.class]) {
             ([[self topViewController] dismissViewControllerAnimated:true completion:nil]);
                 _currentPlayer = nil;
                 _currentPlayer = (AVPlayerViewController*)[PlayerViewController new];
-        }
+        //}
     }
     //PlayerViewController *playerController = [PlayerViewController new];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
@@ -81,6 +106,10 @@
         if (av != _currentPlayer) {
             NSLog(@"[Ethereal] changing up player types?");
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                if (!_currentPlayer){
+                    NSLog(@"[Ethereal] ohnoes, this is bad! no current player!, bail to prevent crash for now");
+                    [self playerForCurrentIndex];
+                }
                 [[self topViewController] presentViewController:_currentPlayer animated:true completion:nil];
             });
             
