@@ -128,22 +128,18 @@
             if (block){
                 block(playerController, true);
             } else {
-                NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
                 [[self topViewController] safePresentViewController:playerController animated:true completion:nil];
             }
-            // [[self topViewController] presentViewController:playerController animated:true completion:nil];
         } else {
             NSLog(@"[Ethereal] no error occured!");
             [player pause];
             dispatch_async(dispatch_get_main_queue(), ^{
                 KBPlayerViewController  *playerView = [[KBPlayerViewController alloc] init];
                 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-                //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemReceivedError:) name:AVPlayerItemNewErrorLogEntryNotification object:singleItem];
                 playerView.player = player;
                 if (block) {
                     block(playerView, true);
                 } else {
-                    NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
                     [[self topViewController] safePresentViewController:playerView animated:YES completion:nil];
                     [playerView.player play];
                 }
@@ -202,22 +198,17 @@
     BOOL hasMore = false;
     if (nextIndex < self.media.count) {
         hasMore = true;
-        NSLog(@"[Ethereal] we have more to play!");
         self.playbackIndex = nextIndex;
         AVPlayerViewController *av = _currentPlayer;
         [self playerForCurrentIndex]; //just call it and it updates its local var.
         if (av != _currentPlayer) {
-            NSLog(@"[Ethereal] changing up player types?");
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 if (!_currentPlayer){
-                    NSLog(@"[Ethereal] ohnoes, this is bad! no current player!, bail to prevent crash for now");
                     [self playerForCurrentIndex];
                 }
                 if (!_currentPlayer){
-                    NSLog(@"[Ethereal] current play is STILL nil??!");
                     return;
                 }
-                NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);;
                 [[self topViewController] safePresentViewController:_currentPlayer animated:true completion:nil];
             });
             

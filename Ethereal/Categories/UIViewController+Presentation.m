@@ -11,7 +11,6 @@
 #import "PlayerViewController.h"
 @implementation UIViewController (Presentation)
 - (void)safePresentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^__nullable)(void))completion {
-    LOG_SELF;
     if ([self isKindOfClass:KBPlayerViewController.class] || [self isKindOfClass:PlayerViewController.class]){
         NSLog(@"[Ethereal] this should never be presenting another view...., bail");
         return;

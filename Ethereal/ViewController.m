@@ -27,18 +27,14 @@
 @implementation ViewController
 
 - (void)enterDirectory {
-    
-    LOG_SELF;
     NSIndexPath *ip = [self savedIndexPath];
     MetaDataAsset  *mda = self.items[ip.row];
     NSString *fullPath = [[self currentPath] stringByAppendingPathComponent:mda.name];
     ViewController *vc = [[ViewController alloc] initWithDirectory:fullPath];
     [[self navigationController] pushViewController:vc animated:true];
-    
 }
 
 - (void)playFile {
-    LOG_SELF;
     KBVideoPlaybackManager *man = [KBVideoPlaybackManager defaultManager];
     [man setPlaybackIndex:self.savedIndexPath.row];
     UIViewController *playerController = [man playerForCurrentIndex];
@@ -48,15 +44,7 @@
             [self dismissViewControllerAnimated:true completion:nil];
         }
     };
-    NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
     [self safePresentViewController:playerController animated:true completion:nil];
-    return;
-    
-    NSIndexPath *ip = [self savedIndexPath];
-    KBMediaAsset  *mda = self.items[ip.row];
-    NSString *fullPath = [[self currentPath] stringByAppendingPathComponent:mda.name];
-    NSLog(@"fullPath: %@", fullPath);
-    [self showPlayerViewWithFile:fullPath];
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
@@ -166,7 +154,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     
     [super viewWillAppear:animated];
-    LOG_SELF;
     [self refreshList];
     if (self.shouldExit){
         //   [[UIApplication sharedApplication] terminateWithSuccess];
@@ -174,29 +161,6 @@
     }
 }
 
-- (void)showPlayerViewWithFile:(NSString *)theFile {
-    
-    if ([[self defaultCompatFiles] containsObject:theFile.pathExtension.lowercaseString]){
-        
-        NSLog(@"default compat files contains %@", theFile);
-        AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-        AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-        playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-        self.shouldExit = true;
-        NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
-        [self safePresentViewController:playerView animated:YES completion:nil];
-        [playerView.player play];
-        
-        return;
-    }
-    //SGPlayerViewController *playerController = [[SGPlayerViewController alloc] initWithMediaURL:[NSURL fileURLWithPath:theFile]];
-    PlayerViewController *playerController = [PlayerViewController new];
-    playerController.mediaURL = [NSURL fileURLWithPath:theFile];
-    [self safePresentViewController:playerController animated:true completion:nil];
-    self.shouldExit = true;
-}
 
 - (void)refreshList {
     
@@ -227,10 +191,7 @@
     return UITableViewCellEditingStyleNone;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    LOG_SELF;
-    NSLog(@"editingStyle : %li, indexPath: %@", (long)editingStyle, indexPath);
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSFileManager *man = [NSFileManager defaultManager];
     MetaDataAsset  *mda = self.items[indexPath.row];
     NSString *fullPath = [[self currentPath] stringByAppendingPathComponent:mda.name];
@@ -248,7 +209,6 @@
     
     [ac addAction: cancel];
     [ac addAction:action];
-    NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
     [self safePresentViewController:ac animated:TRUE completion:nil];
 }
 
@@ -271,7 +231,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    LOG_SELF;
     self.view.alpha = 1;
     
     if (self.currentPath == nil){

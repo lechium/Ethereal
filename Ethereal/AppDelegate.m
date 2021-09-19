@@ -73,10 +73,8 @@
             if (block){
                 block(playerController, true);
             } else {
-                NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
                 [[self topViewController] safePresentViewController:playerController animated:true completion:nil];
             }
-            // [[self topViewController] presentViewController:playerController animated:true completion:nil];
         } else {
             NSLog(@"[Ethereal] no error occured!");
             [player pause];
@@ -88,14 +86,11 @@
                 if (block) {
                     block(playerView, true);
                 } else {
-                    NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
                     [[self topViewController] safePresentViewController:playerView animated:YES completion:nil];
                     [playerView.player play];
                 }
                 
             });
-            //[singleItem seekToTime:singleItem.duration completionHandler:nil];
-            //player = nil;
         }
     });
 }
@@ -103,7 +98,6 @@
 - (void)showPlayerViewWithFile:(NSString *)theFile isLocal:(BOOL)isLocal {
     [[KBVideoPlaybackManager defaultManager] createPlayerViewForFile:theFile isLocal:isLocal completion:^(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success) {
         if (controller) {
-            NSLog(@"[Ethereal] calling safePresentViewController: %@", NSStringFromSelector(_cmd));
             [[self topViewController] safePresentViewController:controller animated:true completion:nil];
             [controller.player play];
 

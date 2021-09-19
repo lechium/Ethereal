@@ -25,7 +25,6 @@
 }
 
 - (void)setMediaURL:(NSURL *)mediaURL {
-    LOG_SELF;
     _mediaURL = mediaURL;
     NSMutableDictionary *options = [NSMutableDictionary new];
     
@@ -118,7 +117,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //LOG_SELF;
     // New and initialize FFAVPlayerController instance to prepare for playback
     [self createAVPlayerIfNecessary];
 }
