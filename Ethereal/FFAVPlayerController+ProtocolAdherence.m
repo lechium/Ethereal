@@ -14,4 +14,8 @@
     [self play:0];
 }
 
+- (id)currentItem {
+    return nil;
+}
+
 @end

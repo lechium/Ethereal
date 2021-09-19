@@ -220,7 +220,9 @@
     if (_avplayController.playbackSpeed > 0.5) {
         [_avplayController setPlaybackSpeed:_avplayController.playbackSpeed-0.25];
     }*/
-    _avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
+    NSLog(@"[Ethereal] go to end");
+    [_avplayController seekto:_avplayController.duration];
+    //_avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
 }
 
 - (void)forwardDidTouch:(id)sender {

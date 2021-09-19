@@ -1,0 +1,7 @@
+#ifdef DEBUG
+	#define __DEBUG__
+#endif
+
+#ifdef __OBJC__
+#define LOG_SELF        NSLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd))
+#endif

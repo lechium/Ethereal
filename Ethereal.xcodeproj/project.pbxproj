@@ -54,6 +54,10 @@
 		328B5FCC26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */; };
 		328B5FD126F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FD026F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m */; };
 		328B5FD726F6746300303CE2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328B5FD626F6746200303CE2 /* IOKit.framework */; };
+		328B5FDB26F6A1E000303CE2 /* KBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FDA26F6A1E000303CE2 /* KBPlayerViewController.m */; };
+		328B5FDE26F6E31700303CE2 /* MediaRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328B5FDD26F6E31700303CE2 /* MediaRemote.framework */; };
+		328B5FE126F6E70900303CE2 /* NSData+Flip.mm in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FDF26F6E70900303CE2 /* NSData+Flip.mm */; };
+		328B5FE526F6F08300303CE2 /* UIViewController+Presentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FE426F6F08300303CE2 /* UIViewController+Presentation.m */; };
 		32AD39C12328A0100085F579 /* gear-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AD39C02328A0100085F579 /* gear-small.png */; };
 		32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */; };
 		32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E525BE6AF10021C9FC /* AVFoundation.framework */; };
@@ -161,6 +165,14 @@
 		328B5FCF26F5CD8D00303CE2 /* AVPlayerViewController+Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVPlayerViewController+Protocol.h"; sourceTree = "<group>"; };
 		328B5FD026F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerViewController+Protocol.m"; sourceTree = "<group>"; };
 		328B5FD626F6746200303CE2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = IOKit.framework; sourceTree = "<group>"; };
+		328B5FD926F6A1E000303CE2 /* KBPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBPlayerViewController.h; sourceTree = "<group>"; };
+		328B5FDA26F6A1E000303CE2 /* KBPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBPlayerViewController.m; sourceTree = "<group>"; };
+		328B5FDD26F6E31700303CE2 /* MediaRemote.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MediaRemote.framework; sourceTree = "<group>"; };
+		328B5FDF26F6E70900303CE2 /* NSData+Flip.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSData+Flip.mm"; sourceTree = "<group>"; };
+		328B5FE026F6E70900303CE2 /* NSData+Flip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Flip.h"; sourceTree = "<group>"; };
+		328B5FE326F6F08300303CE2 /* UIViewController+Presentation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Presentation.h"; sourceTree = "<group>"; };
+		328B5FE426F6F08300303CE2 /* UIViewController+Presentation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Presentation.m"; sourceTree = "<group>"; };
+		328B5FE826F6F82800303CE2 /* Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Prefix.pch; path = Ethereal/Prefix.pch; sourceTree = "<group>"; };
 		32AD39C02328A0100085F579 /* gear-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gear-small.png"; sourceTree = SOURCE_ROOT; };
 		32AD39C4232982270085F579 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = SOURCE_ROOT; };
 		32C584DC25BE5F760021C9FC /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = "<group>"; };
@@ -185,6 +197,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */,
+				328B5FDE26F6E31700303CE2 /* MediaRemote.framework in Frameworks */,
 				328B5FD726F6746300303CE2 /* IOKit.framework in Frameworks */,
 				32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */,
 				32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */,
@@ -203,6 +216,7 @@
 			children = (
 				327B3EA72327694B00377FAE /* makeLatest.sh */,
 				3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */,
+				328B5FE826F6F82800303CE2 /* Prefix.pch */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
 				327D3FDB2324E512000EC3C1 /* Products */,
 				32AD39C22328B66E0085F579 /* Frameworks */,
@@ -231,6 +245,8 @@
 				328B5FC926F5CA5500303CE2 /* KBVideoPlaybackProtocol.h */,
 				32DFF9A126F49605004071B3 /* KBVideoPlaybackManager.h */,
 				32DFF9A226F49605004071B3 /* KBVideoPlaybackManager.m */,
+				328B5FD926F6A1E000303CE2 /* KBPlayerViewController.h */,
+				328B5FDA26F6A1E000303CE2 /* KBPlayerViewController.m */,
 				32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */,
 				32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */,
 				32C9CCE025C049D000E0C4FF /* File */,
@@ -350,6 +366,8 @@
 		327D404F23265BA3000EC3C1 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				328B5FE026F6E70900303CE2 /* NSData+Flip.h */,
+				328B5FDF26F6E70900303CE2 /* NSData+Flip.mm */,
 				328B5FCA26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.h */,
 				328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */,
 				328B5FCF26F5CD8D00303CE2 /* AVPlayerViewController+Protocol.h */,
@@ -364,6 +382,8 @@
 				327D405423265C3A000EC3C1 /* UIView+RecursiveFind.m */,
 				327D405023265BA3000EC3C1 /* UIViewController+Additions.h */,
 				327D405123265BA3000EC3C1 /* UIViewController+Additions.m */,
+				328B5FE326F6F08300303CE2 /* UIViewController+Presentation.h */,
+				328B5FE426F6F08300303CE2 /* UIViewController+Presentation.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -385,6 +405,7 @@
 		32AD39C22328B66E0085F579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				328B5FDD26F6E31700303CE2 /* MediaRemote.framework */,
 				328B5FD626F6746200303CE2 /* IOKit.framework */,
 				32C584ED25BE6B130021C9FC /* libbz2.tbd */,
 				32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */,
@@ -528,9 +549,12 @@
 				327D404623265AEB000EC3C1 /* SDWebImageManager.m in Sources */,
 				327D403F23265AEB000EC3C1 /* NSData+ImageContentType.m in Sources */,
 				327D406923265DBE000EC3C1 /* SVIndefiniteAnimatedView.m in Sources */,
+				328B5FE126F6E70900303CE2 /* NSData+Flip.mm in Sources */,
 				327D406B23265DBE000EC3C1 /* SVRadialGradientLayer.m in Sources */,
 				327D3FDF2324E512000EC3C1 /* AppDelegate.m in Sources */,
+				328B5FDB26F6A1E000303CE2 /* KBPlayerViewController.m in Sources */,
 				327D405B23265CD9000EC3C1 /* UIWindow+Additions.m in Sources */,
+				328B5FE526F6F08300303CE2 /* UIViewController+Presentation.m in Sources */,
 				327D404123265AEB000EC3C1 /* SDImageCache.m in Sources */,
 				327D405523265C3A000EC3C1 /* UIView+RecursiveFind.m in Sources */,
 			);
@@ -674,6 +698,7 @@
 					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
 					"$(PROJECT_DIR)",
 				);
+				GCC_PREFIX_HEADER = $SRCROOT/Ethereal/Prefix.pch;
 				HEADER_SEARCH_PATHS = "$SRCROOT/include/**";
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -710,6 +735,7 @@
 					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
 					"$(PROJECT_DIR)",
 				);
+				GCC_PREFIX_HEADER = $SRCROOT/Ethereal/Prefix.pch;
 				HEADER_SEARCH_PATHS = "$SRCROOT/include/**";
 				INFOPLIST_FILE = Ethereal/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

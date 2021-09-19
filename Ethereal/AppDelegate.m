@@ -14,7 +14,7 @@
 #import <AVKit/AVKit.h>
 #import "NSObject+Additions.h"
 #import "SDWebImageManager.h"
-
+#import "KBVideoPlaybackManager.h"
 
 @interface InternalLicense: NSObject
 
@@ -73,7 +73,8 @@
             if (block){
                 block(playerController, true);
             } else {
-                [[self topViewController] presentViewController:playerController animated:true completion:nil];
+                NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
+                [[self topViewController] safePresentViewController:playerController animated:true completion:nil];
             }
             // [[self topViewController] presentViewController:playerController animated:true completion:nil];
         } else {
@@ -87,7 +88,8 @@
                 if (block) {
                     block(playerView, true);
                 } else {
-                    [[self topViewController] presentViewController:playerView animated:YES completion:nil];
+                    NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
+                    [[self topViewController] safePresentViewController:playerView animated:YES completion:nil];
                     [playerView.player play];
                 }
                 
@@ -99,10 +101,13 @@
 }
 
 - (void)showPlayerViewWithFile:(NSString *)theFile isLocal:(BOOL)isLocal {
-    [self createPlayerViewForFile:theFile isLocal:isLocal completion:^(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success) {
+    [[KBVideoPlaybackManager defaultManager] createPlayerViewForFile:theFile isLocal:isLocal completion:^(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success) {
         if (controller) {
-            [[self topViewController] presentViewController:controller animated:true completion:nil];
+            NSLog(@"[Ethereal] calling safePresentViewController: %@", NSStringFromSelector(_cmd));
+            [[self topViewController] safePresentViewController:controller animated:true completion:nil];
             [controller.player play];
+
+            
             
             /*
             if ([controller isKindOfClass:AVPlayerViewController.class]) {

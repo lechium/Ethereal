@@ -22,7 +22,7 @@
 - (void)terminateWithSuccess;
 
 @end
-#define LOG_SELF        NSLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd))
+
 
 @interface ViewController : SettingsViewController
 

@@ -11,17 +11,22 @@
 #import <AVKit/AVKit.h>
 #import "KBMediaAsset.h"
 #import "KBVideoPlaybackProtocol.h"
+#import "KBPlayerViewController.h"
+#import "UIViewController+Presentation.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KBVideoPlaybackManager : NSObject
-+(instancetype)defaultManager;
++ (instancetype)defaultManager;
 @property NSArray <KBMediaAsset *> *media;
 @property NSInteger playbackIndex;
 - (void)killCurrentPlayer;
 - (NSArray *)approvedExtensions;
 - (NSArray *)defaultCompatFiles;
-- (AVPlayerViewController *)playerForCurrentIndex;
+- (UIViewController <KBVideoPlaybackProtocol> *)playerForCurrentIndex;
+- (void)createPlayerViewForFile:(NSString *)theFile isLocal:(BOOL)isLocal completion:(void (^)(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success))block;
+- (void)killIdleSleep;
+- (void)allowSleepAgain;
 @property (nonatomic, copy) void (^videoDidFinishPlaying)(BOOL moreLeft);
 @end
 

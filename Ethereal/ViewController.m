@@ -13,6 +13,8 @@
 #import <AVKit/AVKit.h>
 #import "SDWebImageManager.h"
 #import "KBVideoPlaybackManager.h"
+#import "UIViewController+Presentation.h"
+
 //#import "SGPlayerViewController.h"
 
 @interface ViewController ()
@@ -46,7 +48,8 @@
             [self dismissViewControllerAnimated:true completion:nil];
         }
     };
-    [self presentViewController:playerController animated:true completion:nil];
+    NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
+    [self safePresentViewController:playerController animated:true completion:nil];
     return;
     
     NSIndexPath *ip = [self savedIndexPath];
@@ -182,7 +185,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
         self.shouldExit = true;
-        [self presentViewController:playerView animated:YES completion:nil];
+        NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
+        [self safePresentViewController:playerView animated:YES completion:nil];
         [playerView.player play];
         
         return;
@@ -190,7 +194,7 @@
     //SGPlayerViewController *playerController = [[SGPlayerViewController alloc] initWithMediaURL:[NSURL fileURLWithPath:theFile]];
     PlayerViewController *playerController = [PlayerViewController new];
     playerController.mediaURL = [NSURL fileURLWithPath:theFile];
-    [self presentViewController:playerController animated:true completion:nil];
+    [self safePresentViewController:playerController animated:true completion:nil];
     self.shouldExit = true;
 }
 
@@ -244,7 +248,8 @@
     
     [ac addAction: cancel];
     [ac addAction:action];
-    [self presentViewController:ac animated:TRUE completion:nil];
+    NSLog(@"[Ethereal] calling safePresentViewController: %@: line: %d", NSStringFromSelector(_cmd), __LINE__);
+    [self safePresentViewController:ac animated:TRUE completion:nil];
 }
 
 - (void)settingsTest:(id)sender {

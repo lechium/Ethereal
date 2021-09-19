@@ -7,11 +7,12 @@
 //
 
 #import <tvOSAVPlayerTouch/tvOSAVPlayerTouch.h>
-
+#import "KBVideoPlaybackProtocol.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FFAVPlayerController (ProtocolAdherence)
+@interface FFAVPlayerController (ProtocolAdherence) <KBVideoPlaybackProtocol>
 - (void)play;
+- (id)currentItem;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -274,7 +274,9 @@
         [self fadeInIfNecessary];
         [self stopFadeOutTimer];
         self.stepValue = _defaultStepValue;
+        self.focusScaleFactor = _defaultFocusScaleFactor;
     } else {
+        self.focusScaleFactor = 1.0;
         self.stepValue = 10;
     }
 }
