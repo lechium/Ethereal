@@ -49,52 +49,6 @@
 //test video
 //https://api.air.tv/v1/portal/hls/EYBAG1FeSbeVhmVEomo6kA
 
-
-- (void)createPlayerViewForFile:(NSString *)theFile isLocal:(BOOL)isLocal completion:(void (^)(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success))block {
-    AVPlayerItem *singleItem = nil;
-    if (isLocal){
-        singleItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:theFile]];
-    } else {
-        singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
-    }
-    __block AVQueuePlayer *player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-    [player play];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (singleItem.error != nil){
-            NSLog(@"[Ethereal] %@", [singleItem error]);
-            player = nil;
-            PlayerViewController *playerController = [PlayerViewController new];
-            if (isLocal){
-                playerController.mediaURL = [NSURL fileURLWithPath:theFile];
-            } else {
-                playerController.mediaURL = [NSURL URLWithString:theFile];
-            }
-            if (block){
-                block(playerController, true);
-            } else {
-                [[self topViewController] safePresentViewController:playerController animated:true completion:nil];
-            }
-        } else {
-            NSLog(@"[Ethereal] no error occured!");
-            [player pause];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                AVPlayerViewController  *playerView = [[AVPlayerViewController alloc] init];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemReceivedError:) name:AVPlayerItemNewErrorLogEntryNotification object:singleItem];
-                playerView.player = player;
-                if (block) {
-                    block(playerView, true);
-                } else {
-                    [[self topViewController] safePresentViewController:playerView animated:YES completion:nil];
-                    [playerView.player play];
-                }
-                
-            });
-        }
-    });
-}
-
 - (void)showPlayerViewWithFile:(NSString *)theFile isLocal:(BOOL)isLocal {
     [[KBVideoPlaybackManager defaultManager] createPlayerViewForFile:theFile isLocal:isLocal completion:^(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success) {
         if (controller) {

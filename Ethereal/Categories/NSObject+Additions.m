@@ -19,10 +19,11 @@
         [scanner scanString:@"=" intoString:nil];
         if (![scanner scanUpToString:@"&" intoString:&val]) val = nil;
         [scanner scanString:@"&" intoString:nil];
-        
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         key = [key stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         val = [val stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
+#pragma clang diagnostic pop
         if (key) [array addObject:[NSDictionary dictionaryWithObjectsAndKeys:
                                    key, @"key", val, @"value", nil]];
     }

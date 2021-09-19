@@ -3,5 +3,6 @@
 #endif
 
 #ifdef __OBJC__
+#import "EXTScope.h"
 #define LOG_SELF        NSLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd))
 #endif

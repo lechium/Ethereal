@@ -215,7 +215,10 @@
 - (void)settingsTest:(id)sender {
     
     NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[UIApplication sharedApplication] openURL:url];
+#pragma clang diagnostic pop
 }
 //url = [NSURL URLWithString:app-settings:]
 - (NSString *)cachesFolder {

@@ -676,9 +676,12 @@
 {
     if (__PureLayout_MinSysVer_iOS_7_0) {
         self.translatesAutoresizingMaskIntoConstraints = NO;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTop relatedBy:relation toItem:viewController.topLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:inset];
         [viewController.view al_addConstraint:constraint]; // Can't use autoInstall because the layout guide is not a view
         return constraint;
+#pragma clang diagnostic pop
     } else {
         // iOS 6 fallback
         return [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:viewController.view withOffset:inset relation:relation];

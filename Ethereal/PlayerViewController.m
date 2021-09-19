@@ -19,7 +19,7 @@
 @end
 
 @implementation PlayerViewController {
-    FFAVPlayerController *_avplayController;
+    FFAVPlayerController <KBVideoPlayerProtocol> *_avplayController;
     UIView *_glView;
     NSURL *_mediaURL;
 }

@@ -580,7 +580,8 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
 
 - (void)setFadeOutTimer:(NSTimer*)newTimer{
     if(_fadeOutTimer){
-        [_fadeOutTimer invalidate], _fadeOutTimer = nil;
+        [_fadeOutTimer invalidate];
+        _fadeOutTimer = nil;
     }
     if(newTimer){
         _fadeOutTimer = newTimer;
@@ -969,14 +970,14 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
                                  
                                  [[NSNotificationCenter defaultCenter] removeObserver:strongSelf];
                                  [strongSelf cancelRingLayerAnimation];
-                                 [_hudView removeFromSuperview];
-                                 _hudView = nil;
+                                 [self->_hudView removeFromSuperview];
+                                 self->_hudView = nil;
                                  
-                                 [_overlayView removeFromSuperview];
-                                 _overlayView = nil;
-                                 
-                                 [_indefiniteAnimatedView removeFromSuperview];
-                                 _indefiniteAnimatedView = nil;
+                                 [self->_overlayView removeFromSuperview];
+                                
+                                 self->_overlayView = nil;
+                                 [self->_indefiniteAnimatedView removeFromSuperview];
+                                 self->_indefiniteAnimatedView = nil;
                                  
                                  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, nil);
                                  

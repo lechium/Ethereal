@@ -12,9 +12,16 @@
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #import <MediaRemote/MediaRemote.h>
 #import "NSData+Flip.h"
+#import "NSTask.h"
 
 @interface AVPlayerViewController (hax)
 @property (nonatomic, strong) NSURL *mediaURL;
+@end
+
+@interface NSObject (h4x)
+-(id)initWithDomain:(NSString *)domain notifyChanges:(BOOL)notify;
+-(NSInteger)activationDelay;
+-(void)setActivationDelay:(NSInteger)activationDelay;
 @end
 
 @interface KBVideoPlaybackManager() {
@@ -22,10 +29,72 @@
     NSInteger _playbackIndex;
     UIViewController <KBVideoPlaybackProtocol> *_currentPlayer;
     IOPMAssertionID assertionID;
+    NSInteger screenSaverTimeout;
+    NSDictionary *_ssPrefsCache;
+    id screenSaverFacade;
 }
 
 @end
 @implementation KBVideoPlaybackManager
+
+/*
+ pr = [[TSKPreferencesFacade alloc] initWithDomain: "com.apple.TVScreenSaver" notifyChanges: true]
+
+ p = "/System/Library/PrivateFrameworks/TVSettingKit.framework"
+ b = [NSBundle bundleWithPath: p]
+ [b load]
+ */
+
+- (NSString *)tvsPath {
+    return @"/System/Library/PrivateFrameworks/TVSettingKit.framework";
+}
+
+- (void)loadTVSettings {
+    NSBundle *b = [NSBundle bundleWithPath: [self tvsPath]];
+    [b load];
+    id tempFacade = [[NSClassFromString(@"TSKPreferencesFacade") alloc] initWithDomain: @"com.apple.TVScreenSaver" notifyChanges: true];
+    screenSaverFacade = [tempFacade valueForKey:@"_prefs"];
+}
+
+- (NSString *)screenSaverPrefPath {
+    return @"/var/mobile/Library/Preferences/com.apple.TVScreenSaver.plist";
+}
+
+- (NSDictionary *)screensaverPrefs {
+    return [NSDictionary dictionaryWithContentsOfFile:[self screenSaverPrefPath]];
+}
+
+- (void)_syncSSPrefs {
+    [self loadTVSettings];
+    //_ssPrefsCache = [self screensaverPrefs];
+    screenSaverTimeout = [screenSaverFacade activationDelay];//[_ssPrefsCache[@"ActivationDelay"] integerValue];
+}
+
+- (void)toggleScreenSaver:(BOOL)isOn {
+    if (isOn) {
+        [screenSaverFacade setActivationDelay:screenSaverTimeout];
+    } else {
+        [screenSaverFacade setActivationDelay:0];
+    }
+    /*
+    NSMutableDictionary * dict = [_ssPrefsCache mutableCopy];
+    if (isOn){
+        dict[@"ActivationDelay"] = [NSNumber numberWithInteger:screenSaverTimeout];
+    } else {
+        dict[@"ActivationDelay"] = @0;
+    }
+    [dict writeToFile:[self screenSaverPrefPath] atomically:true];
+    [self killCFPrefsd];
+     */
+}
+
+- (void)killCFPrefsd {
+    [NSTask launchedTaskWithLaunchPath:@"/usr/bin/killall" arguments:@[@"-9", @"cfprefsd"]];
+}
+
+- (UIViewController <KBVideoPlaybackProtocol> *)currentPlayer {
+    return _currentPlayer;
+}
 
 - (void)killCurrentPlayer {
     
@@ -49,8 +118,13 @@
     
     return newDict;
 }
-
+/*
+- (void)keepAlive {
+    MRMediaRemoteKeepAlive();
+}
+*/
 - (void)setNowPlayingInfo {
+    MRMediaRemoteSetCanBeNowPlayingApplication(true);
     MRMediaRemoteSetNowPlayingInfo((__bridge CFDictionaryRef)([self currentPlayingDetails]));
 }
 
@@ -80,9 +154,11 @@
 - (void)allowSleepAgain {
     NSLog(@"[Ethereal] player done, can sleep again");
     IOPMAssertionRelease(assertionID);
+    [self toggleScreenSaver:true];
 }
 
 - (void)killIdleSleep {
+    [self toggleScreenSaver:false];
     IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep,
                                         kIOPMAssertionLevelOn, CFSTR("Playing Video"), &assertionID);
     if (success == kIOReturnSuccess) {
@@ -189,8 +265,6 @@
 
 - (void)itemDidFinishPlaying:(NSNotification *)n {
     
-    NSLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd));
-    //[self dismissViewControllerAnimated:true completion:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     NSInteger nextIndex = self.playbackIndex+1;
@@ -199,17 +273,19 @@
     if (nextIndex < self.media.count) {
         hasMore = true;
         self.playbackIndex = nextIndex;
-        AVPlayerViewController *av = _currentPlayer;
+        UIViewController <KBVideoPlaybackProtocol> *av = _currentPlayer;
         [self playerForCurrentIndex]; //just call it and it updates its local var.
         if (av != _currentPlayer) {
+            @weakify(self);
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                /*
                 if (!_currentPlayer){
                     [self playerForCurrentIndex];
                 }
                 if (!_currentPlayer){
                     return;
-                }
-                [[self topViewController] safePresentViewController:_currentPlayer animated:true completion:nil];
+                }*/
+                [[self topViewController] safePresentViewController:self_weak_.currentPlayer animated:true completion:nil];
             });
             
         }
@@ -257,6 +333,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         shared = [KBVideoPlaybackManager new];
+        [shared _syncSSPrefs];
     });
     return shared;
 }
