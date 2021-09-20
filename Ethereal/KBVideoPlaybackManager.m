@@ -9,7 +9,7 @@
 #import "KBVideoPlaybackManager.h"
 #import "PlayerViewController.h"
 #import "NSObject+Additions.h"
-#include <IOKit/pwr_mgt/IOPMLib.h>
+//#include <IOKit/pwr_mgt/IOPMLib.h>
 #import <MediaRemote/MediaRemote.h>
 #import "NSData+Flip.h"
 #import "NSTask.h"
@@ -18,79 +18,17 @@
 @property (nonatomic, strong) NSURL *mediaURL;
 @end
 
-@interface NSObject (h4x)
--(id)initWithDomain:(NSString *)domain notifyChanges:(BOOL)notify;
--(NSInteger)activationDelay;
--(void)setActivationDelay:(NSInteger)activationDelay;
-@end
 
 @interface KBVideoPlaybackManager() {
     NSArray *_media;
     NSInteger _playbackIndex;
     UIViewController <KBVideoPlaybackProtocol> *_currentPlayer;
-    IOPMAssertionID assertionID;
     NSInteger screenSaverTimeout;
-    NSDictionary *_ssPrefsCache;
     id screenSaverFacade;
 }
 
 @end
 @implementation KBVideoPlaybackManager
-
-/*
- pr = [[TSKPreferencesFacade alloc] initWithDomain: "com.apple.TVScreenSaver" notifyChanges: true]
-
- p = "/System/Library/PrivateFrameworks/TVSettingKit.framework"
- b = [NSBundle bundleWithPath: p]
- [b load]
- */
-
-- (NSString *)tvsPath {
-    return @"/System/Library/PrivateFrameworks/TVSettingKit.framework";
-}
-
-- (void)loadTVSettings {
-    NSBundle *b = [NSBundle bundleWithPath: [self tvsPath]];
-    [b load];
-    id tempFacade = [[NSClassFromString(@"TSKPreferencesFacade") alloc] initWithDomain: @"com.apple.TVScreenSaver" notifyChanges: true];
-    screenSaverFacade = [tempFacade valueForKey:@"_prefs"];
-}
-
-- (NSString *)screenSaverPrefPath {
-    return @"/var/mobile/Library/Preferences/com.apple.TVScreenSaver.plist";
-}
-
-- (NSDictionary *)screensaverPrefs {
-    return [NSDictionary dictionaryWithContentsOfFile:[self screenSaverPrefPath]];
-}
-
-- (void)_syncSSPrefs {
-    [self loadTVSettings];
-    //_ssPrefsCache = [self screensaverPrefs];
-    screenSaverTimeout = [screenSaverFacade activationDelay];//[_ssPrefsCache[@"ActivationDelay"] integerValue];
-}
-
-- (void)toggleScreenSaver:(BOOL)isOn {
-    if (isOn) {
-        [screenSaverFacade setActivationDelay:screenSaverTimeout];
-    } else {
-        [screenSaverFacade setActivationDelay:0];
-    }
-    /*
-    NSMutableDictionary * dict = [_ssPrefsCache mutableCopy];
-    if (isOn){
-        dict[@"ActivationDelay"] = [NSNumber numberWithInteger:screenSaverTimeout];
-    } else {
-        dict[@"ActivationDelay"] = @0;
-    }
-    [dict writeToFile:[self screenSaverPrefPath] atomically:true];
-    [self killCFPrefsd];
-     */
-}
-
-- (void)killCFPrefsd {
-    [NSTask launchedTaskWithLaunchPath:@"/usr/bin/killall" arguments:@[@"-9", @"cfprefsd"]];
-}
 
 - (UIViewController <KBVideoPlaybackProtocol> *)currentPlayer {
     return _currentPlayer;
@@ -152,30 +90,16 @@
 }
 
 - (void)allowSleepAgain {
+    [[UIApplication sharedApplication] setIdleTimerDisabled:false];
     NSLog(@"[Ethereal] player done, can sleep again");
-    IOPMAssertionRelease(assertionID);
-    [self toggleScreenSaver:true];
 }
 
 - (void)killIdleSleep {
-    [self toggleScreenSaver:false];
-    IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep,
-                                        kIOPMAssertionLevelOn, CFSTR("Playing Video"), &assertionID);
-    if (success == kIOReturnSuccess) {
-        NSLog(@"[Ethereal] sleep killed successfully");
-        //Add the work you need to do without
-        //  the system sleeping here.
-        //NSLog(@"[Ethereal] player done, can sleep again");
-        //success = IOPMAssertionRelease(assertionID);
-        //The system will be able to sleep again.
-    }
+    [[UIApplication sharedApplication] setIdleTimerDisabled:true];
 }
 
-
-- (NSArray *)approvedExtensions {
-    
++ (NSArray *)approvedExtensions {
     return @[@"mov", @"mp4", @"m4v", @"mkv", @"avi", @"mp3", @"vob", @"mpg", @"mpeg", @"flv", @"wmv", @"swf", @"asf", @"rmvb", @"rm"];
-    
 }
 
 - (void)createPlayerViewForFile:(NSString *)theFile isLocal:(BOOL)isLocal completion:(void (^)(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success))block {
@@ -305,10 +229,8 @@
     
 }
 
-- (NSArray *)defaultCompatFiles {
-    
++ (NSArray *)defaultCompatFiles {
     return @[@"mp4", @"mpeg4", @"m4v", @"mov"];
-    
 }
 
 - (void)setPlaybackIndex:(NSInteger)playbackIndex {
@@ -333,7 +255,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         shared = [KBVideoPlaybackManager new];
-        [shared _syncSSPrefs];
     });
     return shared;
 }

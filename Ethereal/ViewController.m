@@ -20,8 +20,6 @@
 @interface ViewController ()
 
 @property (nonatomic, strong) NSString *currentPath;
-
-
 @end
 
 @implementation ViewController
@@ -47,21 +45,6 @@
     [self safePresentViewController:playerController animated:true completion:nil];
 }
 
-- (void)itemDidFinishPlaying:(NSNotification *)n
-{
-    
-    [self dismissViewControllerAnimated:true completion:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
-    
-}
-
-- (NSArray *)approvedExtensions {
-    
-    return @[@"mov", @"mp4", @"m4v", @"mkv", @"avi", @"mp3", @"vob", @"mpg", @"mpeg", @"flv", @"wmv", @"swf", @"asf", @"rmvb", @"rm"];
-    
-}
-
-
 - (NSArray *)currentItems {
     
     NSFileManager *man = [NSFileManager defaultManager];
@@ -82,7 +65,7 @@
                 isDirectory = true;
             }
         }
-        if ([[self approvedExtensions] containsObject:[obj pathExtension].lowercaseString] || isDirectory){
+        if ([[KBVideoPlaybackManager approvedExtensions] containsObject:[obj pathExtension].lowercaseString] || isDirectory){
             KBMediaAsset *currentAsset = [KBMediaAsset new];
             currentAsset.filePath = fullPath;
             currentAsset.name = obj;
@@ -92,7 +75,7 @@
                 currentAsset.assetType = KBMediaAssetTypeDirectory;
                 
             } else {
-                if ([[self defaultCompatFiles] containsObject:[obj pathExtension].lowercaseString]) {
+                if ([[KBVideoPlaybackManager defaultCompatFiles] containsObject:[obj pathExtension].lowercaseString]) {
                     currentAsset.assetType = KBMediaAssetTypeVideoDefault;
                 } else {
                     currentAsset.assetType = KBMediaAssetTypeVideoCustom;
@@ -107,7 +90,6 @@
                 
                 if (!currentImage){
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                       
                         FFAVParser *mp = [[FFAVParser alloc] init];
                         if ([mp openMedia:[NSURL fileURLWithPath:fullPath] withOptions:nil]) {
                             currentImage = [mp thumbnailAtTime:fminf(20, mp.duration/2.0)];
@@ -115,14 +97,11 @@
                                 NSLog(@"thumbnails: %@", currentImage);
                                 mp = nil;
                             }
-                            
-                            
                         }
                         // currentImage = [UIImage imageWithContentsOfFile:currentAsset.imagePath];
                         [[SDImageCache sharedImageCache] storeImage:currentImage forKey:currentAsset.name];
                     });
                 }
-                
                 currentAsset.selectorName = @"playFile";
                 currentAsset.defaultImageName = @"video-icon";
                 currentAsset.accessory = false;
@@ -131,9 +110,7 @@
         }
         
     }];
-    
     return itemArray;
-    
 }
 
 - (id)initWithDirectory:(NSString *)directory {
@@ -145,22 +122,11 @@
     
 }
 
-- (NSArray *)defaultCompatFiles {
-    
-    return @[@"mp4", @"mpeg4", @"m4v", @"mov"];
-    
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     
     [super viewWillAppear:animated];
     [self refreshList];
-    if (self.shouldExit){
-        //   [[UIApplication sharedApplication] terminateWithSuccess];
-        // [self dismissViewControllerAnimated:true completion:nil];
-    }
 }
-
 
 - (void)refreshList {
     
@@ -170,9 +136,7 @@
 }
 
 - (void)editSettings:(id)sender {
-    
     [self.tableView setEditing:!self.tableView.editing animated:true];
-    
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -226,8 +190,7 @@
     return [paths objectAtIndex:0];
 }
 
-- (NSString *)documentsFolder
-{
+- (NSString *)documentsFolder {
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     return [paths objectAtIndex:0];
 }

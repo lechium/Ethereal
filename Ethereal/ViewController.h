@@ -26,7 +26,6 @@
 
 @interface ViewController : SettingsViewController
 
-@property (readwrite, assign) BOOL shouldExit;
 - (id)initWithDirectory:(NSString *)directory;
 
 @end

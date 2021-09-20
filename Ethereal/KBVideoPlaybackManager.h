@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSArray <KBMediaAsset *> *media;
 @property NSInteger playbackIndex;
 - (void)killCurrentPlayer;
-- (NSArray *)approvedExtensions;
-- (NSArray *)defaultCompatFiles;
++ (NSArray *)approvedExtensions;
++ (NSArray *)defaultCompatFiles;
 - (UIViewController <KBVideoPlaybackProtocol> *)playerForCurrentIndex;
 - (void)createPlayerViewForFile:(NSString *)theFile isLocal:(BOOL)isLocal completion:(void (^)(UIViewController <KBVideoPlaybackProtocol> *controller, BOOL success))block;
 - (void)killIdleSleep;
