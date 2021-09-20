@@ -168,13 +168,34 @@
     }
 }
 
+- (void)pressesChanged:(NSSet<UIPress *> *)presses withEvent:(nullable UIPressesEvent *)event {
+    [super pressesChanged:presses withEvent:event];
+}
+
 - (void)pressesCancelled:(NSSet<UIPress *> *)presses withEvent:(nullable UIPressesEvent *)event {
-    [super pressesCancelled:presses withEvent:event];
+    for (UIPress *press in presses) {
+        switch (press.type){
+            case UIPressTypeMenu:
+                break;
+            default:
+                [super pressesCancelled:presses withEvent:event];
+        }
+    }
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    //NSLog(@"[Ethereal] pressesBegan: %@", presses);
-    [super pressesBegan:presses withEvent:event];
+    for (UIPress *press in presses) {
+        switch (press.type){
+            case UIPressTypeMenu:
+                [_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
+                break;
+                
+            default:
+                [super pressesBegan:presses withEvent:event];
+                break;
+        }
+    }
+    
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
@@ -183,6 +204,10 @@
     for (UIPress *press in presses) {
         //NSLog(@"[Ethereal] presstype: %lu", press.type);
         switch (press.type){
+                
+            case UIPressTypeMenu:
+                break;
+                
             case UIPressTypePlayPause:
             case UIPressTypeSelect:
                 
@@ -206,11 +231,11 @@
                 
             default:
                 NSLog(@"[Ethereal] unhandled type: %lu", press.type);
+                [super pressesEnded:presses withEvent:event];
                 break;
                 
         }
         
-        [super pressesEnded:presses withEvent:event];
     }
 }
 

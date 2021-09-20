@@ -52,7 +52,6 @@
 		327D407023266C9C000EC3C1 /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D406F23266C9C000EC3C1 /* folder.png */; };
 		327D407223266DA6000EC3C1 /* video-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 327D407123266DA6000EC3C1 /* video-icon.png */; };
 		328B5FCC26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */; };
-		328B5FD126F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FD026F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m */; };
 		328B5FDB26F6A1E000303CE2 /* KBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FDA26F6A1E000303CE2 /* KBPlayerViewController.m */; };
 		328B5FDE26F6E31700303CE2 /* MediaRemote.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328B5FDD26F6E31700303CE2 /* MediaRemote.framework */; };
 		328B5FE126F6E70900303CE2 /* NSData+Flip.mm in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FDF26F6E70900303CE2 /* NSData+Flip.mm */; };
@@ -163,8 +162,6 @@
 		328B5FC926F5CA5500303CE2 /* KBVideoPlaybackProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBVideoPlaybackProtocol.h; sourceTree = "<group>"; };
 		328B5FCA26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "FFAVPlayerController+ProtocolAdherence.h"; path = "Ethereal/FFAVPlayerController+ProtocolAdherence.h"; sourceTree = SOURCE_ROOT; };
 		328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "FFAVPlayerController+ProtocolAdherence.m"; path = "Ethereal/FFAVPlayerController+ProtocolAdherence.m"; sourceTree = SOURCE_ROOT; };
-		328B5FCF26F5CD8D00303CE2 /* AVPlayerViewController+Protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVPlayerViewController+Protocol.h"; sourceTree = "<group>"; };
-		328B5FD026F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AVPlayerViewController+Protocol.m"; sourceTree = "<group>"; };
 		328B5FD626F6746200303CE2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = IOKit.framework; sourceTree = "<group>"; };
 		328B5FD926F6A1E000303CE2 /* KBPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBPlayerViewController.h; sourceTree = "<group>"; };
 		328B5FDA26F6A1E000303CE2 /* KBPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBPlayerViewController.m; sourceTree = "<group>"; };
@@ -377,8 +374,6 @@
 				328B5FDF26F6E70900303CE2 /* NSData+Flip.mm */,
 				328B5FCA26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.h */,
 				328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */,
-				328B5FCF26F5CD8D00303CE2 /* AVPlayerViewController+Protocol.h */,
-				328B5FD026F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m */,
 				327D406D23265DFB000EC3C1 /* UIColor+Additions.h */,
 				327D406C23265DFA000EC3C1 /* UIColor+Additions.m */,
 				327D405923265CD9000EC3C1 /* UIWindow+Additions.h */,
@@ -541,7 +536,6 @@
 				32DFF9A726F4985B004071B3 /* KBMediaAsset.m in Sources */,
 				327D403D23265AEB000EC3C1 /* FLAnimatedImageView+WebCache.m in Sources */,
 				327D3FE22324E512000EC3C1 /* ViewController.m in Sources */,
-				328B5FD126F5CD8D00303CE2 /* AVPlayerViewController+Protocol.m in Sources */,
 				327D40012324FCE1000EC3C1 /* PlayerViewController.m in Sources */,
 				327D404023265AEB000EC3C1 /* NSImage+WebCache.m in Sources */,
 				327D404823265AEB000EC3C1 /* UIButton+WebCache.m in Sources */,
