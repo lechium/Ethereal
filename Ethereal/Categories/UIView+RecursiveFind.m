@@ -52,10 +52,13 @@
 
 
 - (id) clone {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     NSData *archivedViewData = [NSKeyedArchiver archivedDataWithRootObject: self];
     id clone = [NSKeyedUnarchiver unarchiveObjectWithData:archivedViewData];
     return clone;
 }
+#pragma clang diagnostic pop
 
 - (UIImage *)snapshotViewWithSize:(CGSize)size
 {

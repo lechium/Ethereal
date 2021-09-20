@@ -39,7 +39,7 @@ static UIView *SVProgressHUDExtensionView;
 
 static const CGFloat SVProgressHUDRingRadius = 18;
 static const CGFloat SVProgressHUDRingNoTextRadius = 24;
-static const CGFloat SVProgressHUDParallaxDepthPoints = 10;
+//static const CGFloat SVProgressHUDParallaxDepthPoints = 10;
 static const CGFloat SVProgressHUDUndefinedProgress = -1;
 
 @interface SVProgressHUD ()
@@ -705,8 +705,8 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
     CGFloat posX = CGRectGetWidth(orientationFrame)/2.0f;
     CGFloat posY = floorf(activeHeight*0.45f);
     
-    CGPoint newCenter;
-    CGFloat rotateAngle;
+    CGPoint newCenter = CGPointZero;
+    CGFloat rotateAngle = 0.0;
     
     // Update posX and posY in regards to orientation
     if(ignoreOrientation){

@@ -432,9 +432,12 @@
     MetaDataAsset *currentAsset = self.items[indexPath.row];
     SEL assetSelector = [currentAsset ourSelector];
     
-    if ([self respondsToSelector:assetSelector])
-    {
+    if ([self respondsToSelector:assetSelector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        //-Warc-performSelector-leaks
         [self performSelector:assetSelector];
+#pragma clang diagnostic pop
     } else {
         NSLog(@"doesnt respond to selector: %@", currentAsset.selectorName);
     }

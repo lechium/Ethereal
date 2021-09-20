@@ -11,6 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface KBQueuePlayer: AVQueuePlayer <KBVideoPlayerProtocol>
+@end
+
 @interface KBPlayerViewController : AVPlayerViewController <KBVideoPlaybackProtocol>
 @property (nonatomic, strong) NSURL *mediaURL;
 @end

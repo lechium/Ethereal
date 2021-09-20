@@ -6,8 +6,10 @@ static NSString *CYDHex(NSData *data, bool reverse) {
     
     size_t length([data length]);
     uint8_t bytes[length];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [data getBytes:bytes];
-    
+#pragma clang diagnostic pop
     char string[length * 2 + 1];
     for (size_t i(0); i != length; ++i)
         sprintf(string + i * 2, "%.2x", bytes[reverse ? length - i - 1 : i]);

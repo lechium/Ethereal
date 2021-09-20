@@ -66,7 +66,6 @@ typedef NS_ENUM(NSUInteger, SVProgressHUDAnimationType) {
 + (void)showProgress:(float)progress status:(NSString*)status maskType:(SVProgressHUDMaskType)maskType __attribute__((deprecated("Use showProgress: and setDefaultMaskType: instead.")));
 
 + (void)setStatus:(NSString*)status; // change the HUD loading status while it's showing
-+ (void)printRecursiveHierarchy;
 // stops the activity indicator, shows a glyph + status, and dismisses the HUD a little bit later
 + (void)showInfoWithStatus:(NSString*)status;
 + (void)showInfoWithStatus:(NSString*)status maskType:(SVProgressHUDMaskType)maskType __attribute__((deprecated("Use showInfoWithStatus: and setDefaultMaskType: instead.")));

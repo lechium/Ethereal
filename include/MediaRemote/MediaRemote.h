@@ -130,12 +130,12 @@ extern "C" {
     void MRMediaRemoteSetNowPlayingApplicationOverrideEnabled(Boolean enabled);
 
     void MRMediaRemoteRegisterForNowPlayingNotifications(dispatch_queue_t queue);
-    void MRMediaRemoteUnregisterForNowPlayingNotifications();
+    void MRMediaRemoteUnregisterForNowPlayingNotifications(void);
 
-    void MRMediaRemoteBeginRouteDiscovery();
-    void MRMediaRemoteEndRouteDiscovery();
+    void MRMediaRemoteBeginRouteDiscovery(void);
+    void MRMediaRemoteEndRouteDiscovery(void);
 
-    CFArrayRef MRMediaRemoteCopyPickableRoutes();
+    CFArrayRef MRMediaRemoteCopyPickableRoutes(void);
 
     typedef void (^MRMediaRemoteGetNowPlayingInfoCompletion)(CFDictionaryRef information);
     typedef void (^MRMediaRemoteGetNowPlayingApplicationPIDCompletion)(int PID);
@@ -159,7 +159,7 @@ extern "C" {
     void MRMediaRemoteSetPickedRouteWithPassword(CFStringRef route, CFStringRef password);
 
     CFArrayRef MRMediaRemoteCopyPickableRoutesForCategory(NSString *category);
-    Boolean MRMediaRemotePickedRouteHasVolumeControl();
+    Boolean MRMediaRemotePickedRouteHasVolumeControl(void);
     Boolean MRMediaRemoteSetCanBeNowPlayingApplication(Boolean can);
     void MRMediaRemoteSetNowPlayingInfo(CFDictionaryRef information);
 

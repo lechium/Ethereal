@@ -713,7 +713,10 @@
     }
     if (__PureLayout_MinSysVer_iOS_7_0) {
         self.translatesAutoresizingMaskIntoConstraints = NO;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeBottom relatedBy:relation toItem:viewController.bottomLayoutGuide attribute:NSLayoutAttributeTop multiplier:1.0 constant:inset];
+#pragma clang diagnostic pop
         [viewController.view al_addConstraint:constraint]; // Can't use autoInstall because the layout guide is not a view
         return constraint;
     } else {

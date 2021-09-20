@@ -16,7 +16,10 @@
 - (NSString *)downloadFolder;
 - (BOOL)darkMode;
 @end
-
+@interface UIView (private)
+- (id)_recursiveAutolayoutTraceAtLevel:(long long)arg1;
+- (id)recursiveDescription;
+@end
 @interface UIView (RecursiveFind)
 
 - (BOOL)darkMode;
@@ -28,5 +31,5 @@
 - (void)removeAllSubviews;
 - (void)printAutolayoutTrace;
 //- (NSString *)recursiveDescription;
-- (id)_recursiveAutolayoutTraceAtLevel:(long long)arg1;
+
 @end

@@ -52,6 +52,10 @@
     return _mediaURL;
 }
 
+- (void)setPlayer:(id<KBVideoPlayerProtocol>)player {
+    //no-op for right now, just trying to quiet down warnings.
+}
+
 - (id<KBVideoPlayerProtocol>)player {
     return _avplayController;
 }
@@ -107,7 +111,10 @@
 
 - (void)createAVPlayerIfNecessary {
     if (!_avplayController) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
         _avplayController = [[FFAVPlayerController alloc] init];
+#pragma clang diagnostic pop
         _avplayController.delegate = self;
         _avplayController.allowBackgroundPlayback = YES;
         _avplayController.shouldAutoPlay = YES;

@@ -109,7 +109,7 @@
     } else {
         singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
     }
-    __block AVQueuePlayer *player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+    __block KBQueuePlayer *player = [KBQueuePlayer playerWithPlayerItem:singleItem];
     [player play];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

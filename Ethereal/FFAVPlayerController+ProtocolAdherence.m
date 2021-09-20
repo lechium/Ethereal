@@ -10,6 +10,8 @@
 
 @implementation FFAVPlayerController (ProtocolAdherence)
 
+@dynamic player;
+
 - (void)play {
     [self play:0];
 }

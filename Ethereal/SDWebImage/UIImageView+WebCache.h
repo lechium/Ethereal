@@ -209,7 +209,7 @@
  *
  *  @param style The style of the UIActivityIndicatorView
  */
-- (void)setIndicatorStyle:(UIActivityIndicatorViewStyle)style;
+- (void)setIndicatorStyle:(NSInteger)style;
 
 - (BOOL)showActivityIndicatorView;
 - (void)addActivityIndicator;
