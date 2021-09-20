@@ -14,6 +14,7 @@
 #import "SDWebImageManager.h"
 #import "KBVideoPlaybackManager.h"
 #import "UIViewController+Presentation.h"
+#import "KBAirDropHelper.h"
 
 //#import "SGPlayerViewController.h"
 
@@ -195,6 +196,17 @@
     return [paths objectAtIndex:0];
 }
 
+- (void)airdropFile:(id)sender {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"What file do you want to AirDrop?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    for (KBMediaAsset *item in [[KBVideoPlaybackManager defaultManager] media]) {
+        [alertController addAction:[UIAlertAction actionWithTitle:item.name style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [KBAirDropHelper airdropFile:item.filePath];
+        }]];
+    }
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [self safePresentViewController:alertController animated:true completion:nil];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.alpha = 1;
@@ -205,7 +217,7 @@
     self.items = [self currentItems];
     self.title = self.currentPath.lastPathComponent;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editSettings:)];
-    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(airdropFile:)];
 //    UIImage *image = [UIImage imageNamed:@"gear-small"];
 //    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsTest:)];
 }
