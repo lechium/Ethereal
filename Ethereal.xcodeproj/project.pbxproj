@@ -249,18 +249,8 @@
 				327D3FE12324E512000EC3C1 /* ViewController.m */,
 				3280A2A726F8559D0023658B /* KBAirDropHelper.h */,
 				3280A2A826F8559D0023658B /* KBAirDropHelper.m */,
-				32DFF9A526F4985B004071B3 /* KBMediaAsset.h */,
-				32DFF9A626F4985B004071B3 /* KBMediaAsset.m */,
-				328B5FC926F5CA5500303CE2 /* KBVideoPlaybackProtocol.h */,
-				32DFF9A126F49605004071B3 /* KBVideoPlaybackManager.h */,
-				32DFF9A226F49605004071B3 /* KBVideoPlaybackManager.m */,
-				328B5FD926F6A1E000303CE2 /* KBPlayerViewController.h */,
-				328B5FDA26F6A1E000303CE2 /* KBPlayerViewController.m */,
-				32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */,
-				32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */,
+				3280A2AB26F85C380023658B /* Video Playback */,
 				32C9CCE025C049D000E0C4FF /* File */,
-				327D40002324FCE1000EC3C1 /* PlayerViewController.h */,
-				327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */,
 				3247C3A825BBB550007FE21A /* KBSlider.h */,
 				3247C3A725BBB550007FE21A /* KBSlider.m */,
 				327D404F23265BA3000EC3C1 /* Categories */,
@@ -408,6 +398,24 @@
 			name = SVProgressHUD;
 			path = Ethereal/SVProgressHUD;
 			sourceTree = SOURCE_ROOT;
+		};
+		3280A2AB26F85C380023658B /* Video Playback */ = {
+			isa = PBXGroup;
+			children = (
+				327D40002324FCE1000EC3C1 /* PlayerViewController.h */,
+				327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */,
+				32DFF9A526F4985B004071B3 /* KBMediaAsset.h */,
+				32DFF9A626F4985B004071B3 /* KBMediaAsset.m */,
+				328B5FC926F5CA5500303CE2 /* KBVideoPlaybackProtocol.h */,
+				32DFF9A126F49605004071B3 /* KBVideoPlaybackManager.h */,
+				32DFF9A226F49605004071B3 /* KBVideoPlaybackManager.m */,
+				328B5FD926F6A1E000303CE2 /* KBPlayerViewController.h */,
+				328B5FDA26F6A1E000303CE2 /* KBPlayerViewController.m */,
+				32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */,
+				32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */,
+			);
+			path = "Video Playback";
+			sourceTree = "<group>";
 		};
 		328B5FEE26F700A500303CE2 /* extobjc */ = {
 			isa = PBXGroup;
