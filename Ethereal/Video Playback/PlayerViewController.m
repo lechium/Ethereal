@@ -152,6 +152,7 @@
 
 - (void)sliderMoved:(KBSlider *)slider {
     BOOL isPlaying = _avplayController.playerState == kAVPlayerStatePlaying;
+    slider.isPlaying = isPlaying;
     if (!_wasPlaying) {
         _wasPlaying = isPlaying;
     }
@@ -330,7 +331,14 @@
             [_glView addSubview:_transportSlider];
             [_transportSlider setSliderMode:KBSliderModeTransport];
             [_transportSlider setCurrentTime:0];
+            _transportSlider.fadeOutTransport = true;
+            [_transportSlider setIsContinuous:false];
             [_transportSlider setTotalDuration:_avplayController.duration];
+            _transportSlider.timeSelectedBlock = ^(CGFloat currentTime) {
+                if (currentTime < _avplayController.duration) {
+                    [_avplayController seekto:currentTime];
+                }
+            };
             NSLog(@"setting maximum value to duration: %f",_avplayController.duration);
             
         }
@@ -345,7 +353,11 @@
 // AVPlayer state was changed
 - (void)FFAVPlayerControllerDidStateChange:(FFAVPlayerController *)controller {
     AVPlayerState state = [controller playerState];
-    
+    if (state == kAVPlayerStatePlaying){
+        self.transportSlider.isPlaying = true;
+    } else {
+        self.transportSlider.isPlaying = false;
+    }
     if (state == kAVPlayerStateFinishedPlayback) {
         
         // For local media file source

@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface KBGradientView: UIView
+@property(nonatomic, readonly, strong) CAGradientLayer *layer;
++(instancetype)standardGradientView;
+@end
+
 typedef NS_ENUM(NSInteger, DPadState) {
     DPadStateSelect,
     DPadStateRight,
@@ -29,6 +34,7 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @interface KBSlider : UIControl
 
 @property CGFloat value;
+@property CGFloat scrubValue;
 @property CGFloat minimumValue;
 @property CGFloat maximumValue;
 @property BOOL isContinuous;
@@ -42,9 +48,13 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property UIImage *currentMaximumTrackImage;
 
 @property CGFloat storedValue;
+@property CGFloat storedScrubberValue; //may not be necessary
 @property NSTimeInterval currentTime; //only applicable in the transport mode
 @property NSTimeInterval totalDuration; //only applicable in the transport mode
-
+@property BOOL isPlaying; //transport mode only
+@property BOOL isScrubbing; //transport mode only
+@property (nonatomic, copy, nullable) void (^timeSelectedBlock)(CGFloat currentTime); //transport mode only, is called when a slider value is selected when scrubbing.
+@property BOOL fadeOutTransport;
 @property KBSliderMode sliderMode;
 
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
@@ -61,5 +71,6 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 - (UIImage *)thumbImageForState:(UIControlState)state;
 @end
 
+#define LOG_SELF        NSLog(@"[KBSlider] %@ %@", self, NSStringFromSelector(_cmd))
 #define KBSLog(format, ...) NSLog(@"[KBSlider] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
 NS_ASSUME_NONNULL_END

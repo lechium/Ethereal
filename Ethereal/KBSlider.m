@@ -8,6 +8,25 @@
 
 #import "KBSlider.h"
 #import <GameController/GameController.h>
+#import "UIColor+Additions.h"
+@implementation KBGradientView
+@dynamic layer;
+
++ (Class)layerClass {
+    return CAGradientLayer.class;
+}
+
++(instancetype)standardGradientView {
+    KBGradientView *view = [[KBGradientView alloc] initWithFrame:CGRectMake(-100, 0, 1920+200, 200)];
+    view.layer.startPoint = CGPointMake(0.5, 0);
+    view.layer.endPoint = CGPointMake(0.5, 1);
+    view.layer.type = kCAGradientLayerAxial;
+    view.layer.colors = @[(id)[UIColor colorWithWhite:0 alpha:0].CGColor,
+                          (id)[UIColor colorWithWhite:0 alpha:0.6].CGColor];
+    return view;
+}
+
+@end
 
 @interface KBSlider() {
     CGFloat _minimumValue;
@@ -19,8 +38,11 @@
     
     BOOL _isEnabled;
     BOOL _isSelected;
+    BOOL _isPlaying;
     BOOL _isHighlighted;
+    BOOL _defaultFadeOut;
     
+    KBGradientView *gradient;
     KBSliderMode _sliderMode;
     UILabel *durationLabel;
     UILabel *currentTimeLabel;
@@ -48,6 +70,9 @@
 @property NSMutableDictionary *thumbViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
 @property UIImageView *thumbView;
 
+@property NSMutableDictionary *scrubViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
+@property UIImageView *scrubView;
+
 @property NSMutableDictionary *trackViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
 @property UIImageView *trackView;
 
@@ -61,18 +86,32 @@
 @property UITapGestureRecognizer *leftTapGestureRecognizer;
 @property UITapGestureRecognizer *rightTapGestureRecognizer;
 @property NSLayoutConstraint *thumbViewCenterXConstraint;
-
+@property NSLayoutConstraint *scrubViewCenterXConstraint;
 @property DPadState dPadState; //.select
 
 @property NSTimer *deceleratingTimer;
 @property CGFloat deceleratingVelocity;
 @property CGFloat thumbViewCenterXConstraintConstant;
+@property CGFloat scrubViewCenterXConstraintConstant;
 
 @end
 
 @implementation KBSlider
 
+- (BOOL)isPlaying {
+    return _isPlaying;
+}
+
+- (void)setIsPlaying:(BOOL)isPlaying {
+    _isPlaying = isPlaying;
+    if (self.sliderMode == KBSliderModeTransport) {
+        self.scrubView.hidden = isPlaying;
+    }
+}
+
 - (void)initializeDefaults {
+    _defaultFadeOut = true;
+    _fadeOutTransport = _defaultFadeOut;
     _trackViewHeight = 5;
     _thumbSize = 30;
     _animationDuration = 0.3;
@@ -88,7 +127,7 @@
     _decelerationRate = 0.92;
     _decelerationMaxVelocity = 1000;
     _fineTunningVelocityThreshold = 600;
-    
+    _storedScrubberValue = _defaultValue;
     _storedValue = _defaultValue;
     _dPadState = DPadStateSelect;
     _isContinuous = _defaultIsContinuous;
@@ -130,7 +169,7 @@
         return nil;
     }
     if (self.sliderMode == KBSliderModeTransport){
-        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel];
+        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView];
     } else {
         return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView];
     }
@@ -156,6 +195,7 @@
 }
 
 - (void)fadeOut {
+    if (!_fadeOutTransport || self.isScrubbing) return;
     [UIView animateWithDuration:3.0 animations:^{
         [self _toggleVisibleViews:true];
     }];
@@ -270,13 +310,12 @@
     [self setUpThumbView];
     [self setUpThumbViewConstraints];
     [self updateStateDependantViews];
+    [self setUpMinimumTrackViewConstraints];
     if (sliderMode == KBSliderModeDefault){
         [self fadeInIfNecessary];
         [self stopFadeOutTimer];
         self.stepValue = _defaultStepValue;
-        self.focusScaleFactor = _defaultFocusScaleFactor;
     } else {
-        self.focusScaleFactor = 1.0;
         self.stepValue = 10;
     }
 }
@@ -309,6 +348,20 @@
     return _isEnabled;
 }
 
+- (CGFloat)scrubValue {
+    return _storedScrubberValue;
+}
+
+- (void)setScrubValue:(CGFloat)newValue {
+    _storedScrubberValue = MIN(_maximumValue, newValue);
+    _storedScrubberValue = MAX(_minimumValue, _storedScrubberValue);
+    CGFloat offset = _trackView.bounds.size.width * (_storedScrubberValue - _minimumValue) / (_maximumValue - _minimumValue);
+    offset = MIN(_trackView.bounds.size.width, offset);
+    if(isnan(offset)){
+        return;
+    }
+    _scrubViewCenterXConstraint.constant = offset;
+}
 
 - (CGFloat)value {
     return _storedValue;
@@ -324,6 +377,10 @@
     }
     //NSLog(@"[KBSlider] attempting to set offset value: %f", offset);
     _thumbViewCenterXConstraint.constant = offset;
+    if (self.sliderMode == KBSliderModeTransport) {
+        _storedScrubberValue = _storedValue;
+        _scrubViewCenterXConstraint.constant = offset;
+    }
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
@@ -472,6 +529,18 @@
     }
 }
 
+- (void)setUpScrubView {
+    if (_scrubView){
+        [_scrubView removeFromSuperview];
+        _scrubView = nil;
+    }
+    _scrubView = [UIImageView new];
+    _scrubView.backgroundColor = _thumbTintColor;
+    [self addSubview:_scrubView];
+    _scrubView.hidden = true; //its only visible if were currently scrubbing
+}
+
+
 - (void)removeTransportViewsIfNecessary {
     if (currentTimeLabel){
         [currentTimeLabel removeFromSuperview];
@@ -499,6 +568,10 @@
     [durationLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:5].active = true;
     [durationLabel.trailingAnchor constraintEqualToAnchor:self.trackView.trailingAnchor].active = true;
     durationLabel.text = [NSString stringWithFormat:@"%.0f", _totalDuration];
+    [self setUpScrubView];
+    [self setUpScrubViewConstraints];
+    gradient = [KBGradientView standardGradientView];
+    [self insertSubview:gradient atIndex:0];
 }
 
 - (void)setUpTrackView {
@@ -564,6 +637,16 @@
     _thumbViewCenterXConstraint.active = true;
 }
 
+- (void)setUpScrubViewConstraints {
+    _scrubView.translatesAutoresizingMaskIntoConstraints = false;
+    [_scrubView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
+    [_scrubView.heightAnchor constraintEqualToConstant:30].active = true;
+    [_scrubView.widthAnchor constraintEqualToConstant:1].active = true;
+    
+    _scrubViewCenterXConstraint = [_scrubView.centerXAnchor constraintEqualToAnchor:_trackView.leadingAnchor constant:self.scrubValue];
+    _scrubViewCenterXConstraint.active = true;
+}
+
 - (void)setUpGestures {
     
     _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureWasTriggered:)];
@@ -604,6 +687,7 @@
 
 - (void)controllerConnected:(NSNotification *)n {
     GCController *controller = [n object];
+    KBSLog(@"controller: %@ micro: %@", controller, [controller microGamepad]);
     GCMicroGamepad *micro = [controller microGamepad];
     if (!micro)return;
     
@@ -622,6 +706,18 @@
 
 - (void)handleDeceleratingTimer:(NSTimer *)timer {
     
+    if ([self shouldMoveScrubView]) {
+        CGFloat centerX = _scrubViewCenterXConstraintConstant + _deceleratingVelocity * 0.01;
+        CGFloat percent = centerX / (_trackView.frame.size.width);
+        CGFloat newValue = _minimumValue + ((_maximumValue - _minimumValue) * percent);
+        [self setScrubValue:newValue];
+        _scrubViewCenterXConstraintConstant = _scrubViewCenterXConstraint.constant;
+        _deceleratingVelocity *= _decelerationRate;
+        if (![self isFocused] || fabs(_deceleratingVelocity) < 1){
+            [self stopDeceleratingTimer];
+        }
+        return;
+    }
     CGFloat centerX = _thumbViewCenterXConstraintConstant + _deceleratingVelocity * 0.01;
     CGFloat percent = centerX / (_trackView.frame.size.width);
     CGFloat newValue = _minimumValue + ((_maximumValue - _minimumValue) * percent);
@@ -638,9 +734,16 @@
 }
 
 - (void)stopDeceleratingTimer {
+    LOG_SELF;
+    //NSLog(@"%@", [NSThread callStackSymbols]);
     [_deceleratingTimer invalidate];
     _deceleratingTimer = nil;
     _deceleratingVelocity = 0;
+    if ([self shouldMoveScrubView] || !_deceleratingTimer) {
+        NSLog(@"dont do stuff here");
+        return;
+        
+    }
     [self sendActionsForControlEvents:UIControlEventValueChanged];
 }
 
@@ -653,6 +756,10 @@
     return false;
 }
 
+- (BOOL)shouldMoveScrubView {
+    return (self.sliderMode == KBSliderModeTransport && self.isPlaying == false);
+}
+
 #pragma mark - Actions
 
 - (void)panGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
@@ -660,6 +767,10 @@
     if (self.sliderMode == KBSliderModeTransport){
         if (![self _isVisible]){
             [self fadeIn];
+        }
+        if (self.isPlaying){
+            //NSLog(@"isplaying return");
+            return;
         }
     }
     if ([self isVerticalGesture:panGestureRecognizer]){
@@ -670,23 +781,40 @@
     switch(panGestureRecognizer.state){
         case UIGestureRecognizerStateBegan:
             [self stopDeceleratingTimer];
-            _thumbViewCenterXConstraintConstant = _thumbViewCenterXConstraint.constant;
+            self.isScrubbing = true;
+            self.scrubView.hidden = false;
+            if ([self shouldMoveScrubView]) {
+                _scrubViewCenterXConstraintConstant = _scrubViewCenterXConstraint.constant;
+            } else {
+                _thumbViewCenterXConstraintConstant = _thumbViewCenterXConstraint.constant;
+            }
             break;
             
         case UIGestureRecognizerStateChanged:{
-            CGFloat centerX = _thumbViewCenterXConstraintConstant + translation / 5;
-            CGFloat percent = centerX / _trackView.frame.size.width;
-            CGFloat newValue = _minimumValue + ((_maximumValue - _minimumValue) * percent);
-            [self setValue:newValue];
-            if ([self isContinuous]){
-                [self sendActionsForControlEvents:UIControlEventValueChanged];
+            if ([self shouldMoveScrubView]) { //TODO: refactor to make this less repeat code, smarter and cleaner
+                CGFloat centerX = _scrubViewCenterXConstraintConstant + translation / 5;
+                CGFloat percent = centerX / _trackView.frame.size.width;
+                CGFloat newValue = _minimumValue + ((_maximumValue - _minimumValue) * percent);
+                [self setScrubValue:newValue];
+            } else {
+                CGFloat centerX = _thumbViewCenterXConstraintConstant + translation / 5;
+                CGFloat percent = centerX / _trackView.frame.size.width;
+                CGFloat newValue = _minimumValue + ((_maximumValue - _minimumValue) * percent);
+                [self setValue:newValue];
+                if ([self isContinuous]){
+                    [self sendActionsForControlEvents:UIControlEventValueChanged];
+                }
             }
         }
             break;
             
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled:
-            _thumbViewCenterXConstraintConstant = _thumbViewCenterXConstraint.constant;
+            if ([self shouldMoveScrubView]) {
+                _scrubViewCenterXConstraintConstant = _scrubViewCenterXConstraint.constant;
+            } else {
+                _thumbViewCenterXConstraintConstant = _thumbViewCenterXConstraint.constant;
+            }
             if (fabs(velocity) > _fineTunningVelocityThreshold){
                 CGFloat direction = velocity > 0 ? 1 : -1;
                 _deceleratingVelocity = fabs(velocity) > _decelerationMaxVelocity ? _decelerationMaxVelocity * direction : velocity;
@@ -703,7 +831,7 @@
 }
 
 - (void)leftTapWasTriggered {
-    
+    if ([self shouldMoveScrubView]) return;
     CGFloat newValue = [self value]-_stepValue;
     [self setCurrentTime:newValue];
     [self setValue:newValue animated:true];
@@ -722,7 +850,20 @@
     }
 }
 
+- (void)triggerTransportTapIfNecessary {
+    if (_sliderMode == KBSliderModeTransport) {
+        if (self.isScrubbing) {
+            self.isScrubbing = false;
+            if (self.timeSelectedBlock){
+                self.timeSelectedBlock(self.scrubValue);
+                self.isPlaying = true;
+            }
+        }
+    }
+}
+
 - (void)rightTapWasTriggered {
+    if ([self shouldMoveScrubView]) return;
     CGFloat newValue = [self value]+_stepValue;
     [self setCurrentTime:newValue];
     [self setValue:newValue animated:true];
@@ -741,6 +882,7 @@
                     _panGestureRecognizer.enabled = false;
                     [self rightTapWasTriggered];
                 } else {
+                    [self triggerTransportTapIfNecessary];
                     _panGestureRecognizer.enabled = false;
                 }
                 break;
