@@ -10,18 +10,39 @@
 #import "ViewController.h"
 #import "KBSlider.h"
 #import "KBVideoPlaybackManager.h"
+#import "KBAVInfoViewController.h"
 
 @import tvOSAVPlayerTouch;
 
-@interface PlayerViewController () <FFAVPlayerControllerDelegate>
+@interface PlayerViewController () <FFAVPlayerControllerDelegate> {
+    BOOL _showingInfoPanel;
+}
 @property KBSlider *transportSlider;
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
+@property KBAVInfoViewController *avInfoViewController;
 @end
 
 @implementation PlayerViewController {
     FFAVPlayerController <KBVideoPlayerProtocol> *_avplayController;
     UIView *_glView;
     NSURL *_mediaURL;
+}
+
+- (void)hideAVInfoView {
+    if (!_showingInfoPanel) return;
+    self.transportSlider.userInteractionEnabled = true;
+    self.transportSlider.hidden = false;
+    [_avInfoViewController closeWithCompletion:nil];
+    _showingInfoPanel = false;
+}
+
+- (void)showAVInfoView {
+    if (_showingInfoPanel) return;
+    if (!_avInfoViewController){
+        _avInfoViewController = [KBAVInfoViewController new];
+    }
+    [_avInfoViewController showFromViewController:self];
+    _showingInfoPanel = true;
 }
 
 - (void)setMediaURL:(NSURL *)mediaURL {
@@ -66,16 +87,23 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-   NSLog(@"[Ethereal] shouldRecognizeSimultaneouslyWithGestureRecognizer: %@", gestureRecognizer);
+   NSLog(@"[Ethereal] %@ shouldRecognizeSimultaneouslyWithGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+    if ([gestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class] && [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
+        //return FALSE;
+    }
     return TRUE;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
    NSLog(@"[Ethereal] shouldRequireFailureOfGestureRecognizer: %@", gestureRecognizer);
+    if ([gestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class] && [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
+        NSLog(@"[Ethereal], fail");
+        //return TRUE;
+    }
     return FALSE;
 }
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
-   NSLog(@"[Ethereal] shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer);
+   NSLog(@"[Ethereal] %@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     return FALSE;
 }
 
@@ -102,7 +130,12 @@
 - (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
     NSLog(@"[Ethereal] menu tapped");
     if (gestRecognizer.state == UIGestureRecognizerStateEnded){
-    
+        if (_showingInfoPanel) {
+            [self hideAVInfoView];
+        } else {
+            [_avplayController pause];
+            [self dismissViewControllerAnimated:true completion:nil];
+        }
     }
 }
 
@@ -118,7 +151,7 @@
         _avplayController.delegate = self;
         _avplayController.allowBackgroundPlayback = YES;
         _avplayController.shouldAutoPlay = YES;
-        //_avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
+        _avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
     }
 }
 
@@ -126,6 +159,40 @@
     [super viewDidLoad];
     // New and initialize FFAVPlayerController instance to prepare for playback
     [self createAVPlayerIfNecessary];
+    UISwipeGestureRecognizer *swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeDown:)];
+    swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
+    swipeDown.delegate = self;
+    [self.view addGestureRecognizer:swipeDown];
+    
+    UISwipeGestureRecognizer *swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeUp:)];
+    swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
+    swipeUp.delegate = self;
+    [self.view addGestureRecognizer:swipeUp];
+    
+    UITapGestureRecognizer *menuTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuTapped:)];
+    menuTap.numberOfTapsRequired = 1;
+    menuTap.allowedPressTypes = @[@(UIPressTypeMenu)];
+    [self.view addGestureRecognizer:menuTap];
+}
+
+- (void)swipeUp:(UIGestureRecognizer *)gestureRecognizer {
+    NSLog(@"[Ethereal] swipeUp?");
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [self hideAVInfoView];
+        self.transportSlider.hidden = false;
+        self.transportSlider.userInteractionEnabled = true;
+    }
+}
+
+- (void)swipeDown:(UISwipeGestureRecognizer *)gestureRecognizer {
+    self.transportSlider.userInteractionEnabled = false;
+    NSLog(@"[Ethereal] swipeDown?");
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        NSLog(@"[Ethereal] showAVInfoView");
+        self.transportSlider.userInteractionEnabled = false;
+        self.transportSlider.hidden = true;
+        [self showAVInfoView];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -188,7 +255,7 @@
     for (UIPress *press in presses) {
         switch (press.type){
             case UIPressTypeMenu:
-                [_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
+                //[_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
                 break;
                 
             default:
@@ -348,6 +415,13 @@
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:true completion:nil];
     }
+}
+
+- (NSArray *) preferredFocusEnvironments {
+    if (_showingInfoPanel) {
+        return @[_avInfoViewController.tempTabBar, self.transportSlider];
+    }
+    return @[self.transportSlider];
 }
 
 // AVPlayer state was changed

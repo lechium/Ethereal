@@ -72,6 +72,8 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property KBSliderMode sliderMode;
 @property KBScrubMode scrubMode;
 @property (nonatomic, weak) AVPlayer *avPlayer; //optional
+@property BOOL displaysCurrentTime;
+@property BOOL displaysRemainingTime;
 
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
 - (NSTimeInterval)remainingTime;
@@ -85,9 +87,10 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 - (UIImage *)minimumTrackImageForState:(UIControlState)state;
 - (UIImage *)maximumTrackImageForState:(UIControlState)state;
 - (UIImage *)thumbImageForState:(UIControlState)state;
+- (void)hideSliderAnimated:(BOOL)animated;
 @end
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
-#define LOG_SELF        DLog(@"[KBSlider] %@ %@", self, NSStringFromSelector(_cmd))
-#define KBSLog(format, ...) DLog(@"[KBSlider] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
+#define LOG_SELF        DLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd))
+#define KBSLog(format, ...) DLog(@"[Ethereal] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
 NS_ASSUME_NONNULL_END

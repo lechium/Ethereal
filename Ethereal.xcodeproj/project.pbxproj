@@ -10,6 +10,7 @@
 		3247C3AB25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */; };
 		3268F8A02786C3120062D5AC /* KBSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3268F8952786C3120062D5AC /* KBSlider.m */; };
 		3268F8A12786C3120062D5AC /* KBSliderImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 3268F89A2786C3120062D5AC /* KBSliderImages.m */; };
+		327040BE278B80E80080183C /* KBAVInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327040BD278B80E80080183C /* KBAVInfoViewController.m */; };
 		327D3FDF2324E512000EC3C1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FDE2324E512000EC3C1 /* AppDelegate.m */; };
 		327D3FE22324E512000EC3C1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FE12324E512000EC3C1 /* ViewController.m */; };
 		327D3FE52324E512000EC3C1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 327D3FE32324E512000EC3C1 /* Main.storyboard */; };
@@ -85,6 +86,8 @@
 		3268F89D2786C3120062D5AC /* KBSliderImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBSliderImages.h; sourceTree = "<group>"; };
 		3268F89E2786C3120062D5AC /* forward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = forward.h; sourceTree = "<group>"; };
 		3268F89F2786C3120062D5AC /* KBSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBSlider.h; sourceTree = "<group>"; };
+		327040BC278B80E80080183C /* KBAVInfoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBAVInfoViewController.h; sourceTree = "<group>"; };
+		327040BD278B80E80080183C /* KBAVInfoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoViewController.m; sourceTree = "<group>"; };
 		327B3EA72327694B00377FAE /* makeLatest.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = makeLatest.sh; sourceTree = "<group>"; };
 		327D3FDA2324E512000EC3C1 /* Ethereal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ethereal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		327D3FDD2324E512000EC3C1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -306,6 +309,8 @@
 				327D3FE82324E515000EC3C1 /* Info.plist */,
 				327D3FE92324E515000EC3C1 /* main.m */,
 				327D40742326D995000EC3C1 /* Sharing.tbd */,
+				327040BC278B80E80080183C /* KBAVInfoViewController.h */,
+				327040BD278B80E80080183C /* KBAVInfoViewController.m */,
 			);
 			path = Ethereal;
 			sourceTree = "<group>";
@@ -598,6 +603,7 @@
 				327D404523265AEB000EC3C1 /* SDWebImageDownloaderOperation.m in Sources */,
 				327D405223265BA3000EC3C1 /* UIViewController+Additions.m in Sources */,
 				327D401323265A78000EC3C1 /* ALView+PureLayout.m in Sources */,
+				327040BE278B80E80080183C /* KBAVInfoViewController.m in Sources */,
 				327D404223265AEB000EC3C1 /* SDWebImageCompat.m in Sources */,
 				327D401423265A78000EC3C1 /* NSArray+PureLayout.m in Sources */,
 				327D404A23265AEB000EC3C1 /* UIImage+MultiFormat.m in Sources */,

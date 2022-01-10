@@ -10,6 +10,90 @@
 #import <GameController/GameController.h>
 #import "KBSliderImages.h"
 
+@interface UIGestureRecognizer (helper)
+
+- (NSString *)stringForState;
+
+@end
+
+@implementation UIGestureRecognizer (helper)
+
+- (NSString *)stringForState {
+    switch(self.state){
+        case UIGestureRecognizerStatePossible: return @"UIGestureRecognizerStatePossible";
+        case UIGestureRecognizerStateBegan: return @"UIGestureRecognizerStateBegan";
+        case UIGestureRecognizerStateChanged: return @"UIGestureRecognizerStateChanged";
+        case UIGestureRecognizerStateEnded: return @"UIGestureRecognizerStateEnded";
+        case UIGestureRecognizerStateCancelled: return @"UIGestureRecognizerStateCancelled";
+        case UIGestureRecognizerStateFailed: return @"UIGestureRecognizerStateFailed";
+    }
+    
+    return nil;
+}
+
+@end
+
+@interface KBFocusTensionGestureRecognizer: UIPanGestureRecognizer
+@property (assign,setter=_setTouching:,nonatomic) BOOL isTouching;
+-(BOOL)isTouching;
+-(void)_setTouching:(BOOL)touching;
+@end
+
+@interface KBFocusTensionGestureRecognizer () {
+    BOOL _isTouching;
+    double _lastTouchesBeganTime;
+}
+@end
+
+@implementation KBFocusTensionGestureRecognizer
+
+-(BOOL)isTouching {
+    return _isTouching;
+}
+-(void)_setTouching:(BOOL)touching {
+    _isTouching = touching;
+}
+
+- (BOOL)shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    BOOL orig = [super shouldRequireFailureOfGestureRecognizer:otherGestureRecognizer];
+    //DLog(@"shouldRequireFailureOfGestureRecognizer: %@ = %d", otherGestureRecognizer,orig);
+    return orig;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    //DLog(@"touches began: %@", [self stringForState]);
+    [self _setTouching:true];
+    UITouch *firstTouch = [[touches allObjects] firstObject];
+    
+    if (firstTouch.gestureRecognizers[0].state == UIGestureRecognizerStatePossible){
+        //firstTouch.gestureRecognizers[0].state = UIGestureRecognizerStateBegan;
+    }
+    CGPoint location = [firstTouch locationInView:self.view];
+    CGPoint previous = [firstTouch previousLocationInView:self.view];
+    //DLog(@"firstTouch: now %@ previous: %@", NSStringFromCGPoint(location), NSStringFromCGPoint(previous));
+    _lastTouchesBeganTime = [firstTouch timestamp];
+    [super touchesBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    //DLog(@"touches moved: %@",[self stringForState]);
+    UITouch *firstTouch = [[touches allObjects] firstObject];
+    CGPoint location = [firstTouch locationInView:self.view];
+    CGPoint previous = [firstTouch previousLocationInView:self.view];
+    //DLog(@"moved: now %@ previous: %@", NSStringFromCGPoint(location), NSStringFromCGPoint(previous));
+    [super touchesMoved:touches withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self _setTouching:false];
+    UITouch *firstTouch = [[touches allObjects] firstObject];
+    //DLog(@"ended: %@", firstTouch);
+    //[super touchesEnded:touches withEvent:event];
+    DLog(@"touches ended: %@", [self stringForState]);
+}
+
+@end
+
 @implementation NSThread (additions)
 + (NSArray *)stackFrameTruncatedTo:(NSInteger)offset {
     if ([[NSThread callStackSymbols] count] < offset){
@@ -27,7 +111,7 @@
 }
 
 +(instancetype)standardGradientView {
-    KBGradientView *view = [[KBGradientView alloc] initWithFrame:CGRectMake(-100, 0, 1920+200, 200)];
+    KBGradientView *view = [[KBGradientView alloc] initWithFrame:CGRectMake(-100, -30, 1920+200, 220)];
     view.layer.startPoint = CGPointMake(0.5, 0);
     view.layer.endPoint = CGPointMake(0.5, 1);
     view.layer.type = kCAGradientLayerAxial;
@@ -60,12 +144,18 @@
     NSTimeInterval _currentTime;
     NSTimeInterval _totalDuration;
     NSTimer *_fadeOutTimer;
+    NSTimeInterval _touchBeganTime;
     UIImageView *_leftHintImageView;
     UIImageView *_rightHintImageView;
     KBScrubMode _scrubMode;
-    NSLayoutConstraint *_trackViewHeightAnchor;
+    NSLayoutConstraint *_trackViewHeightConstraint;
+    NSLayoutConstraint *_currentTimeLabelWidthConstraint;
+    BOOL _displaysCurrentTime;
+    BOOL _displaysRemainingTime;
 }
-
+@property UITapGestureRecognizer *tapGestureRecognizer;
+@property UILongPressGestureRecognizer *leftLongPressGestureRecognizer;
+@property UILongPressGestureRecognizer *rightLongPressGestureRecognizer;
 @property CGFloat trackViewHeight;
 @property CGFloat thumbSize;
 @property NSTimeInterval animationDuration;
@@ -133,6 +223,9 @@
     if (self.sliderMode == KBSliderModeTransport) {
         self.scrubView.hidden = isPlaying;
         scrubTimeLabel.hidden = isPlaying && !self.isScrubbing;
+        if (isPlaying){
+            [self setScrubMode:KBScrubModeNone];
+        }
     }
 }
 
@@ -159,7 +252,7 @@
     _storedValue = _defaultValue;
     _dPadState = DPadStateSelect;
     _isContinuous = _defaultIsContinuous;
-    
+    _displaysRemainingTime = true;
     _minimumTrackViewImages = [NSMutableDictionary new];
     _maximumTrackViewImages = [NSMutableDictionary new];
     _trackViewImages = [NSMutableDictionary new];
@@ -195,14 +288,28 @@
     [_rightHintImageView.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
     _rightHintImageView.alpha = 0;
     _leftHintImageView.alpha = 0;
-    [_leftHintImageView setImage:[KBSliderImages backwardsImage]];
-    [_rightHintImageView setImage:[KBSliderImages forwardsImage]];
+    //[_leftHintImageView setImage:[KBSliderImages backwardsImage]];
+    //[_rightHintImageView setImage:[KBSliderImages forwardsImage]];
+}
+
+- (void)toggleVisibleTimerLabels {
+    if (self.displaysRemainingTime) {
+        [self setDisplaysCurrentTime:true];
+    } else if (self.displaysCurrentTime) {
+        [self setDisplaysCurrentTime:false];
+        currentTimeLabel.alpha = 0;
+        durationLabel.alpha = 0;
+    } else {
+        [self setDisplaysRemainingTime:true];
+    }
 }
 
 - (void)updateHintImages {
     switch (self.scrubMode) {
         case KBScrubModeNone:
         case KBScrubModeJumping:
+            _rightHintImageView.image = nil;
+            _leftHintImageView.image = nil;
             _leftHintImageView.alpha = 0;
             _rightHintImageView.alpha = 0;
             break;
@@ -254,7 +361,7 @@
         return nil;
     }
     if (self.sliderMode == KBSliderModeTransport){
-        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, scrubTimeLabel];
+        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, scrubTimeLabel, _leftHintImageView, _rightHintImageView];
     } else {
         return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView];
     }
@@ -279,6 +386,16 @@
     }];
 }
 
+- (void)hideSliderAnimated:(BOOL)animated {
+    if (!animated){
+        [self _toggleVisibleViews:true];
+    } else {
+        [UIView animateWithDuration:3.0 animations:^{
+            [self _toggleVisibleViews:true];
+        }];
+    }
+}
+
 - (void)fadeOut {
     if (!_fadeOutTransport) return;
     
@@ -287,12 +404,13 @@
         return;
     }
     
-    [UIView animateWithDuration:3.0 animations:^{
-        [self _toggleVisibleViews:true];
-    }];
+    [self hideSliderAnimated:true];
 }
 
 - (void)fadeIn {
+    if (!self.userInteractionEnabled) {
+        return;
+    }
     [UIView animateWithDuration:0.1 animations:^{
         [self _toggleVisibleViews:false];
         [self _startFadeOutTimer];
@@ -311,6 +429,19 @@
     } else {
         [KBSlider sharedTimeFormatter].allowedUnits =  NSCalendarUnitMinute | NSCalendarUnitSecond;
     }
+}
+//@"h:mm:ss a"
++ (NSDateFormatter *)currentDateFormatter {
+    static dispatch_once_t minOnceToken;
+    static NSDateFormatter *dateFormatter = nil;
+    if(dateFormatter == nil) {
+        dispatch_once(&minOnceToken, ^{
+            dateFormatter = [[NSDateFormatter alloc] init];
+            dateFormatter.dateStyle = NSDateFormatterShortStyle;
+            dateFormatter.dateFormat = @"h:mm a";
+        });
+    }
+    return dateFormatter;
 }
 
 + (NSDateComponentsFormatter *)elapsedTimeFormatter {
@@ -341,8 +472,53 @@
     return sharedTime;
 }
 
+- (BOOL)displaysRemainingTime {
+    return _displaysRemainingTime;
+}
+
+- (void)setDisplaysRemainingTime:(BOOL)displaysRemainingTime {
+    _displaysRemainingTime = displaysRemainingTime;
+    if (displaysRemainingTime && _displaysCurrentTime) {
+        [self setDisplaysCurrentTime:false];
+    }
+    if (displaysRemainingTime){
+        _currentTimeLabelWidthConstraint.constant = 76;
+        currentTimeLabel.alpha = 1.0;
+        durationLabel.alpha = 1.0;
+        currentTimeLabel.text = [self elapsedTimeFormatted];
+        durationLabel.text = [self remainingTimeFormatted];
+    }
+}
+
+- (BOOL)displaysCurrentTime {
+    return _displaysCurrentTime;
+}
+
+- (void)setDisplaysCurrentTime:(BOOL)displaysCurrentTime {
+    _displaysCurrentTime = displaysCurrentTime;
+    if (displaysCurrentTime && _displaysRemainingTime) {
+        [self setDisplaysRemainingTime:false];
+    }
+    if (displaysCurrentTime){
+        _currentTimeLabelWidthConstraint.constant = 120;
+        currentTimeLabel.alpha = 1.0;
+        durationLabel.alpha = 1.0;
+        currentTimeLabel.text = [self currentDateFormatted];
+        durationLabel.text = [self finishDateFormatted];
+    }
+}
+
+
 - (NSTimeInterval)remainingTime {
     return -(self.totalDuration - self.currentTime);
+}
+
+- (NSString *)finishDateFormatted {
+    return [[KBSlider currentDateFormatter] stringFromDate:[[NSDate date] dateByAddingTimeInterval:fabs(self.remainingTime)]];
+}
+
+- (NSString *)currentDateFormatted {
+    return [[KBSlider currentDateFormatter] stringFromDate:[NSDate date]];
 }
 
 - (NSString *)remainingTimeFormatted {
@@ -380,10 +556,18 @@
     [self setValue:currentTime];
     [self _updateFormatters];
     if (currentTimeLabel){
-        currentTimeLabel.text = [self elapsedTimeFormatted];
+        if (self.displaysCurrentTime){
+            currentTimeLabel.text = [self currentDateFormatted];
+        } else {
+            currentTimeLabel.text = [self elapsedTimeFormatted];
+        }
     }
     if (durationLabel){
-        durationLabel.text = [self remainingTimeFormatted];
+        if (self.displaysCurrentTime){
+            durationLabel.text = [self finishDateFormatted];
+        } else {
+            durationLabel.text = [self remainingTimeFormatted];
+        }
     }
     if (!self.isScrubbing) {
         self.scrubValue = currentTime;
@@ -407,7 +591,9 @@
     _sliderMode = sliderMode;
     if (sliderMode == KBSliderModeTransport) {
         _trackViewHeight = 10;
+        _focusScaleFactor = 1.00;
     } else {
+        _focusScaleFactor = 1.05;
         _trackViewHeight = 5;
     }
     [self setUpTrackView];
@@ -425,6 +611,7 @@
         [self stopFadeOutTimer];
         self.stepValue = _defaultStepValue;
     } else {
+        [self hideSliderAnimated:false];
         self.stepValue = 10;
     }
 }
@@ -475,6 +662,16 @@
 
 - (CGFloat)value {
     return _storedValue;
+}
+
+- (void)connectSiriGCControllerIfNecessary {
+    GCController *first = [[GCController controllers] firstObject];
+    if (first) {
+        GCMicroGamepad *micro = [first microGamepad];
+        if (micro) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:GCControllerDidConnectNotification object:first];
+        }
+    }
 }
 
 - (void)setValue:(CGFloat)newValue {
@@ -574,6 +771,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(controllerConnected:) name:GCControllerDidConnectNotification object:nil];
     [self updateStateDependantViews];
+    [self connectSiriGCControllerIfNecessary];
 }
 
 - (void)setValue:(CGFloat)value animated:(BOOL)animated {
@@ -681,7 +879,8 @@
     currentTimeLabel.layer.masksToBounds = true;
     currentTimeLabel.backgroundColor = [UIColor whiteColor];
     currentTimeLabel.textColor = [UIColor blackColor];
-    [currentTimeLabel.widthAnchor constraintGreaterThanOrEqualToConstant:76].active = true;
+    _currentTimeLabelWidthConstraint = [currentTimeLabel.widthAnchor constraintGreaterThanOrEqualToConstant:76];
+    _currentTimeLabelWidthConstraint.active = true;
     [currentTimeLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCaption2]];
     durationLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     durationLabel.translatesAutoresizingMaskIntoConstraints = false;
@@ -747,12 +946,12 @@
     [_trackView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
     [_trackView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
     [_trackView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
-    if (_trackViewHeightAnchor) {
-        [NSLayoutConstraint deactivateConstraints:@[_trackViewHeightAnchor]];
-        _trackViewHeightAnchor = nil;
+    if (_trackViewHeightConstraint) {
+        [NSLayoutConstraint deactivateConstraints:@[_trackViewHeightConstraint]];
+        _trackViewHeightConstraint = nil;
     }
-    _trackViewHeightAnchor = [_trackView.heightAnchor constraintEqualToConstant:_trackViewHeight];
-    _trackViewHeightAnchor.active = true;
+    _trackViewHeightConstraint = [_trackView.heightAnchor constraintEqualToConstant:_trackViewHeight];
+    _trackViewHeightConstraint.active = true;
     
 }
 
@@ -798,10 +997,12 @@
     _scrubViewCenterXConstraint.active = true;
 }
 
+
 - (void)setUpGestures {
     
     _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureWasTriggered:)];
     [self addGestureRecognizer:_panGestureRecognizer];
+    _panGestureRecognizer.delegate = self;
     
     _leftTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftTapWasTriggered)];
     _leftTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
@@ -812,6 +1013,43 @@
     _rightTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeRightArrow)];
     _rightTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
     [self addGestureRecognizer:_rightTapGestureRecognizer];
+    
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
+    _tapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
+    _tapGestureRecognizer.allowedPressTypes = @[];
+    [self addGestureRecognizer:_tapGestureRecognizer];
+    
+    _leftLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longLeftPressTriggered:)];
+    [self addGestureRecognizer:_leftLongPressGestureRecognizer];
+    
+    //_rightLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longRightPressTriggered:)];
+    //[self addGestureRecognizer:_rightLongPressGestureRecognizer];
+    
+}
+
+- (void)longRightPressTriggered:(UILongPressGestureRecognizer *)gestureRecognizer {
+    
+}
+
+- (void)longLeftPressTriggered:(UILongPressGestureRecognizer *)gestureRecognizer {
+    switch (gestureRecognizer.state) {
+        case UIGestureRecognizerStateBegan:
+            DLog(@"long press began");
+            if (_dPadState == DPadStateLeft){
+                DLog(@"long press left");
+            } else if (_dPadState == DPadStateRight) {
+                DLog(@"long press right");
+            }
+            break;
+            
+        case UIGestureRecognizerStateEnded:
+            DLog(@"long press ended");
+            break;
+            
+        default:
+            break;
+            
+    }
 }
 
 - (void)updateStateDependantViews {
@@ -836,20 +1074,39 @@
     
 }
 
+/*
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
+   NSLog(@"[Ethereal] %@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+    if ([otherGestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class]) {
+        return TRUE;
+    }
+    return FALSE;
+}
+*/
 - (void)controllerConnected:(NSNotification *)n {
     GCController *controller = [n object];
-    KBSLog(@"controller: %@ micro: %@", controller, [controller microGamepad]);
+    NSLog(@"controller: %@ micro: %@", controller, [controller microGamepad]);
     GCMicroGamepad *micro = [controller microGamepad];
     if (!micro)return;
     
-    CGFloat threshold = 0.7;
+    CGFloat threshold = 0.6f;
     micro.reportsAbsoluteDpadValues = true;
     micro.dpad.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
+        //NSLog(@"xValue: %f", xValue);
         if (xValue < -threshold){
+            if (self.dPadState != DPadStateLeft) {
+                NSLog(@"DPadStateLeft");
+            }
             self.dPadState = DPadStateLeft;
         } else if (xValue > threshold){
+            if (self.dPadState != DPadStateRight) {
+                NSLog(@"DPadStateRight");
+            }
             self.dPadState = DPadStateRight;
         } else {
+            if (self.dPadState != DPadStateSelect) {
+                NSLog(@"DPadStateSelect");
+            }
             self.dPadState = DPadStateSelect;
         }
     };
@@ -909,14 +1166,70 @@
 
 #pragma mark - Actions
 
-- (void)panGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
+- (void)nowPlayingGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
+    if ([self isVerticalGesture:panGestureRecognizer]){
+        //DLog(@"is vertical gesture?");
+        //return;
+    }
+    CGFloat translation = [panGestureRecognizer translationInView:self].x;
+    CGFloat velocity = [panGestureRecognizer velocityInView:self].x;
+    NSTimeInterval inBetweenTime = 0;
+    switch(panGestureRecognizer.state){
+        case UIGestureRecognizerStateBegan:
+            _touchBeganTime = [[NSDate date] timeIntervalSince1970];
+            NSLog(@"began translation: %.0f velocity: %.0f at interval: %f dpadstate: %lu", translation, velocity, _touchBeganTime, _dPadState);
+            break;
+        
+        case UIGestureRecognizerStateChanged:
+            inBetweenTime =[[NSDate date] timeIntervalSince1970] - _touchBeganTime;
+            if (_dPadState == DPadStateRight){
+                
+                
+                //if (self.avPlayer.rate != 8.0){
+                    NSLog(@"fast forward?");
+                //    self.avPlayer.rate = MIN(self.avPlayer.rate + 8.0, 8.0);
+                //}
+                [self setScrubMode:KBScrubModeFastForward];
+            } else if (_dPadState == DPadStateLeft){
+                //if (self.avPlayer.rate != -8.0){
+                    NSLog(@"rewind?");
+                [self setScrubMode:KBScrubModeRewind];
+                  //  self.avPlayer.rate = MIN(self.avPlayer.rate - 8.0, - 8.0);
+                //}
+                //self.avPlayer.play;
+            } else {
+                
+                [self setScrubMode:KBScrubModeNone];
+                //self.avPlayer.rate = 1.0;
+                //[self.avPlayer play];
+            }
+            NSLog(@"changed translation: %.0f velocity: %.0f at interval: %f, dpadstate: %lu", translation, velocity, inBetweenTime, _dPadState);
+            break;
+            
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+            //self.avPlayer.rate = 1.0;
+            //[self.avPlayer play];
+            inBetweenTime =[[NSDate date] timeIntervalSince1970] - _touchBeganTime;
+            NSLog(@"ended translation: %.0f velocity: %.0f at interval: %f", translation, velocity, inBetweenTime);
+            break;
+            
+        default:
+            break;
+    }
     
+}
+
+- (void)panGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
+    NSLog(@"[Ethereal] [KBSlider] panGestureWasTriggered");
+    NSLog(@"[Ethereal] uie: %lu", self.userInteractionEnabled);
     if (self.sliderMode == KBSliderModeTransport){
-        if (![self _isVisible]){
+        if (![self _isVisible] && self.userInteractionEnabled){
             [self fadeIn];
         }
         if (self.isPlaying){
             //NSLog(@"isplaying return");
+            //[self nowPlayingGestureWasTriggered:panGestureRecognizer];
             return;
         }
     }
@@ -977,12 +1290,26 @@
     }
 }
 
+//with how this recognizer is configured it ONLY gets tap events and not physical presses.
+- (void)tapGestureTriggered:(UITapGestureRecognizer *)tapGestureRecognizer {
+    NSLog(@"[Ethereal] tapGestureTriggered");
+    switch (tapGestureRecognizer.state) {
+        case UIGestureRecognizerStateEnded:
+            [self toggleVisibleTimerLabels];
+            break;
+        default:
+            break;
+    }
+}
+
 - (void)leftTapWasTriggered {
+    LOG_SELF;
     if ([self shouldMoveScrubView]) return;
     CGFloat newValue = [self value]-_stepValue;
     [self setCurrentTime:newValue];
     [self setValue:newValue animated:true];
     [self fadeInIfNecessary];
+    [self setScrubMode:KBScrubModeSkippingBackwards];
 }
 
 - (void)fadeInIfNecessary {
@@ -1011,14 +1338,17 @@
 }
 
 - (void)rightTapWasTriggered {
+    LOG_SELF;
     if ([self shouldMoveScrubView]) return;
     CGFloat newValue = [self value]+_stepValue;
     [self setCurrentTime:newValue];
     [self setValue:newValue animated:true];
     [self fadeInIfNecessary];
+    [self setScrubMode:KBScrubModeSkippingForwards];
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    LOG_SELF;
     [self fadeInIfNecessary];
     for (UIPress *press in presses){
         switch (press.type) {
