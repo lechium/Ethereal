@@ -68,6 +68,8 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property BOOL isPlaying; //transport mode only
 @property BOOL isScrubbing; //transport mode only
 @property (nonatomic, copy, nullable) void (^timeSelectedBlock)(CGFloat currentTime); //transport mode only, is called when a slider value is selected when scrubbing.
+@property (nonatomic, copy, nullable) void (^scanStartedBlock)(CGFloat currentTime, NSInteger direction); //0 = rewind, 1 = ff
+@property (nonatomic, copy, nullable) void (^scanEndedBlock)(NSInteger direction);
 @property BOOL fadeOutTransport;
 @property KBSliderMode sliderMode;
 @property KBScrubMode scrubMode;
@@ -80,7 +82,7 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 - (NSString *)remainingTimeFormatted;
 - (NSString *)elapsedTimeFormatted;
 - (UIImage *)currentThumbImage;
-- (void)setValue:(CGFloat)value animated:(BOOL)animated;
+- (void)setValue:(CGFloat)value animated:(BOOL)animated completion:(void(^)(void))completion;
 - (void)setMinimumTrackImage:(UIImage *)minTrackImage forState:(UIControlState)state;
 - (void)setMaximumTrackImage:(UIImage *)maxTrackImage forState:(UIControlState)state;
 - (void)setThumbImage:(UIImage *)thumbImage forState:(UIControlState)state;

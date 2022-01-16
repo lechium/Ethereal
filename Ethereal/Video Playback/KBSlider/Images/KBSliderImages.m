@@ -2,6 +2,7 @@
 #import "forward.h"
 #import "gobackward.h"
 #import "goforward.h"
+#import "checkmark.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "KBSliderImages.h"
@@ -29,5 +30,7 @@
 + (UIImage *)skipBackwardsImage {
     return SliderImageTemplate(gobackward_10_png);
 }
-
++ (UIImage *)checkmarkImage {
+    return SliderImageTemplate(checkmark_png);
+}
 @end

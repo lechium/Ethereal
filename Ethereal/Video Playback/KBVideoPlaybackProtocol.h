@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol KBVideoPlaybackProtocol <NSObject>
 @property (nonatomic, strong) NSURL *mediaURL;
 @property (nonatomic, strong) id <KBVideoPlayerProtocol> player;
+@property (nonatomic, weak) id currentAsset;
 @end
 
 NS_ASSUME_NONNULL_END

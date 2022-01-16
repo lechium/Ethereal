@@ -33,66 +33,6 @@
 
 @end
 
-@interface KBFocusTensionGestureRecognizer: UIPanGestureRecognizer
-@property (assign,setter=_setTouching:,nonatomic) BOOL isTouching;
--(BOOL)isTouching;
--(void)_setTouching:(BOOL)touching;
-@end
-
-@interface KBFocusTensionGestureRecognizer () {
-    BOOL _isTouching;
-    double _lastTouchesBeganTime;
-}
-@end
-
-@implementation KBFocusTensionGestureRecognizer
-
--(BOOL)isTouching {
-    return _isTouching;
-}
--(void)_setTouching:(BOOL)touching {
-    _isTouching = touching;
-}
-
-- (BOOL)shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    BOOL orig = [super shouldRequireFailureOfGestureRecognizer:otherGestureRecognizer];
-    //DLog(@"shouldRequireFailureOfGestureRecognizer: %@ = %d", otherGestureRecognizer,orig);
-    return orig;
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    //DLog(@"touches began: %@", [self stringForState]);
-    [self _setTouching:true];
-    UITouch *firstTouch = [[touches allObjects] firstObject];
-    
-    if (firstTouch.gestureRecognizers[0].state == UIGestureRecognizerStatePossible){
-        //firstTouch.gestureRecognizers[0].state = UIGestureRecognizerStateBegan;
-    }
-    CGPoint location = [firstTouch locationInView:self.view];
-    CGPoint previous = [firstTouch previousLocationInView:self.view];
-    //DLog(@"firstTouch: now %@ previous: %@", NSStringFromCGPoint(location), NSStringFromCGPoint(previous));
-    _lastTouchesBeganTime = [firstTouch timestamp];
-    [super touchesBegan:touches withEvent:event];
-}
-
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    //DLog(@"touches moved: %@",[self stringForState]);
-    UITouch *firstTouch = [[touches allObjects] firstObject];
-    CGPoint location = [firstTouch locationInView:self.view];
-    CGPoint previous = [firstTouch previousLocationInView:self.view];
-    //DLog(@"moved: now %@ previous: %@", NSStringFromCGPoint(location), NSStringFromCGPoint(previous));
-    [super touchesMoved:touches withEvent:event];
-}
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [self _setTouching:false];
-    UITouch *firstTouch = [[touches allObjects] firstObject];
-    //DLog(@"ended: %@", firstTouch);
-    //[super touchesEnded:touches withEvent:event];
-    DLog(@"touches ended: %@", [self stringForState]);
-}
-
-@end
 
 @implementation NSThread (additions)
 + (NSArray *)stackFrameTruncatedTo:(NSInteger)offset {
@@ -123,6 +63,7 @@
 @end
 
 @interface KBSlider() {
+    __weak AVPlayer *_avPlayer;
     CGFloat _minimumValue;
     CGFloat _maximumValue;
     UIColor *_maximumTrackTintColor;
@@ -152,6 +93,7 @@
     NSLayoutConstraint *_currentTimeLabelWidthConstraint;
     BOOL _displaysCurrentTime;
     BOOL _displaysRemainingTime;
+    BOOL _hasPlayingObserver;
 }
 @property UITapGestureRecognizer *tapGestureRecognizer;
 @property UILongPressGestureRecognizer *leftLongPressGestureRecognizer;
@@ -203,6 +145,15 @@
 
 @implementation KBSlider
 
+- (void)setAvPlayer:(AVPlayer *)avPlayer {
+    _avPlayer = avPlayer;
+    [self addPlayingObserver];
+}
+
+- (AVPlayer *)avPlayer {
+    return _avPlayer;
+}
+
 - (void)setScrubMode:(KBScrubMode)scrubMode {
     _scrubMode = scrubMode;
     [self updateHintImages];
@@ -217,8 +168,23 @@
     return _isPlaying;
 }
 
+- (void)addPlayingObserver {
+    [self.avPlayer addObserver:self forKeyPath:@"timeControlStatus" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ([keyPath isEqualToString:@"timeControlStatus"]) {
+        AVPlayerTimeControlStatus changed = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
+        DLog(@"timeControlStatusChanged: %lu", changed);
+        if (changed == AVPlayerTimeControlStatusPlaying) {
+            [self setScrubMode:KBScrubModeNone];
+        }
+        
+    }
+}
+
 - (void)setIsPlaying:(BOOL)isPlaying {
-    LOG_SELF;
+    
     _isPlaying = isPlaying;
     if (self.sliderMode == KBSliderModeTransport) {
         self.scrubView.hidden = isPlaying;
@@ -230,6 +196,7 @@
 }
 
 - (void)initializeDefaults {
+    _hasPlayingObserver = false;
     _defaultFadeOut = true;
     _fadeOutTransport = _defaultFadeOut;
     _scrubMode = KBScrubModeNone;
@@ -293,6 +260,11 @@
 }
 
 - (void)toggleVisibleTimerLabels {
+    if (self.trackView.alpha == 0){
+        [self fadeIn];
+        self.displaysRemainingTime = true;
+        return;
+    }
     if (self.displaysRemainingTime) {
         [self setDisplaysCurrentTime:true];
     } else if (self.displaysCurrentTime) {
@@ -300,7 +272,8 @@
         currentTimeLabel.alpha = 0;
         durationLabel.alpha = 0;
     } else {
-        [self setDisplaysRemainingTime:true];
+        [self fadeOut];
+        //[self setDisplaysRemainingTime:true];
     }
 }
 
@@ -318,12 +291,14 @@
             _leftHintImageView.alpha = 1;
             _rightHintImageView.alpha = 0;
             _leftHintImageView.image = [KBSliderImages backwardsImage];
+            [self setDisplaysRemainingTime:true];
             break;
             
         case KBScrubModeFastForward:
             _leftHintImageView.alpha = 0;
             _rightHintImageView.alpha = 1;
             _rightHintImageView.image = [KBSliderImages forwardsImage];
+            [self setDisplaysRemainingTime:true];
             break;
             
         case KBScrubModeSkippingForwards:
@@ -361,7 +336,7 @@
         return nil;
     }
     if (self.sliderMode == KBSliderModeTransport){
-        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, scrubTimeLabel, _leftHintImageView, _rightHintImageView];
+        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView];
     } else {
         return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView];
     }
@@ -380,6 +355,9 @@
     [[self _viewsToAdjust] enumerateObjectsUsingBlock:^(UIView  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (hide){
             obj.alpha = 0;
+            if (scrubTimeLabel){
+                scrubTimeLabel.alpha = 0;
+            }
         } else {
             obj.alpha = 1;
         }
@@ -390,7 +368,7 @@
     if (!animated){
         [self _toggleVisibleViews:true];
     } else {
-        [UIView animateWithDuration:3.0 animations:^{
+        [UIView animateWithDuration:0.3 animations:^{
             [self _toggleVisibleViews:true];
         }];
     }
@@ -399,7 +377,7 @@
 - (void)fadeOut {
     if (!_fadeOutTransport) return;
     
-    if ([self isScrubbing]){
+    if ([self isScrubbing] || self.scrubMode == KBScrubModeRewind || self.scrubMode == KBScrubModeFastForward){
         [self _startFadeOutTimer];
         return;
     }
@@ -411,7 +389,7 @@
     if (!self.userInteractionEnabled) {
         return;
     }
-    [UIView animateWithDuration:0.1 animations:^{
+    [UIView animateWithDuration:0.3 animations:^{
         [self _toggleVisibleViews:false];
         [self _startFadeOutTimer];
     }];
@@ -575,7 +553,7 @@
     if (CGRectIntersectsRect(durationLabel.frame, currentTimeLabel.frame)){
         durationLabel.alpha = 0.0;
     } else {
-        if ([self _isVisible]){
+        if ([self _isVisible] && (self.displaysRemainingTime || self.displaysCurrentTime)){
             durationLabel.alpha = 1.0;
         }
     }
@@ -774,13 +752,17 @@
     [self connectSiriGCControllerIfNecessary];
 }
 
-- (void)setValue:(CGFloat)value animated:(BOOL)animated {
+- (void)setValue:(CGFloat)value animated:(BOOL)animated completion:(void(^)(void))completion {
     [self setValue:value];
     [self stopDeceleratingTimer];
     if (animated){
         [UIView animateWithDuration:self.animationDuration animations:^{
             [self setNeedsLayout];
             [self layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            if (completion){
+                completion();
+            }
         }];
     }
 }
@@ -1004,6 +986,7 @@
     [self addGestureRecognizer:_panGestureRecognizer];
     _panGestureRecognizer.delegate = self;
     
+    /*
     _leftTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftTapWasTriggered)];
     _leftTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
     _leftTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
@@ -1013,7 +996,7 @@
     _rightTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeRightArrow)];
     _rightTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
     [self addGestureRecognizer:_rightTapGestureRecognizer];
-    
+    */
     _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
     _tapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
     _tapGestureRecognizer.allowedPressTypes = @[];
@@ -1037,13 +1020,30 @@
             DLog(@"long press began");
             if (_dPadState == DPadStateLeft){
                 DLog(@"long press left");
+                if (self.scanStartedBlock){
+                    self.scanStartedBlock(self.currentTime, 0);
+                }
             } else if (_dPadState == DPadStateRight) {
                 DLog(@"long press right");
+                if (self.scanStartedBlock){
+                    self.scanStartedBlock(self.currentTime, 1);
+                }
             }
             break;
             
         case UIGestureRecognizerStateEnded:
             DLog(@"long press ended");
+            if (_dPadState == DPadStateLeft){
+                DLog(@"long press left ended");
+                if (self.scanEndedBlock){
+                    self.scanEndedBlock(0);
+                }
+            } else if (_dPadState == DPadStateRight) {
+                DLog(@"long press right ended");
+                if (self.scanEndedBlock){
+                    self.scanEndedBlock(1);
+                }
+            }
             break;
             
         default:
@@ -1085,7 +1085,7 @@
 */
 - (void)controllerConnected:(NSNotification *)n {
     GCController *controller = [n object];
-    NSLog(@"controller: %@ micro: %@", controller, [controller microGamepad]);
+    //NSLog(@"controller: %@ micro: %@", controller, [controller microGamepad]);
     GCMicroGamepad *micro = [controller microGamepad];
     if (!micro)return;
     
@@ -1177,7 +1177,7 @@
     switch(panGestureRecognizer.state){
         case UIGestureRecognizerStateBegan:
             _touchBeganTime = [[NSDate date] timeIntervalSince1970];
-            NSLog(@"began translation: %.0f velocity: %.0f at interval: %f dpadstate: %lu", translation, velocity, _touchBeganTime, _dPadState);
+            //NSLog(@"began translation: %.0f velocity: %.0f at interval: %f dpadstate: %lu", translation, velocity, _touchBeganTime, _dPadState);
             break;
         
         case UIGestureRecognizerStateChanged:
@@ -1186,13 +1186,13 @@
                 
                 
                 //if (self.avPlayer.rate != 8.0){
-                    NSLog(@"fast forward?");
+                    //NSLog(@"fast forward?");
                 //    self.avPlayer.rate = MIN(self.avPlayer.rate + 8.0, 8.0);
                 //}
                 [self setScrubMode:KBScrubModeFastForward];
             } else if (_dPadState == DPadStateLeft){
                 //if (self.avPlayer.rate != -8.0){
-                    NSLog(@"rewind?");
+                    //NSLog(@"rewind?");
                 [self setScrubMode:KBScrubModeRewind];
                   //  self.avPlayer.rate = MIN(self.avPlayer.rate - 8.0, - 8.0);
                 //}
@@ -1203,15 +1203,14 @@
                 //self.avPlayer.rate = 1.0;
                 //[self.avPlayer play];
             }
-            NSLog(@"changed translation: %.0f velocity: %.0f at interval: %f, dpadstate: %lu", translation, velocity, inBetweenTime, _dPadState);
+            //NSLog(@"changed translation: %.0f velocity: %.0f at interval: %f, dpadstate: %lu", translation, velocity, inBetweenTime, _dPadState);
             break;
             
         case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
             //self.avPlayer.rate = 1.0;
             //[self.avPlayer play];
             inBetweenTime =[[NSDate date] timeIntervalSince1970] - _touchBeganTime;
-            NSLog(@"ended translation: %.0f velocity: %.0f at interval: %f", translation, velocity, inBetweenTime);
+            //NSLog(@"ended translation: %.0f velocity: %.0f at interval: %f", translation, velocity, inBetweenTime);
             break;
             
         default:
@@ -1221,8 +1220,6 @@
 }
 
 - (void)panGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
-    NSLog(@"[Ethereal] [KBSlider] panGestureWasTriggered");
-    NSLog(@"[Ethereal] uie: %lu", self.userInteractionEnabled);
     if (self.sliderMode == KBSliderModeTransport){
         if (![self _isVisible] && self.userInteractionEnabled){
             [self fadeIn];
@@ -1240,6 +1237,7 @@
     CGFloat velocity = [panGestureRecognizer velocityInView:self].x;
     switch(panGestureRecognizer.state){
         case UIGestureRecognizerStateBegan:
+            scrubTimeLabel.alpha = 1;
             [self stopDeceleratingTimer];
             self.isScrubbing = true;
             self.scrubView.hidden = false;
@@ -1269,7 +1267,6 @@
             break;
             
         case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
             if ([self shouldMoveScrubView]) {
                 _scrubViewCenterXConstraintConstant = _scrubViewCenterXConstraint.constant;
             } else {
@@ -1292,7 +1289,6 @@
 
 //with how this recognizer is configured it ONLY gets tap events and not physical presses.
 - (void)tapGestureTriggered:(UITapGestureRecognizer *)tapGestureRecognizer {
-    NSLog(@"[Ethereal] tapGestureTriggered");
     switch (tapGestureRecognizer.state) {
         case UIGestureRecognizerStateEnded:
             [self toggleVisibleTimerLabels];
@@ -1305,11 +1301,16 @@
 - (void)leftTapWasTriggered {
     LOG_SELF;
     if ([self shouldMoveScrubView]) return;
+    [self setScrubMode:KBScrubModeSkippingBackwards];
     CGFloat newValue = [self value]-_stepValue;
     [self setCurrentTime:newValue];
-    [self setValue:newValue animated:true];
     [self fadeInIfNecessary];
-    [self setScrubMode:KBScrubModeSkippingBackwards];
+    CMTime newtime = CMTimeMakeWithSeconds(newValue, 600);
+    [_avPlayer seekToTime:newtime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self setValue:newValue animated:true completion:^{
+        [self setScrubMode:KBScrubModeNone];
+    }];
+    
 }
 
 - (void)fadeInIfNecessary {
@@ -1340,15 +1341,19 @@
 - (void)rightTapWasTriggered {
     LOG_SELF;
     if ([self shouldMoveScrubView]) return;
+    [self setScrubMode:KBScrubModeSkippingForwards];
     CGFloat newValue = [self value]+_stepValue;
     [self setCurrentTime:newValue];
-    [self setValue:newValue animated:true];
     [self fadeInIfNecessary];
-    [self setScrubMode:KBScrubModeSkippingForwards];
+    CMTime newtime = CMTimeMakeWithSeconds(newValue, 600);
+    [_avPlayer seekToTime:newtime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self setValue:newValue animated:true completion:^{
+        [self setScrubMode:KBScrubModeNone];
+    }];
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    LOG_SELF;
+    
     [self fadeInIfNecessary];
     for (UIPress *press in presses){
         switch (press.type) {

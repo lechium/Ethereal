@@ -166,6 +166,7 @@
             }
         }
         [_currentPlayer setMediaURL:[NSURL fileURLWithPath:theFile]];
+        [_currentPlayer setCurrentAsset:currentAsset];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:_currentPlayer.player.currentItem];
         return _currentPlayer;
     } 
@@ -180,6 +181,7 @@
         //}
     }
     [self killIdleSleep];
+    [_currentPlayer setCurrentAsset:currentAsset];
     //PlayerViewController *playerController = [PlayerViewController new];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     _currentPlayer.mediaURL = [NSURL fileURLWithPath:theFile];

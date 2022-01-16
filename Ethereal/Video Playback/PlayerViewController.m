@@ -11,15 +11,31 @@
 #import "KBSlider.h"
 #import "KBVideoPlaybackManager.h"
 #import "KBAVInfoViewController.h"
+#import "SDWebImageManager.h"
 
 @import tvOSAVPlayerTouch;
 
 @interface PlayerViewController () <FFAVPlayerControllerDelegate> {
-    BOOL _showingInfoPanel;
+    BOOL _ffActive;
+    BOOL _rwActive;
+    NSTimer *_rightHoldTimer;
+    NSTimer *_leftHoldTimer;
+    NSTimer *_rewindTimer;
+    NSTimer *_ffTimer;
 }
 @property KBSlider *transportSlider;
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
 @property KBAVInfoViewController *avInfoViewController;
+
+/*
+ @objc var rightHoldTimer = Timer()
+ @objc var leftHoldTimer = Timer()
+ @objc var rewindTimer = Timer()
+ @objc var ffTimer = Timer()
+ @objc var ffActive = false
+ @objc var rwActive = false
+ */
+
 @end
 
 @implementation PlayerViewController {
@@ -28,23 +44,34 @@
     NSURL *_mediaURL;
 }
 
+
+
+- (BOOL)avInfoPanelShowing {
+    return self.avInfoViewController.view.alpha;
+}
+
+- (FFAVPlayerController *)avPlayController {
+    return _avplayController;
+}
+
 - (void)hideAVInfoView {
-    if (!_showingInfoPanel) return;
-    self.transportSlider.userInteractionEnabled = true;
-    self.transportSlider.hidden = false;
-    [_avInfoViewController closeWithCompletion:nil];
-    _showingInfoPanel = false;
+    if (!self.avInfoPanelShowing) return;
+    [_avInfoViewController closeWithCompletion:^{
+        self.transportSlider.userInteractionEnabled = true;
+        self.transportSlider.hidden = false; //likely frivolous
+    }];
 }
 
 - (void)showAVInfoView {
-    if (_showingInfoPanel) return;
+    if (self.avInfoPanelShowing) return;
     if (!_avInfoViewController){
         _avInfoViewController = [KBAVInfoViewController new];
+        [self createAndSetMeta];
     }
+    self.transportSlider.userInteractionEnabled = false;
+    [self.transportSlider hideSliderAnimated:true];
     [_avInfoViewController showFromViewController:self];
-    _showingInfoPanel = true;
 }
-
 - (void)setMediaURL:(NSURL *)mediaURL {
     _mediaURL = mediaURL;
     NSMutableDictionary *options = [NSMutableDictionary new];
@@ -68,6 +95,7 @@
         NSLog(@"[Ethereal] failed to load file");
     }
 }
+
 
 - (NSURL *)mediaURL {
     return _mediaURL;
@@ -130,7 +158,7 @@
 - (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
     NSLog(@"[Ethereal] menu tapped");
     if (gestRecognizer.state == UIGestureRecognizerStateEnded){
-        if (_showingInfoPanel) {
+        if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
         } else {
             [_avplayController pause];
@@ -151,7 +179,7 @@
         _avplayController.delegate = self;
         _avplayController.allowBackgroundPlayback = YES;
         _avplayController.shouldAutoPlay = YES;
-        _avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
+        //_avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
     }
 }
 
@@ -185,12 +213,9 @@
 }
 
 - (void)swipeDown:(UISwipeGestureRecognizer *)gestureRecognizer {
-    self.transportSlider.userInteractionEnabled = false;
     NSLog(@"[Ethereal] swipeDown?");
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
         NSLog(@"[Ethereal] showAVInfoView");
-        self.transportSlider.userInteractionEnabled = false;
-        self.transportSlider.hidden = true;
         [self showAVInfoView];
     }
 }
@@ -208,6 +233,23 @@
     [super viewWillAppear:animated];
     _wasPlaying = false;
     [self createSliderIfNecessary];
+    [self handleSubtitleOptions];
+
+}
+
+- (void)createAndSetMeta {
+    KBMediaAsset *asset = [self currentAsset];
+    if (asset) {
+        KBAVMetaData *meta = [KBAVMetaData new];
+        meta.title = asset.name;
+        meta.duration = _avplayController.duration;
+        meta.image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:asset.name];
+        [_avInfoViewController setMetadata:meta];
+    }
+}
+
+- (void)handleSubtitleOptions {
+    _avplayController.enableBuiltinSubtitleRender = [KBAVInfoViewController areSubtitlesAlwaysOn];
 }
 
 - (void)createSliderIfNecessary {
@@ -251,6 +293,68 @@
     }
 }
 
+- (void)stepVideoBackwards {
+    self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
+    NSTimeInterval newValue = self.transportSlider.value - self.transportSlider.stepValue;
+    [_avplayController seekto:self.transportSlider.value];
+    @weakify(self);
+    [self.transportSlider setValue:newValue animated:true completion:^{
+        self_weak_.transportSlider.scrubMode = KBScrubModeNone;
+    }];
+    
+}
+
+- (void)stepVideoForwards {
+    self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
+    NSTimeInterval newValue = self.transportSlider.value + self.transportSlider.stepValue;
+    [_avplayController seekto:self.transportSlider.value];
+    @weakify(self);
+    [self.transportSlider setValue:newValue animated:true completion:^{
+        self_weak_.transportSlider.scrubMode = KBScrubModeNone;
+    }];
+    
+}
+
+- (void)startFastForwarding {
+    _ffActive = true;
+    self.transportSlider.scrubMode = KBScrubModeFastForward;
+    [_avplayController pause];
+    @weakify(self);
+    _ffTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:true block:^(NSTimer * _Nonnull timer) {
+        NSTimeInterval newValue = self_weak_.transportSlider.value + self_weak_.transportSlider.stepValue;
+        self_weak_.transportSlider.value = newValue;
+        self_weak_.transportSlider.currentTime = newValue;
+    }];
+}
+
+- (void)stopFastForwarding {
+    _ffActive = false;
+    [_ffTimer invalidate];
+    [_avplayController seekto:self.transportSlider.value];
+    [_avplayController setPlaybackSpeed:1.0];
+    [_avplayController resume];
+}
+
+- (void)startRewinding {
+    _rwActive = true;
+    self.transportSlider.scrubMode = KBScrubModeRewind;
+    [_avplayController pause];
+    @weakify(self);
+    _rewindTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:true block:^(NSTimer * _Nonnull timer) {
+        NSTimeInterval newValue = self.transportSlider.value - self.transportSlider.stepValue;
+        self_weak_.transportSlider.value = newValue;
+        self_weak_.transportSlider.currentTime = newValue;
+    }];
+}
+
+- (void)stopRewinding {
+    _rwActive = false;
+    [_rewindTimer invalidate];
+    [_avplayController seekto:self.transportSlider.value];
+    [_avplayController setPlaybackSpeed:1.0];
+    [_avplayController resume];
+}
+
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     for (UIPress *press in presses) {
         switch (press.type){
@@ -258,6 +362,22 @@
                 //[_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
                 break;
                 
+            case UIPressTypeRightArrow: {
+                if (![self avInfoPanelShowing]) {
+                    _rightHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
+                    [self startFastForwarding];
+                    }];
+                }
+            }
+            break;
+                
+            case UIPressTypeLeftArrow: {
+                if (![self avInfoPanelShowing]) {
+                    _leftHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
+                        [self startRewinding];
+                    }];
+                }
+            }
             default:
                 [super pressesBegan:presses withEvent:event];
                 break;
@@ -286,15 +406,42 @@
                     [_avplayController pause];
                 }
                 break;
+            case UIPressTypeLeftArrow:
+                if (![self avInfoPanelShowing]) {
+                    [_leftHoldTimer invalidate];
+                    if (_rwActive) {
+                        self.transportSlider.scrubMode = KBScrubModeNone;
+                        [self stopRewinding];
+                    } else {
+                        [self stepVideoBackwards];
+                    }
+                }
+                break;
+                
+            case UIPressTypeRightArrow:
+                if (![self avInfoPanelShowing]) {
+                    [_rightHoldTimer invalidate];
+                    if (_ffActive) {
+                        self.transportSlider.scrubMode = KBScrubModeNone;
+                        [self stopFastForwarding];
+                    } else {
+                        [self stepVideoForwards];
+                    }
+                }
+                break;
                 
             case UIPressTypeUpArrow:
+                [self hideAVInfoView]; //need to make this one smarter
                 //NSLog(@"[Ethereal] up");
                 //[self upTouch];
+                
                 break;
                 
             case UIPressTypeDownArrow:
+                
                 //NSLog(@"[Ethereal] down");
                 //[self downTouch];
+                [self showAVInfoView];
                 break;
                 
             default:
@@ -401,9 +548,10 @@
             _transportSlider.fadeOutTransport = true;
             [_transportSlider setIsContinuous:false];
             [_transportSlider setTotalDuration:_avplayController.duration];
+            @weakify(self);
             _transportSlider.timeSelectedBlock = ^(CGFloat currentTime) {
-                if (currentTime < _avplayController.duration) {
-                    [_avplayController seekto:currentTime];
+                if (currentTime < self_weak_.avPlayController.duration) {
+                    [self_weak_.avPlayController seekto:currentTime];
                 }
             };
             NSLog(@"setting maximum value to duration: %f",_avplayController.duration);
@@ -418,7 +566,7 @@
 }
 
 - (NSArray *) preferredFocusEnvironments {
-    if (_showingInfoPanel) {
+    if ([self avInfoPanelShowing]) {
         return @[_avInfoViewController.tempTabBar, self.transportSlider];
     }
     return @[self.transportSlider];
