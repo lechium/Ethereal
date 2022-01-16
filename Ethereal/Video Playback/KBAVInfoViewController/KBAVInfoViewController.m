@@ -428,6 +428,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
     [self.view addSubview:_mainStackView];
     [_mainStackView autoCenterInSuperview];
     _posterView = [[UIImageView alloc] initForAutoLayout];
+    _posterView.contentMode = UIViewContentModeScaleAspectFit;
     //[_posterView autoConstrainToSize:CGSizeMake(235, 132)];
     [_posterView.heightAnchor constraintLessThanOrEqualToConstant:235].active = true;
     [_posterView.widthAnchor constraintLessThanOrEqualToConstant:235].active = true;
