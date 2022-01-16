@@ -9,6 +9,7 @@
 #import "KBSlider.h"
 #import <GameController/GameController.h>
 #import "KBSliderImages.h"
+#import "UIView+AL.h"
 
 @interface UIGestureRecognizer (helper)
 
@@ -897,7 +898,29 @@
     _trackView = [UIImageView new];
     _trackView.layer.cornerRadius = _trackViewHeight/2;
     _trackView.backgroundColor = _defaultTrackColor;
-    [self addSubview:_trackView];
+    /*
+    if (self.sliderMode == KBSliderModeTransport){
+        
+        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+        UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
+        UIVisualEffectView *vibrancyEffectView = [[UIVisualEffectView alloc] initWithEffect:vibrancyEffect];
+        [self addSubview:blurView];
+        [blurView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
+        [blurView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+        [blurView.heightAnchor constraintEqualToConstant:_trackViewHeight].active = true;
+        //[blurView autoPinEdgesToSuperviewEdges];
+        [self addSubview:vibrancyEffectView];
+        //[vibrancyEffectView autoPinEdgesToSuperviewEdges];
+        [vibrancyEffectView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
+        [vibrancyEffectView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+        [vibrancyEffectView.heightAnchor constraintEqualToConstant:_trackViewHeight].active = true;
+        [vibrancyEffectView.contentView addSubview:_trackView];
+    } else {
+     */
+        [self addSubview:_trackView];
+    //}
+
 }
 
 - (void)setUpMinimumTrackView {

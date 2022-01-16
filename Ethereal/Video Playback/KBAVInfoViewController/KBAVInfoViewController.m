@@ -16,28 +16,17 @@
 #import "KBTextPresentationViewController.h"
 #import "EXTScope.h"
 #import "KBSliderImages.h"
+#import "PlayerViewController.h"
+#import "KBVideoPlaybackProtocol.h"
 
-typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
-    KBSubtitleTagTypeOff,
-    KBSubtitleTagTypeAuto,
-    KBSubtitleTagTypeOn,
-};
-
-@interface KBAVInfoPanelMediaOption: NSObject {
-    
+@interface KBAVInfoPanelMediaOption() {
     NSString* _displayName;
     NSString* _languageCode;
     AVMediaSelectionOption* _mediaSelectionOption;
     NSInteger _tag;
     BOOL _selected;
 }
-@property (nonatomic,readonly) NSString * displayName;
-@property (nonatomic,readonly) NSString * languageCode;
-@property (nonatomic,readonly) AVMediaSelectionOption * mediaSelectionOption;
-@property (nonatomic,readonly) BOOL selected;
-@property (readonly) KBSubtitleTagType tag;
--(id)initWithLanguageCode:(id)arg1 displayName:(id)arg2 mediaSelectionOption:(id)arg3 tag:(KBSubtitleTagType)tag;
--(void)setIsSelected:(BOOL)selected;
+
 @end
 
 @implementation KBAVInfoPanelMediaOption
@@ -105,7 +94,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
     _mediaSelectionOption = mediaSelectionOption;
 }
 
-- (id)initWithLanguageCode:(id)code displayName:(id)displayName mediaSelectionOption:(id)mediaSelectionOption tag:(KBSubtitleTagType)tag {
+- (id)initWithLanguageCode:(NSString *_Nullable)code displayName:(NSString *)displayName mediaSelectionOption:(AVMediaSelectionOption * _Nullable)mediaSelectionOption tag:(KBSubtitleTagType)tag {
     self = [super init];
     if (self) {
         _displayName = displayName;
@@ -518,6 +507,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
     KBAVMetaData *_metadata;
     __weak AVPlayerItem *_playerItem;
     BOOL _observing;
+    NSArray *_subtitleData;
 }
 @property UIView *visibleView;
 @property UIView *divider;
@@ -534,6 +524,46 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 
 @implementation KBAVInfoViewController
 
+/*
+ `(
+         {
+         "BPS-eng" = 170;
+         "DURATION-eng" = "00:21:34.949000000";
+         "NUMBER_OF_BYTES-eng" = 27675;
+         "NUMBER_OF_FRAMES-eng" = 630;
+         "_STATISTICS_TAGS-eng" = "BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES";
+         "_STATISTICS_WRITING_APP-eng" = "mkvmerge v47.0.0 ('Black Flag') 64-bit";
+         "_STATISTICS_WRITING_DATE_UTC-eng" = "2020-09-28 01:02:14";
+         language = eng;
+     }
+ )
+ */
+
+- (void)setSubtitleData:(NSArray *)subtitleData {
+    //_subtitleData = subtitleData;
+    __block NSMutableArray *_newArray = [NSMutableArray new];
+    [subtitleData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBAVInfoPanelMediaOption *opt = [[KBAVInfoPanelMediaOption alloc] initWithLanguageCode:obj[@"language"] displayName:obj[@"language"] mediaSelectionOption:nil tag:KBSubtitleTagTypeOn];
+        @weakify(self)
+        opt.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
+            //self_weak_.pl
+            PlayerViewController *ffAVP = (PlayerViewController *)[self_weak_ parentViewController];
+            FFAVPlayerController *player = (FFAVPlayerController*)[ffAVP player];
+            if ([player respondsToSelector:@selector(switchSubtitleStream:)]){
+                [player setEnableBuiltinSubtitleRender:true];
+                [player switchSubtitleStream:(int)idx];
+            }
+            
+        };
+        [_newArray addObject:opt];
+    }];
+    _subtitleData = _newArray;
+    //do other stuff
+}
+
+- (NSArray *)subtitleData {
+    return _subtitleData;
+}
 
 - (NSArray *)preferredFocusEnvironments {
     if (self.tempTabBar){
@@ -768,6 +798,25 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
     MACaptionAppearanceDisplayType type = MACaptionAppearanceGetDisplayType(kMACaptionAppearanceDomainUser);
     NSMutableArray *opts = [NSMutableArray new];
     AVAsset *asset = [_playerItem asset];
+    if (!_playerItem) {
+        if (self.subtitleData) {
+            KBAVInfoPanelMediaOption *off = [KBAVInfoPanelMediaOption optionOff];
+            @weakify(self);
+            off.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
+                NSLog(@"[Ethereal] off selected block??");
+                PlayerViewController *ffAVP = (PlayerViewController *)[self_weak_ parentViewController];
+                FFAVPlayerController *player = (FFAVPlayerController*)[ffAVP player];
+                if ([player respondsToSelector:@selector(switchSubtitleStream:)]){
+                    [player setEnableBuiltinSubtitleRender:false];
+                }
+            };
+            [opts addObject:off];
+            [opts addObjectsFromArray:self.subtitleData];
+            return opts;
+        } else {
+            return opts;
+        }
+    }
     [opts addObject:[KBAVInfoPanelMediaOption optionOff]];
     [opts addObject:[KBAVInfoPanelMediaOption optionAuto]];
     AVMediaSelectionGroup *group = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
@@ -863,7 +912,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 }
 
 -(void)viewController:(id)viewController didSelectSubtitleOption:(KBAVInfoPanelMediaOption *)option {
-    if (option.tag == KBSubtitleTagTypeOff) {
+    if (option.tag == KBSubtitleTagTypeOff && option.selectedBlock == nil) {
         MACaptionAppearanceSetDisplayType(kMACaptionAppearanceDomainUser, kMACaptionAppearanceDisplayTypeForcedOnly);
         [self toggleSubtitles:false];
         [_subtitleViewController setSelectedSubtitleOptionIndex:0];
@@ -875,6 +924,8 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
         MACaptionAppearanceSetDisplayType(kMACaptionAppearanceDomainUser, kMACaptionAppearanceDisplayTypeAlwaysOn);
         [_subtitleViewController setSelectedSubtitleOptionIndex:2];
         [self toggleSubtitles:true];
+    } else if (option.selectedBlock != nil) {
+        option.selectedBlock(option);
     }
     [self closeWithCompletion:nil];
 }

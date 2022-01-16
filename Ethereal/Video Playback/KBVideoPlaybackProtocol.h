@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)play;
 - (void)pause;
 - (id)currentItem;
-
+@optional
+- (void)switchSubtitleStream:(int)index;
 @end
 
 @protocol KBVideoPlaybackProtocol <NSObject>
