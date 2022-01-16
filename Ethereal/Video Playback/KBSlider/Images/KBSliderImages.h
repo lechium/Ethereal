@@ -7,5 +7,7 @@
 + (UIImage *)skipForwardsImage;
 + (UIImage *)skipBackwardsImage;
 + (UIImage *)checkmarkImage;
++ (UIImage *)HDImage;
++ (UIImage *)CCImage;
 
 @end

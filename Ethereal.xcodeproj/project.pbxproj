@@ -77,6 +77,7 @@
 		32E0A7FE2793A36A006FB9B0 /* NSString+Truncate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A7F32793A36A006FB9B0 /* NSString+Truncate.m */; };
 		32E0A7FF2793A36A006FB9B0 /* KBMoreButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A7F42793A36A006FB9B0 /* KBMoreButton.m */; };
 		32E0A8002793A36A006FB9B0 /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A7F72793A36A006FB9B0 /* KBTextPresentationViewController.m */; };
+		32E0A8062794C242006FB9B0 /* AVAsset+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A8052794C242006FB9B0 /* AVAsset+Extras.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -226,6 +227,8 @@
 		32E0A7F72793A36A006FB9B0 /* KBTextPresentationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBTextPresentationViewController.m; sourceTree = "<group>"; };
 		32E0A7F82793A36A006FB9B0 /* KBTextPresentationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBTextPresentationViewController.h; sourceTree = "<group>"; };
 		32E0A8032793A6F5006FB9B0 /* checkmark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = checkmark.h; sourceTree = "<group>"; };
+		32E0A8042794C242006FB9B0 /* AVAsset+Extras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVAsset+Extras.h"; sourceTree = "<group>"; };
+		32E0A8052794C242006FB9B0 /* AVAsset+Extras.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AVAsset+Extras.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -522,6 +525,8 @@
 				32E0A7ED2793A36A006FB9B0 /* UIView+AL.h */,
 				32E0A7EE2793A36A006FB9B0 /* UIView+AL.m */,
 				32E0A7EF2793A36A006FB9B0 /* UIStackView+Helper.h */,
+				32E0A8042794C242006FB9B0 /* AVAsset+Extras.h */,
+				32E0A8052794C242006FB9B0 /* AVAsset+Extras.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -648,6 +653,7 @@
 				32E0A7FA2793A36A006FB9B0 /* KBSliderImages.m in Sources */,
 				327D401123265A78000EC3C1 /* MetadataPreviewView.m in Sources */,
 				327D404723265AEB000EC3C1 /* SDWebImagePrefetcher.m in Sources */,
+				32E0A8062794C242006FB9B0 /* AVAsset+Extras.m in Sources */,
 				327D403E23265AEB000EC3C1 /* MKAnnotationView+WebCache.m in Sources */,
 				32E0A7F92793A36A006FB9B0 /* KBSlider.m in Sources */,
 				32DFF9A726F4985B004071B3 /* KBMediaAsset.m in Sources */,

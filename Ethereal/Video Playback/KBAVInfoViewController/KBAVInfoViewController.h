@@ -42,6 +42,8 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 @property (readwrite, assign) NSInteger duration;
 @property (nonatomic) NSURL *imageURL;
 @property (nonatomic) UIImage *image;
+@property (readwrite, assign) BOOL isHD;
+@property (readwrite, assign) BOOL hasCC;
 @end
 
 @interface KBAVInfoViewController : UIViewController <UITabBarDelegate>
@@ -49,7 +51,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 @property UITabBar *tempTabBar;
 @property (nonatomic, weak) AVPlayerItem *playerItem;
 @property (nonatomic, weak) id <KBAVInfoViewControllerDelegate> delegate;
-
+- (BOOL)isHD;
 - (NSArray *)subtitleData;
 - (void)setSubtitleData:(NSArray *)subtitleData;
 + (NSDateComponentsFormatter *)sharedTimeFormatter;

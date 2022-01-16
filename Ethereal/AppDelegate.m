@@ -86,7 +86,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
+    NSLog(@"[Ethereal] AVMediaTypeClosedCaption: %@", AVMediaTypeClosedCaption);//clcp
     InternalLicense *shared = [InternalLicense sharedInstance];
     [shared setIsDemoVersion:false];
     [shared setExpiredDate:[NSDate distantFuture]];

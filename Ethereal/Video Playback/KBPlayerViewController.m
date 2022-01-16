@@ -23,11 +23,16 @@
     return _mediaURL;
 }
 
-- (void)setMediaURL:(NSURL *)mediaURL {
+- (BOOL)setMediaURL:(NSURL *)mediaURL {
     _mediaURL = mediaURL;
     AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:mediaURL];
+    if (![[singleItem asset] isPlayable]){
+        NSLog(@"[Ethereal] this is not playable!!");
+        return false;
+    }
     self.player = [KBQueuePlayer playerWithPlayerItem:singleItem];
     [self.player play];
+    return true;
 }
 
 - (void)viewDidLoad {

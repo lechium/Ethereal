@@ -239,14 +239,21 @@
     [self handleSubtitleOptions];
 
 }
-
+//- (CGSize)videoFrameSize
 - (void)createAndSetMeta {
+    CGSize frameSize = [_avplayController videoFrameSize];
     KBMediaAsset *asset = [self currentAsset];
     if (!_avInfoViewController) if (!_avInfoViewController){
         _avInfoViewController = [KBAVInfoViewController new];
     }
     if (asset) {
+        NSLog(@"[Ethereal] frameSize: %@", NSStringFromCGSize(frameSize));
+       
         KBAVMetaData *meta = [KBAVMetaData new];
+        if (frameSize.width >= 1280){
+            NSLog(@"[Ethereal] IS HD!");
+            meta.isHD = true;
+        }
         meta.title = asset.name;
         meta.duration = _avplayController.duration;
         meta.image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:asset.name];

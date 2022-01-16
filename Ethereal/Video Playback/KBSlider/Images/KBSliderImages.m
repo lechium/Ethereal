@@ -3,6 +3,8 @@
 #import "gobackward.h"
 #import "goforward.h"
 #import "checkmark.h"
+#import "hd.h"
+#import "cc.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "KBSliderImages.h"
@@ -32,5 +34,11 @@
 }
 + (UIImage *)checkmarkImage {
     return SliderImageTemplate(checkmark_png);
+}
++ (UIImage *)HDImage {
+    return SliderImageTemplate(HD_png);
+}
++ (UIImage *)CCImage {
+    return SliderImageTemplate(CC_png);
 }
 @end

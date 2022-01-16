@@ -533,6 +533,10 @@
 #define TOP_PADDING 60.0
 #define SIDE_PADDING 90.0
 
+/*
+ cy# [player audioTracks]
+ @[@{"handler_name":"English","creation_time":"2016-06-05T06:37:30.000000Z","language":"eng"},@{"handler_name":"English","creation_time":"2016-06-05T06:37:30.000000Z","language":"eng"}]
+ */
 
 @implementation KBAVInfoViewController
 
@@ -888,6 +892,19 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     DLog(@"desc view: %@", _descriptionViewController.contentView);
+}
+
+- (BOOL)isHD {
+    if (_playerItem){
+        AVAsset *asset = [_playerItem asset];
+        AVAssetTrack *track = [[asset tracksWithMediaCharacteristic:AVMediaCharacteristicVisual] firstObject];
+        CGSize trackSize = [track naturalSize];
+        return trackSize.width >= 1280;
+    }
+    if (_metadata){
+        return _metadata.isHD;
+    }
+    return false;
 }
 
 - (BOOL)hasClosedCaptions {
