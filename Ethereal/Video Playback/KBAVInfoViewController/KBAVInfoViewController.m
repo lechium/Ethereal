@@ -659,6 +659,22 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
     }
 }
 
+- (void)showView:(UIView *)view withHeight:(CGFloat)height animated:(BOOL)animated {
+    if (!animated){
+        view.alpha = 1.0;
+        self->_heightConstraint.constant = height;
+        [self.view layoutIfNeeded];
+        return;
+    }
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self->_heightConstraint.constant = height;
+        view.alpha = 1.0;
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        
+    }];
+}
+
 - (void)changeHeight:(CGFloat)height animated:(BOOL)animated {
     if (!animated){
             self->_heightConstraint.constant = height;
@@ -727,16 +743,18 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 - (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
     switch(item.tag) {
         case 0: //info
-            self.descriptionViewController.view.alpha = 1;
+            //self.descriptionViewController.view.alpha = 1;
             self.subtitleViewController.view.alpha = 0;
             self.subtitleViewController.view.userInteractionEnabled = false;
-            [self changeHeight:430 animated:true];
+            [self showView:self.descriptionViewController.view withHeight:430 animated:true];
+            //[self changeHeight:430 animated:true];
             break;
         case 1: //subs
             self.descriptionViewController.view.alpha = 0;
-            self.subtitleViewController.view.alpha = 1;
+            //self.subtitleViewController.view.alpha = 1;
             self.subtitleViewController.view.userInteractionEnabled = true;
-            [self changeHeight:200 animated:true];
+            [self showView:self.subtitleViewController.view withHeight:200 animated:true];
+            //[self changeHeight:200 animated:true];
             break;
     }
 }
@@ -865,6 +883,11 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
     
 }
 
+- (BOOL)shouldDismissView {
+    UIFocusSystem *fs = [UIFocusSystem focusSystemForEnvironment:self];
+    Class cls = NSClassFromString(@"UITabBarButton"); //FIXME: this could get flagged
+    return [[fs focusedItem] isKindOfClass:cls];
+}
 
 //TODO: add a 30 second timer to dismiss the view if it has been inactive, the harder part is judging inactivity with all the varying gesture recognizers across all the different involved classes.
 

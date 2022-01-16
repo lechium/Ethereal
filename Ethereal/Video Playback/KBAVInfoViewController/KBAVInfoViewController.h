@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)closeWithCompletion:(void(^_Nullable)(void))block;
 - (void)setMetadata:(KBAVMetaData *)metadata;
 + (BOOL)areSubtitlesAlwaysOn;
+- (BOOL)shouldDismissView;
 @end
 
 NS_ASSUME_NONNULL_END
