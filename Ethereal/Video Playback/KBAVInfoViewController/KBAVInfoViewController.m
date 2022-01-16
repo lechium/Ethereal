@@ -223,6 +223,7 @@
     UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal; //CGRectMake(0, 0, 659, 35)
     layout.itemSize = CGSizeMake(80,35);
+    layout.minimumLineSpacing = 80;
     UICollectionView *cl = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     cl.translatesAutoresizingMaskIntoConstraints = false;
     self.widthConstraint = [cl.widthAnchor constraintEqualToConstant:470];
@@ -241,8 +242,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
-    self.widthConstraint.constant = (_mediaOptions.count + 1) * layout.itemSize.width;
+    //UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+    //self.widthConstraint.constant = (_mediaOptions.count + 1) * layout.itemSize.width;
 }
 
 -  (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -259,6 +260,10 @@
 
 - (void)setMediaOptions:(NSArray <KBAVInfoPanelMediaOption *>*)mediaOptions {
     _mediaOptions = mediaOptions;
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+    CGFloat newConst = (_mediaOptions.count + 2) * layout.itemSize.width;
+    NSLog(@"[Ethereal] newconst: %f count: %lu width: %f", newConst, (_mediaOptions.count + 2), layout.itemSize.width);
+    self.widthConstraint.constant = (_mediaOptions.count + 2) * layout.itemSize.width;
     [self.collectionView reloadData];
 }
 
