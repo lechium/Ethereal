@@ -197,7 +197,7 @@
 @property (nonatomic,retain) NSArray <KBAVInfoPanelMediaOption *>* mediaOptions;
 @property (assign,nonatomic) long long selectedMediaOptionIndex;
 @property (weak, nonatomic) id <KBAVInfoPanelMediaOptionSelectionDelegate>selectionDelegate;
-
+@property (nonatomic, strong) NSLayoutConstraint *widthConstraint;
 -(id)mediaOptionAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
@@ -225,7 +225,8 @@
     layout.itemSize = CGSizeMake(80,35);
     UICollectionView *cl = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     cl.translatesAutoresizingMaskIntoConstraints = false;
-    [cl.widthAnchor constraintEqualToConstant:470].active = true;
+    self.widthConstraint = [cl.widthAnchor constraintEqualToConstant:470];
+    self.widthConstraint.active = true;
     [cl.heightAnchor constraintEqualToConstant:35].active = true;
     self.collectionView = cl;
     self.collectionView.delegate = self;
@@ -236,6 +237,12 @@
     [super viewDidLoad];
     [self.collectionView registerClass:KBAVInfoPanelCollectionViewTextCell.class forCellWithReuseIdentifier:@"cell"];
     [self.collectionView autoCenterHorizontallyInSuperview];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+    self.widthConstraint.constant = (_mediaOptions.count + 1) * layout.itemSize.width;
 }
 
 -  (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
