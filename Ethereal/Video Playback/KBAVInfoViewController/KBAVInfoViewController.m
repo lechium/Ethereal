@@ -387,7 +387,10 @@
     UILabel* _titleLabel;
     UILabel* _subtitleLabel;
     UILabel* _durationLabel;
+    UILabel* _genreLabel;
+    UILabel* _yearLabel;
     UIImageView* _videoResolutionBadge;
+    UIImageView* _ccBadge;
     NSLayoutConstraint* _posterViewWidthConstraint;
     NSLayoutConstraint* _posterViewHeightConstraint;
     BOOL _closedCaptioned;
@@ -439,7 +442,13 @@
     _detailsStackView.distribution = UIStackViewDistributionEqualSpacing;
     _detailsStackView.spacing = 8;
     _detailsStackView.alignment = UIStackViewAlignmentTop; //1
-    [_detailsStackView setArrangedViews:@[_titleLabel,_subtitleLabel,_durationLabel,_summaryView]];
+    UIStackView *middleStack = [[UIStackView alloc] initForAutoLayout];
+    middleStack.axis = UILayoutConstraintAxisHorizontal;
+    middleStack.distribution = UIStackViewDistributionEqualSpacing;
+    middleStack.spacing = 10;
+    //duration | genre | year | HD | CC
+    [middleStack setArrangedViews:@[_durationLabel, _genreLabel, _yearLabel, _videoResolutionBadge, _ccBadge]];
+    [_detailsStackView setArrangedViews:@[_titleLabel,_subtitleLabel,middleStack,_summaryView]];
     [_mainStackView setArrangedViews:@[_posterView,_detailsStackView]];
     [self populateTitles];
     _contentView = _mainStackView;
@@ -454,7 +463,10 @@
     _titleLabel.text = _metadata.title;
     _subtitleLabel.text = _metadata.subtitle;
     _summaryView.text = _metadata.summary;
-   
+    _videoResolutionBadge.alpha = _metadata.isHD;
+    _ccBadge.alpha = _metadata.hasCC;
+    _genreLabel.text = _metadata.genre;
+    _yearLabel.text = _metadata.year;
     _durationLabel.text = [self durationFormatted];
     if (_metadata.image) {
         _posterView.image = _metadata.image;
@@ -479,6 +491,22 @@
     _durationLabel = [[UILabel alloc] initForAutoLayout];
     _durationLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _durationLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+    _yearLabel = [[UILabel alloc] initForAutoLayout];
+    _yearLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _yearLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+    _genreLabel = [[UILabel alloc] initForAutoLayout];
+    _genreLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _genreLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+    _videoResolutionBadge = [[UIImageView alloc] initForAutoLayout];
+    _videoResolutionBadge.contentMode = UIViewContentModeScaleAspectFit;
+    [_videoResolutionBadge autoConstrainToSize:CGSizeMake(38, 22)];
+    _videoResolutionBadge.alpha = 0;
+    _videoResolutionBadge.image = [KBSliderImages HDImage];
+    _ccBadge = [[UIImageView alloc] initForAutoLayout];
+    _ccBadge.contentMode = UIViewContentModeScaleAspectFit;
+    [_ccBadge autoConstrainToSize:CGSizeMake(38, 22)];
+    _ccBadge.alpha = 0;
+    _ccBadge.image = [KBSliderImages CCImage];
     _summaryView = [[KBMoreButton alloc] initForAutoLayout];
     _summaryView.labelMargin = 0.0;
     _summaryView.trailingTextFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];

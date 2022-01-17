@@ -42,6 +42,8 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 @property (readwrite, assign) NSInteger duration;
 @property (nonatomic) NSURL *imageURL;
 @property (nonatomic) UIImage *image;
+@property (nonatomic) NSString *genre;
+@property (nonatomic) NSString *year;
 @property (readwrite, assign) BOOL isHD;
 @property (readwrite, assign) BOOL hasCC;
 @end
