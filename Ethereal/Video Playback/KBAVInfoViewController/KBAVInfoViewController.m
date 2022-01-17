@@ -446,8 +446,8 @@
     middleStack.axis = UILayoutConstraintAxisHorizontal;
     middleStack.distribution = UIStackViewDistributionEqualSpacing;
     middleStack.spacing = 10;
-    //duration | genre | year | HD | CC
-    [middleStack setArrangedViews:@[_durationLabel, _genreLabel, _yearLabel, _videoResolutionBadge, _ccBadge]];
+    //duration | genre | year | CC | HD
+    [middleStack setArrangedViews:@[_durationLabel, _genreLabel, _yearLabel, _ccBadge, _videoResolutionBadge]];
     [_detailsStackView setArrangedViews:@[_titleLabel,_subtitleLabel,middleStack,_summaryView]];
     [_mainStackView setArrangedViews:@[_posterView,_detailsStackView]];
     [self populateTitles];
