@@ -28,6 +28,7 @@
     AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:mediaURL];
     if (![[singleItem asset] isPlayable]){
         NSLog(@"[Ethereal] this is not playable!!");
+        singleItem = nil;
         return false;
     }
     self.player = [KBQueuePlayer playerWithPlayerItem:singleItem];

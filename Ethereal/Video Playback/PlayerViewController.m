@@ -110,12 +110,12 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-   NSLog(@"[Ethereal] gestureRecognizerShouldBegin: %@", gestureRecognizer);
+    //NSLog(@"[Ethereal] gestureRecognizerShouldBegin: %@", gestureRecognizer);
     return true;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-   NSLog(@"[Ethereal] %@ shouldRecognizeSimultaneouslyWithGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+    //NSLog(@"[Ethereal] %@ shouldRecognizeSimultaneouslyWithGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     if ([gestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class] && [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
         //return FALSE;
     }
@@ -123,34 +123,34 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-   NSLog(@"[Ethereal] shouldRequireFailureOfGestureRecognizer: %@", gestureRecognizer);
+    //NSLog(@"[Ethereal] shouldRequireFailureOfGestureRecognizer: %@", gestureRecognizer);
     if ([gestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class] && [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
-        NSLog(@"[Ethereal], fail");
+        //NSLog(@"[Ethereal], fail");
         //return TRUE;
     }
     return FALSE;
 }
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
-   NSLog(@"[Ethereal] %@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+    //NSLog(@"[Ethereal] %@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     return FALSE;
 }
 
 // called before touchesBegan:withEvent: is called on the gesture recognizer for a new touch. return NO to prevent the gesture recognizer from seeing this touch
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-   NSLog(@"[Ethereal] shouldReceiveTouch: %@", gestureRecognizer);
+    //NSLog(@"[Ethereal] shouldReceiveTouch: %@", gestureRecognizer);
     return TRUE;
 }
 
 // called before pressesBegan:withEvent: is called on the gesture recognizer for a new press. return NO to prevent the gesture recognizer from seeing this press
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
-   NSLog(@"[Ethereal] shouldReceivePress: %@", gestureRecognizer);
+    //NSLog(@"[Ethereal] shouldReceivePress: %@", gestureRecognizer);
     return TRUE;
 }
 
 // called once before either -gestureRecognizer:shouldReceiveTouch: or -gestureRecognizer:shouldReceivePress:
 // return NO to prevent the gesture recognizer from seeing this event
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event {
-   NSLog(@"[Ethereal] shouldReceiveEvent: %@", gestureRecognizer);
+    //NSLog(@"[Ethereal] shouldReceiveEvent: %@", gestureRecognizer);
     return TRUE;
 }
 
@@ -207,7 +207,6 @@
     if (![self.avInfoViewController shouldDismissView]){
         return;
     }
-    NSLog(@"[Ethereal] swipeUp?");
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
         [self hideAVInfoView];
         self.transportSlider.hidden = false;
@@ -216,9 +215,7 @@
 }
 
 - (void)swipeDown:(UISwipeGestureRecognizer *)gestureRecognizer {
-    NSLog(@"[Ethereal] swipeDown?");
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"[Ethereal] showAVInfoView");
         [self showAVInfoView];
     }
 }
@@ -237,7 +234,7 @@
     _wasPlaying = false;
     [self createSliderIfNecessary];
     [self handleSubtitleOptions];
-
+    
 }
 //- (CGSize)videoFrameSize
 - (void)createAndSetMeta {
@@ -247,11 +244,8 @@
         _avInfoViewController = [KBAVInfoViewController new];
     }
     if (asset) {
-        NSLog(@"[Ethereal] frameSize: %@", NSStringFromCGSize(frameSize));
-       
         KBAVMetaData *meta = [KBAVMetaData new];
         if (frameSize.width >= 1280){
-            NSLog(@"[Ethereal] IS HD!");
             meta.isHD = true;
         }
         meta.title = asset.name;
@@ -259,7 +253,7 @@
         meta.image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:asset.name];
         [_avInfoViewController setMetadata:meta];
     }
-        [_avInfoViewController setSubtitleData:_avplayController.subtitleTracks];
+    [_avInfoViewController setSubtitleData:_avplayController.subtitleTracks];
 }
 
 - (void)handleSubtitleOptions {
@@ -269,7 +263,7 @@
 - (void)createSliderIfNecessary {
     if (!_transportSlider) {
         _transportSlider = [[KBSlider alloc] initWithFrame:CGRectMake(100, 950, 1700, 55)];
-       [_transportSlider addTarget:self action:@selector(sliderMoved:) forControlEvents:UIControlEventValueChanged];
+        [_transportSlider addTarget:self action:@selector(sliderMoved:) forControlEvents:UIControlEventValueChanged];
     }
 }
 
@@ -379,11 +373,11 @@
             case UIPressTypeRightArrow: {
                 if (![self avInfoPanelShowing]) {
                     _rightHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
-                    [self startFastForwarding];
+                        [self startFastForwarding];
                     }];
                 }
             }
-            break;
+                break;
                 
             case UIPressTypeLeftArrow: {
                 if (![self avInfoPanelShowing]) {
@@ -448,15 +442,11 @@
                 if ([self.avInfoViewController shouldDismissView]){
                     [self hideAVInfoView]; //need to make this one smarter
                 }
-                //NSLog(@"[Ethereal] up");
-                //[self upTouch];
                 
                 break;
                 
             case UIPressTypeDownArrow:
                 
-                //NSLog(@"[Ethereal] down");
-                //[self downTouch];
                 [self showAVInfoView];
                 break;
                 
@@ -478,9 +468,9 @@
 
 - (void)downTouch {
     /*
-    if (_avplayController.playbackSpeed > 0.5) {
-        [_avplayController setPlaybackSpeed:_avplayController.playbackSpeed-0.25];
-    }*/
+     if (_avplayController.playbackSpeed > 0.5) {
+     [_avplayController setPlaybackSpeed:_avplayController.playbackSpeed-0.25];
+     }*/
     //NSLog(@"[Ethereal] go to end");
     [_avplayController seekto:_avplayController.duration];
     //_avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
@@ -636,12 +626,12 @@
 
 - (void)FFAVPlayerControllerDidBufferingProgressChange:(FFAVPlayerController *)controller progress:(double)progress {
     // Log the buffering progress info
-      //NSLog(@"[Ethereal] >>> BUFFERING : %.3f%%", progress);
+    //NSLog(@"[Ethereal] >>> BUFFERING : %.3f%%", progress);
 }
 
 - (void)FFAVPlayerControllerDidBitrateChange:(FFAVPlayerController *)controller bitrate:(NSInteger)bitrate {
     // Log the bitrate info
-      //NSLog(@"[Ethereal] bitrate : %ld Kbits/s", bitrate);
+    //NSLog(@"[Ethereal] bitrate : %ld Kbits/s", bitrate);
 }
 
 @end
