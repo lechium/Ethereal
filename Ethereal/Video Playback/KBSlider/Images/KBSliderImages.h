@@ -9,5 +9,6 @@
 + (UIImage *)checkmarkImage;
 + (UIImage *)HDImage;
 + (UIImage *)CCImage;
-
++ (UIImage *)audioImage;
++ (UIImage *)captionsImage;
 @end

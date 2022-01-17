@@ -5,6 +5,8 @@
 #import "checkmark.h"
 #import "hd.h"
 #import "cc.h"
+#import "audio.h"
+#import "captions.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "KBSliderImages.h"
@@ -40,5 +42,11 @@
 }
 + (UIImage *)CCImage {
     return SliderImageTemplate(CC_png);
+}
++ (UIImage *)audioImage {
+    return SliderImageTemplate(audio_png);
+}
++ (UIImage *)captionsImage {
+    return SliderImageTemplate(captions_png);
 }
 @end
