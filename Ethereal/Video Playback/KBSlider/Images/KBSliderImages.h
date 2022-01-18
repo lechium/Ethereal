@@ -11,4 +11,6 @@
 + (UIImage *)CCImage;
 + (UIImage *)audioImage;
 + (UIImage *)captionsImage;
++ (UIImage *)appletvImage;
++ (UIImage *)tvHifiImage;
 @end

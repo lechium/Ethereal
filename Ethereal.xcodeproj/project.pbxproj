@@ -233,6 +233,8 @@
 		32E0A80E27954D5D006FB9B0 /* audio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = audio.h; sourceTree = "<group>"; };
 		32E0A80F27954D5D006FB9B0 /* goforward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = goforward.h; sourceTree = "<group>"; };
 		32E0A81027954E43006FB9B0 /* captions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = captions.h; sourceTree = "<group>"; };
+		32E2A55027970455001CB1AA /* appletv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = appletv.h; sourceTree = "<group>"; };
+		32E2A55127970455001CB1AA /* tvhifi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tvhifi.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -501,6 +503,8 @@
 		32E0A7E12793A36A006FB9B0 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				32E2A55027970455001CB1AA /* appletv.h */,
+				32E2A55127970455001CB1AA /* tvhifi.h */,
 				32E0A81027954E43006FB9B0 /* captions.h */,
 				32E0A80E27954D5D006FB9B0 /* audio.h */,
 				32E0A80827954D5D006FB9B0 /* backward.h */,

@@ -95,7 +95,11 @@
     [[SDImageCache sharedImageCache] cleanDisk];
     [[SDImageCache sharedImageCache] clearMemory];
     */
-
+    AVAudioSession *sesh = [AVAudioSession sharedInstance];
+    [sesh setCategory:AVAudioSessionCategoryPlayback error:nil];
+    AVAudioSessionRouteDescription *d = [sesh currentRoute];
+    
+    NSLog(@"[Ethereal] routes: %@", d.outputs);
     return YES;
 }
 
