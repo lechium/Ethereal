@@ -19,6 +19,129 @@
 #import "PlayerViewController.h"
 #import "KBVideoPlaybackProtocol.h"
 
+@interface KBButton() {
+    KBButtonType _buttonType;
+    BOOL _selected;
+    UIView *_selectedView;
+}
+
+@end
+
+@implementation KBButton
+
+- (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    [super pressesEnded:presses withEvent:event];
+    //DLog(@"subtype: %lu type: %lu", event.subtype, event.type);
+    UIPress *first = [presses.allObjects firstObject];
+    if (first.type == UIPressTypeSelect){
+        [self sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
+    }
+}
+
+- (void)setTitle:(nullable NSString *)title forState:(UIControlState)state {
+    _titleLabel.text = title;
+}
+
+- (BOOL)isEnabled {
+    return true;
+}
+
+- (BOOL)canBecomeFirstResponder {
+    return true;
+}
+
+- (BOOL)canFocus {
+    return true;
+}
+
+- (BOOL)canBecomeFocused {
+    return true;
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+    [coordinator addCoordinatedAnimations:^{
+        
+        if (self.isFocused) {
+            if (self.focusChanged){
+                self.focusChanged(true);
+            }
+            [self setSelected:true];
+        } else {
+            if (self.focusChanged){
+                self.focusChanged(false);
+            }
+            [self setSelected:false];
+        }
+        
+    } completion:^{
+        
+    }];
+    
+}
+
+
++(instancetype)buttonWithType:(KBButtonType)buttonType {
+    KBButton *button = [[KBButton alloc] init];
+    if (buttonType == KBButtonTypeText){
+        [button _setupLabelView];
+    } else if (buttonType == KBButtonTypeImage) {
+        [button _setupImageView];
+    }
+    return button;
+}
+
+- (void)_setupSelectedView {
+    _selectedView = [[UIView alloc] initForAutoLayout];
+    [self addSubview:_selectedView];
+    [_selectedView autoPinEdgesToSuperviewEdges];
+    _selectedView.alpha = 0;
+    _selectedView.backgroundColor = [UIColor darkGrayColor];
+}
+
+- (void)_setupLabelView {
+    [self _setupSelectedView];
+    _titleLabel = [[UILabel alloc] initForAutoLayout];
+    [self addSubview:_titleLabel];
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    [_titleLabel autoCenterInSuperview];
+    [_titleLabel.widthAnchor constraintEqualToAnchor:self.widthAnchor multiplier:0.8].active = true;
+    [_titleLabel.heightAnchor constraintEqualToAnchor:self.heightAnchor multiplier:0.8].active = true;
+    _selectedView.layer.cornerRadius = 20;
+}
+
+- (void)_setupImageView {
+    [self _setupSelectedView];
+    _buttonImageView = [[UIImageView alloc] initForAutoLayout];
+    [self addSubview:_buttonImageView];
+    _buttonImageView.contentMode = UIViewContentModeScaleAspectFit;
+    [_buttonImageView autoCenterInSuperview];
+    [_buttonImageView.widthAnchor constraintEqualToAnchor:self.widthAnchor multiplier:0.6].active = true;
+    [_buttonImageView.heightAnchor constraintEqualToAnchor:self.heightAnchor multiplier:0.6].active = true;
+}
+
+- (void)setSelected:(BOOL)selected {
+    _selected = selected;
+    if (selected){
+        _selectedView.alpha = 1.0;
+    } else {
+        _selectedView.alpha = 0;
+    }
+}
+
+- (BOOL)selected {
+    return _selected;
+}
+
+- (void)setButtonType:(KBButtonType)buttonType {
+    _buttonType = buttonType;
+}
+
+- (KBButtonType)buttonType {
+    return _buttonType;
+}
+
+@end
+
 @interface KBAVInfoPanelMediaOption() {
     NSString* _displayName;
     NSString* _languageCode;
@@ -261,9 +384,9 @@
 - (void)setMediaOptions:(NSArray <KBAVInfoPanelMediaOption *>*)mediaOptions {
     _mediaOptions = mediaOptions;
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
-    CGFloat newConst = (_mediaOptions.count + 2) * layout.itemSize.width;
-    NSLog(@"[Ethereal] newconst: %f count: %lu width: %f", newConst, (_mediaOptions.count + 2), layout.itemSize.width);
-    self.widthConstraint.constant = (_mediaOptions.count + 2) * layout.itemSize.width;
+    CGFloat newConst = (_mediaOptions.count + 2) * layout.itemSize.width + 70; //70 is just extra padding
+    DLog(@"newconst: %f count: %lu width: %f", newConst, (_mediaOptions.count + 2), layout.itemSize.width);
+    self.widthConstraint.constant = newConst;
     [self.collectionView reloadData];
 }
 
@@ -409,6 +532,7 @@
 @property (assign,nonatomic) long long audioFormat;
 @property (nonatomic,readonly) BOOL hasContent;
 @property (nonatomic) KBMoreButton *summaryView;
+@property (readwrite,assign) KBAVInfoStyle infoStyle;
 - (UIImageView *)posterView;
 @end
 
@@ -416,6 +540,15 @@
 
 - (UIImageView *)posterView {
     return _posterView;
+}
+
+- (void)didMoveToParentViewController:(UIViewController *)parent {
+    [super didMoveToParentViewController:parent];
+    [_posterView.heightAnchor constraintEqualToConstant:_mainStackView.frame.size.height *.08].active = true;
+}
+
+- (void)updateViewConstraints {
+    [super updateViewConstraints];
 }
 
 - (BOOL)hasContent {
@@ -434,8 +567,12 @@
     _posterView = [[UIImageView alloc] initForAutoLayout];
     _posterView.contentMode = UIViewContentModeScaleAspectFit;
     //[_posterView autoConstrainToSize:CGSizeMake(235, 132)];
-    [_posterView.heightAnchor constraintLessThanOrEqualToConstant:235].active = true;
-    [_posterView.widthAnchor constraintLessThanOrEqualToConstant:235].active = true;
+    //used to be 235x235
+    _posterViewHeightConstraint = [_posterView.heightAnchor constraintLessThanOrEqualToConstant:230];
+    _posterViewHeightConstraint.active = true;
+    _posterViewWidthConstraint = [_posterView.widthAnchor constraintLessThanOrEqualToConstant:409];
+    _posterViewWidthConstraint.active = true;
+    //_posterView.backgroundColor = [UIColor redColor];
     [self setupLabels];
     _detailsStackView = [[UIStackView alloc] initForAutoLayout];
     _detailsStackView.axis = UILayoutConstraintAxisVertical;
@@ -448,9 +585,10 @@
     middleStack.spacing = 10;
     //duration | genre | year | CC | HD
     [middleStack setArrangedViews:@[_durationLabel, _genreLabel, _yearLabel, _ccBadge, _videoResolutionBadge]];
-    [_detailsStackView setArrangedViews:@[_titleLabel,_subtitleLabel,middleStack,_summaryView]];
+    [_detailsStackView setArrangedViews:@[_titleLabel,_subtitleLabel,_summaryView, middleStack]];
     [_mainStackView setArrangedViews:@[_posterView,_detailsStackView]];
     [self populateTitles];
+    //[_mainStackView.widthAnchor constraintEqualToConstant:835].active = true;
     _contentView = _mainStackView;
     
 }
@@ -471,6 +609,7 @@
     if (_metadata.image) {
         _posterView.image = _metadata.image;
     } else {
+        DLog(@"imageURL %@:", _metadata.imageURL);
         [_posterView sd_setImageWithURL:_metadata.imageURL
                      placeholderImage:[UIImage imageNamed:@"video-icon"]];
     }
@@ -513,7 +652,7 @@
     _summaryView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _summaryView.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     _summaryView.trailingTextColor = [UIColor colorWithWhite:1.0 alpha:0.5];
-    [_summaryView autoConstrainToSize:CGSizeMake(1113, 154)];
+    [_summaryView autoConstrainToSize:CGSizeMake(1113, 100)]; //used to be 154
     _summaryView.focusedScaleFactor = 1.0;
     _summaryView.cornerRadius = 0.0;
     @weakify(self);
@@ -524,7 +663,25 @@
     _summaryView.focusableUpdated = ^(BOOL canFocus) {
         DLog(@"focusable updated");
         [[self_weak_ parentViewController] setNeedsFocusUpdate];
+        [[self_weak_ parentViewController] updateFocusIfNeeded];
     };
+    if (self.infoStyle == KBAVInfoStyleNew) {
+        _titleLabel.textColor = [UIColor whiteColor];
+        _genreLabel.textColor = [UIColor whiteColor];
+        _yearLabel.textColor = [UIColor whiteColor];
+        _durationLabel.textColor = [UIColor whiteColor];
+        UIFont *cap2 = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+        [_subtitleLabel setFont:cap2];
+        [_summaryView setFont:cap2];
+        [_summaryView setTrailingTextFont:cap2];
+        [_summaryView setTrailingTextColor:[UIColor whiteColor]];
+        [_genreLabel setFont:cap2];
+        [_yearLabel setFont:cap2];
+        [_durationLabel setFont:cap2];
+        _posterView.layer.cornerRadius = 20;
+        _posterView.layer.masksToBounds = true;
+        _posterView.clipsToBounds = true;
+    }
     //[_summaryLabel.widthAnchor constraintLessThanOrEqualToConstant:1113].active = true;
     //[_summaryLabel.heightAnchor constraintLessThanOrEqualToConstant:154].active = true;
     //_summaryLabel.numberOfLines = 0;
@@ -548,6 +705,7 @@
     __weak AVPlayerItem *_playerItem;
     BOOL _observing;
     NSArray *_subtitleData;
+    KBAVInfoStyle _infoStyle;
 }
 @property UIView *visibleView;
 @property UIView *divider;
@@ -583,6 +741,15 @@
  )
  */
 
+- (void)setInfoStyle:(KBAVInfoStyle)infoStyle {
+    _infoStyle = infoStyle;
+}
+
+- (KBAVInfoStyle)infoStyle {
+    return _infoStyle;
+}
+
+
 - (void)setSubtitleData:(NSArray *)subtitleData {
     //_subtitleData = subtitleData;
     __block NSMutableArray *_newArray = [NSMutableArray new];
@@ -616,11 +783,22 @@
             return @[self.tempTabBar, self.descriptionViewController.summaryView];
         }
         return @[self.tempTabBar];
+    } else if (self.infoButton) {
+        if (self.descriptionViewController.summaryView.canFocus){
+            DLog(@"allowing desc label to focus");
+            return @[self.infoButton, self.descriptionViewController.summaryView];
+        }
+        return @[self.infoButton];
     }
     return nil;
 }
 
 - (void)setPlayerItem:(AVPlayerItem *)playerItem {
+    if (playerItem != _playerItem) {
+        if (_observing){
+            [self removeObserver];
+        }
+    }
     _playerItem = playerItem;
     if (!_observing){
         [self addObserver];
@@ -634,10 +812,24 @@
                        context:(void *)context {
     if ([keyPath isEqualToString:@"status"]) {
         AVPlayerItemStatus status = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
+        if (self.playbackStatusChanged){
+            self.playbackStatusChanged(status);
+        }
         if (status == AVPlayerItemStatusReadyToPlay){
             [self checkSubtitleOptions];
+            [self refreshMetadata];
         }
     }
+}
+
+- (void)refreshMetadata {
+    _metadata.isHD = [self isHD];
+    [self setMetadata:_metadata];
+}
+
+- (void)removeObserver {
+    [_playerItem removeObserver:self forKeyPath:@"status"];
+    _observing = false;
 }
 
 - (void)addObserver {
@@ -671,9 +863,7 @@
     return _metadata;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.view.backgroundColor = [UIColor clearColor];
+- (void)setupLegacy {
     _visibleView = [[UIView alloc] initForAutoLayout];
     _visibleView.layer.masksToBounds = true;
     _visibleView.layer.cornerRadius = 27;
@@ -719,10 +909,64 @@
     [_tabBarBottomFocusGuide.leadingAnchor constraintEqualToAnchor:self.tempTabBar.leadingAnchor].active = true;
     [_tabBarBottomFocusGuide.trailingAnchor constraintEqualToAnchor:self.tempTabBar.trailingAnchor].active = true;
     //_tabBarBottomFocusGuide.preferredFocusEnvironments = @[self.toggleTypeButton];
+
 }
 
+- (void)setupNew {
+    //self.infoButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.infoButton = [KBButton buttonWithType:KBButtonTypeText];
+    self.infoButton.translatesAutoresizingMaskIntoConstraints = false;
+    [self.infoButton setTitle:@"Info" forState:UIControlStateNormal];
+    [self.infoButton.titleLabel setFont:[UIFont boldSystemFontOfSize:24]];
+    //[self.infoButton.heightAnchor constraintEqualToConstant:62].active = true;
+    [self.infoButton autoConstrainToSize:CGSizeMake(100, 62)];
+    [self.view addSubview:self.infoButton];
+    [self.infoButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:60].active = true;
+    [self.infoButton.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:15].active = true;
+    @weakify(self);
+    self.infoButton.focusChanged = ^(BOOL focused) {
+        if (self_weak_.infoFocusChanged){
+            self_weak_.infoFocusChanged(focused);
+        }
+    };
+    _visibleView = [[UIView alloc] initForAutoLayout];
+    _visibleView.layer.masksToBounds = true;
+    _visibleView.layer.cornerRadius = 27;
+    [self.view addSubview:_visibleView];
+    _heightConstraint = [_visibleView.heightAnchor constraintEqualToConstant:255];
+    _heightConstraint.active = true;
+    [_visibleView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:SIDE_PADDING+15].active = true;
+    _topConstraint = [_visibleView.topAnchor constraintEqualToAnchor:self.infoButton.bottomAnchor constant:30];
+    _topConstraint.active = true;
+    [_visibleView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-(SIDE_PADDING+15)].active = true;
+    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    blurView.translatesAutoresizingMaskIntoConstraints = false;
+    UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
+    UIVisualEffectView *vibrancyEffectView = [[UIVisualEffectView alloc] initWithEffect:vibrancyEffect];
+    vibrancyEffectView.translatesAutoresizingMaskIntoConstraints = false;
+    [_visibleView addSubview:blurView];
+    [blurView autoPinEdgesToSuperviewEdges];
+    [_visibleView addSubview:vibrancyEffectView];
+    [vibrancyEffectView autoPinEdgesToSuperviewEdges];
+    _tabBarBottomFocusGuide = [[UIFocusGuide alloc] init];
+    [self.view addLayoutGuide:_tabBarBottomFocusGuide];
+    [_tabBarBottomFocusGuide.topAnchor constraintEqualToAnchor:self.infoButton.bottomAnchor].active = true;
+    [_tabBarBottomFocusGuide.heightAnchor constraintEqualToConstant:40].active = true;
+    [_tabBarBottomFocusGuide.leadingAnchor constraintEqualToAnchor:self.infoButton.leadingAnchor].active = true;
+    [_tabBarBottomFocusGuide.trailingAnchor constraintEqualToAnchor:self.infoButton.trailingAnchor].active = true;
+}
 
-
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    //self.infoStyle = KBAVInfoStyleLegacy;
+    self.view.backgroundColor = [UIColor clearColor];
+    if (self.infoStyle == KBAVInfoStyleLegacy){
+        [self setupLegacy];
+    } else if (self.infoStyle == KBAVInfoStyleNew) {
+        [self setupNew];
+    }
+}
 
 - (void)updateFocusIfNeeded {
     LOG_SELF;
@@ -763,7 +1007,36 @@
     }];
 }
 
+- (void)attachToView:(KBSlider *)theView inController:(UIViewController *)pvc {
+    [self.view layoutIfNeeded];
+    [pvc addChildViewController:self];
+    UIView *myView = self.view;
+    myView.translatesAutoresizingMaskIntoConstraints = false;
+    [pvc.view addSubview:myView];
+    self.view.accessibilityViewIsModal = true;
+    self.view.alpha = 0;
+    _visibleView.alpha = 1;
+    [self didMoveToParentViewController:pvc];
+    [myView.topAnchor constraintEqualToAnchor:theView.bottomAnchor constant:10].active = true;
+    [_visibleView.leadingAnchor constraintEqualToAnchor:theView.leadingAnchor].active = true;
+    [_visibleView.trailingAnchor constraintEqualToAnchor:theView.trailingAnchor].active = true;
+    theView.attachedView = myView;
+    [self addDescriptionController];
+    [self.parentViewController.view setNeedsFocusUpdate];
+    [self.parentViewController.view updateFocusIfNeeded];
+    //[self addSubtitleViewController];
+}
+
+- (void)showWithCompletion:(void(^_Nullable)(void))block {
+    if (self.delegate) {
+        [self.delegate willShowAVViewController];
+    }
+}
+
 - (void)showFromViewController:(UIViewController *)pvc {
+    if (self.infoStyle == KBAVInfoStyleNew) {
+        return;
+    }
     if (self.delegate) {
         [self.delegate willShowAVViewController];
     }
@@ -789,6 +1062,9 @@
 }
 
 - (void)closeWithCompletion:(void(^_Nullable)(void))block {
+    if (self.infoStyle == KBAVInfoStyleNew) {
+        return;
+    }
     if (self.delegate) {
         [self.delegate willHideAVViewController];
     }
@@ -901,16 +1177,25 @@
 - (void)addDescriptionController {
     if (!_descriptionViewController) {
         _descriptionViewController = [KBAVInfoPanelDescriptionViewController new];
+        _descriptionViewController.infoStyle = self.infoStyle;
         [_descriptionViewController setMetadata:_metadata];
         [self.view layoutIfNeeded];
         [self addChildViewController:_descriptionViewController];
         UIView *descView = _descriptionViewController.view;
         descView.translatesAutoresizingMaskIntoConstraints = false;
         [_visibleView addSubview:descView];
-        [descView.topAnchor constraintEqualToAnchor:_divider.bottomAnchor constant:10].active = true;
+        if (self.infoStyle == KBAVInfoStyleLegacy) {
+            [descView.topAnchor constraintEqualToAnchor:_divider.bottomAnchor constant:10].active = true;
+            [descView.bottomAnchor constraintEqualToAnchor:_visibleView.bottomAnchor constant:0].active = true;
+            [descView autoCenterHorizontallyInSuperview];
+        } else if (self.infoStyle == KBAVInfoStyleNew) {
+            [descView.topAnchor constraintEqualToAnchor:_visibleView.topAnchor constant:30].active = true;
+            [descView.bottomAnchor constraintEqualToAnchor:_visibleView.bottomAnchor constant:-30].active = true;
+            _descriptionViewLeadingAnchor = [descView.leadingAnchor constraintEqualToAnchor:_visibleView.leadingAnchor constant:800];
+            _descriptionViewLeadingAnchor.active = true;
+        }
         //[descView.widthAnchor constraintEqualToConstant:1320].active = true;
-        [descView.bottomAnchor constraintEqualToAnchor:_visibleView.bottomAnchor constant:0].active = true;
-        [descView autoCenterHorizontallyInSuperview];
+        
         DLog(@"desc view: %@", _descriptionViewController.contentView);
         [self setNeedsFocusUpdate];
         
@@ -925,8 +1210,18 @@
 - (BOOL)isHD {
     if (_playerItem){
         AVAsset *asset = [_playerItem asset];
+        CGSize trackSize = CGSizeZero;
         AVAssetTrack *track = [[asset tracksWithMediaCharacteristic:AVMediaCharacteristicVisual] firstObject];
-        CGSize trackSize = [track naturalSize];
+        if (track) {
+            trackSize = track.naturalSize;
+        } else {
+            AVPlayerItemTrack *track = [[_playerItem tracks] firstObject]; //TODO make smarter to be certain its video
+            DLog(@"track: %@", track);
+            trackSize = [[track assetTrack] naturalSize];
+            //trackSize = asset.naturalSize;
+        }
+        //CGSize trackSize = [track naturalSize];
+        DLog(@"trackSize: %@", NSStringFromCGSize(trackSize));
         return trackSize.width >= 1280;
     }
     if (_metadata){
@@ -941,6 +1236,15 @@
     return (group);
 }
 
+- (BOOL)subtitlesOn {
+    AVAsset *asset = [_playerItem asset];
+    AVMediaSelectionGroup *group = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+    AVMediaSelection *selection = [_playerItem currentMediaSelection];
+    AVMediaSelectionOption *selected = [selection selectedMediaOptionInMediaSelectionGroup:group];
+    return (selected);
+    //selectedMediaOptionInMediaSelectionGroup
+}
+
 - (void)toggleSubtitles:(BOOL)on {
     if (!_playerItem) return;
     AVAsset *asset = [_playerItem asset];
@@ -948,7 +1252,9 @@
     if (on) {
         AVMediaSelectionOption *opt = [group defaultOption];
         [_playerItem selectMediaOption:opt inMediaSelectionGroup:group];
+        MACaptionAppearanceSetDisplayType(kMACaptionAppearanceDomainUser, kMACaptionAppearanceDisplayTypeAlwaysOn);
     } else {
+        MACaptionAppearanceSetDisplayType(kMACaptionAppearanceDomainUser, kMACaptionAppearanceDisplayTypeForcedOnly);
         [_playerItem selectMediaOption:nil inMediaSelectionGroup:group];
     }
 }
@@ -992,8 +1298,13 @@
 }
 
 - (BOOL)shouldDismissView {
+    if (self.infoStyle == KBAVInfoStyleNew) return true;
     UIFocusSystem *fs = [UIFocusSystem focusSystemForEnvironment:self];
     Class cls = NSClassFromString(@"UITabBarButton"); //FIXME: this could get flagged
+    if (self.infoStyle == KBAVInfoStyleNew) {
+        cls = [UIButton class];
+    }
+    DLog(@"focused: %@", [fs focusedItem]);
     return [[fs focusedItem] isKindOfClass:cls];
 }
 

@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVKit/AVKit.h>
 #import "KBVideoPlaybackProtocol.h"
-@interface PlayerViewController : UIViewController <KBVideoPlaybackProtocol>
+@interface PlayerViewController : UIViewController <KBVideoPlaybackProtocol, UIGestureRecognizerDelegate, AVRoutePickerViewDelegate>
 // audio or video file path (local or network file path)
 @property (nonatomic, strong) NSURL *mediaURL;
 @property (nonatomic, strong) NSString *avFormatName;

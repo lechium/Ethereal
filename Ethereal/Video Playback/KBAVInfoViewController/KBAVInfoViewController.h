@@ -8,7 +8,31 @@
 
 #import <UIKit/UIKit.h>
 #import <AVKit/AVKit.h>
+#import "KBSlider.h"
+
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSInteger, KBButtonType) {
+    KBButtonTypeText,
+    KBButtonTypeImage,
+};
+
+@interface KBButton: UIControl
+
+@property (readwrite, assign) KBButtonType buttonType;
+@property (nonatomic, strong, nullable) UILabel *titleLabel;
+@property (nonatomic, strong, nullable) UIImageView *buttonImageView;
+@property (nonatomic, copy, nullable) void (^focusChanged)(BOOL focused);
++(instancetype)buttonWithType:(KBButtonType)buttonType;
+- (void)setTitle:(nullable NSString *)title forState:(UIControlState)state;
+@end
+
+
+
+typedef NS_ENUM(NSInteger, KBAVInfoStyle) {
+    KBAVInfoStyleLegacy,
+    KBAVInfoStyleNew,
+};
 
 typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
     KBSubtitleTagTypeOff,
@@ -17,6 +41,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 };
 
 @protocol KBAVInfoViewControllerDelegate <NSObject>
+@optional
 - (void)willShowAVViewController;
 - (void)willHideAVViewController;
 @end
@@ -51,9 +76,19 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 @interface KBAVInfoViewController : UIViewController <UITabBarDelegate>
 
 @property UITabBar *tempTabBar;
+@property KBButton *infoButton;
 @property (nonatomic, weak) AVPlayerItem *playerItem;
 @property (nonatomic, weak) id <KBAVInfoViewControllerDelegate> delegate;
+@property (nonatomic, copy, nullable) void (^playbackStatusChanged)(AVPlayerItemStatus status);
+@property (nonatomic, copy, nullable) void (^infoFocusChanged)(BOOL focused);
+@property (readwrite, assign) KBAVInfoStyle infoStyle;
+
+@property (nonatomic, strong, nullable) NSLayoutConstraint *descriptionViewLeadingAnchor;
+
+- (void)attachToView:(KBSlider *)theView inController:(UIViewController *)pvc;
+- (void)showWithCompletion:(void(^_Nullable)(void))block;
 - (BOOL)isHD;
+- (BOOL)hasClosedCaptions;
 - (NSArray *)subtitleData;
 - (void)setSubtitleData:(NSArray *)subtitleData;
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
@@ -62,6 +97,8 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 - (void)setMetadata:(KBAVMetaData *)metadata;
 + (BOOL)areSubtitlesAlwaysOn;
 - (BOOL)shouldDismissView;
+- (BOOL)subtitlesOn;
+- (void)toggleSubtitles:(BOOL)on;
 @end
 
 NS_ASSUME_NONNULL_END

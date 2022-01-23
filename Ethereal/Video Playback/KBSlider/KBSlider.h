@@ -67,15 +67,19 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property NSTimeInterval totalDuration; //only applicable in the transport mode
 @property BOOL isPlaying; //transport mode only
 @property BOOL isScrubbing; //transport mode only
+@property NSString *title; //transport mode only
+
 @property (nonatomic, copy, nullable) void (^timeSelectedBlock)(CGFloat currentTime); //transport mode only, is called when a slider value is selected when scrubbing.
 @property (nonatomic, copy, nullable) void (^scanStartedBlock)(CGFloat currentTime, NSInteger direction); //0 = rewind, 1 = ff
 @property (nonatomic, copy, nullable) void (^scanEndedBlock)(NSInteger direction);
+@property (nonatomic, copy, nullable) void (^sliderFading)(CGFloat direction, BOOL animated); //0 = out, 1 = in
 @property BOOL fadeOutTransport;
 @property KBSliderMode sliderMode;
 @property KBScrubMode scrubMode;
 @property (nonatomic, weak) AVPlayer *avPlayer; //optional
 @property BOOL displaysCurrentTime;
 @property BOOL displaysRemainingTime;
+@property (nullable) UIView *attachedView;
 
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
 - (NSTimeInterval)remainingTime;
@@ -90,9 +94,12 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 - (UIImage *)maximumTrackImageForState:(UIControlState)state;
 - (UIImage *)thumbImageForState:(UIControlState)state;
 - (void)hideSliderAnimated:(BOOL)animated;
+- (void)fadeIn;
+- (void)hideSliderOnly;
+- (void)fadeInIfNecessary;
 @end
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
-#define LOG_SELF        DLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd))
-#define KBSLog(format, ...) DLog(@"[Ethereal] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
+//#define LOG_SELF        DLog(@"[KBSlider] %@ %@", self, NSStringFromSelector(_cmd))
+#define KBSLog(format, ...) DLog(@"[KBSlider] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
 NS_ASSUME_NONNULL_END

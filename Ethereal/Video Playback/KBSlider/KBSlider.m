@@ -10,7 +10,7 @@
 #import <GameController/GameController.h>
 #import "KBSliderImages.h"
 #import "UIView+AL.h"
-
+//#import "KBAVInfoViewController.h"
 @interface UIGestureRecognizer (helper)
 
 - (NSString *)stringForState;
@@ -52,7 +52,7 @@
 }
 
 +(instancetype)standardGradientView {
-    KBGradientView *view = [[KBGradientView alloc] initWithFrame:CGRectMake(-100, -30, 1920+200, 220)];
+    KBGradientView *view = [[KBGradientView alloc] initWithFrame:CGRectMake(-100, -30, 1920+200, 320)];
     view.layer.startPoint = CGPointMake(0.5, 0);
     view.layer.endPoint = CGPointMake(0.5, 1);
     view.layer.type = kCAGradientLayerAxial;
@@ -89,16 +89,17 @@
     NSTimeInterval _touchBeganTime;
     UIImageView *_leftHintImageView;
     UIImageView *_rightHintImageView;
+    UILabel *_titleLabel;
     KBScrubMode _scrubMode;
     NSLayoutConstraint *_trackViewHeightConstraint;
     NSLayoutConstraint *_currentTimeLabelWidthConstraint;
     BOOL _displaysCurrentTime;
     BOOL _displaysRemainingTime;
     BOOL _hasPlayingObserver;
+    NSString *_title;
 }
 @property UITapGestureRecognizer *tapGestureRecognizer;
 @property UILongPressGestureRecognizer *leftLongPressGestureRecognizer;
-@property UILongPressGestureRecognizer *rightLongPressGestureRecognizer;
 @property CGFloat trackViewHeight;
 @property CGFloat thumbSize;
 @property NSTimeInterval animationDuration;
@@ -145,6 +146,15 @@
 @end
 
 @implementation KBSlider
+
+- (void)setTitle:(NSString *)title {
+    _title = title;
+    _titleLabel.text = title;
+}
+
+- (NSString *)title {
+    return _title;
+}
 
 - (void)setAvPlayer:(AVPlayer *)avPlayer {
     _avPlayer = avPlayer;
@@ -331,12 +341,33 @@
     }
 }
 
+- (void)hideSliderOnly {
+    if (self.sliderMode == KBSliderModeTransport) {
+        if (self.sliderFading) {
+            self.sliderFading(0, true);
+        }
+        NSArray *viewArray = @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel];
+        [UIView animateWithDuration:0.3 animations:^{
+            [viewArray enumerateObjectsUsingBlock:^(UIView  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                obj.alpha = 0;
+            }];
+        }];
+       
+    }
+}
+
 //the views we need to show or hide as necessary
 - (NSArray *)_viewsToAdjust {
     if (!self.thumbView){
         return nil;
     }
     if (self.sliderMode == KBSliderModeTransport){
+        if (_attachedView){
+            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel, _attachedView];
+        }
+        if (_titleLabel){
+            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel];
+        }
         return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView];
     } else {
         return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView];
@@ -366,9 +397,16 @@
 }
 
 - (void)hideSliderAnimated:(BOOL)animated {
+    if (!_fadeOutTransport) return;
     if (!animated){
+        if (self.sliderFading) {
+            self.sliderFading(0, false);
+        }
         [self _toggleVisibleViews:true];
     } else {
+        if (self.sliderFading) {
+            self.sliderFading(0, true);
+        }
         [UIView animateWithDuration:0.3 animations:^{
             [self _toggleVisibleViews:true];
         }];
@@ -389,6 +427,9 @@
 - (void)fadeIn {
     if (!self.userInteractionEnabled) {
         return;
+    }
+    if (self.sliderFading){
+        self.sliderFading(1, false);
     }
     [UIView animateWithDuration:0.3 animations:^{
         [self _toggleVisibleViews:false];
@@ -554,7 +595,7 @@
     if (CGRectIntersectsRect(durationLabel.frame, currentTimeLabel.frame)){
         durationLabel.alpha = 0.0;
     } else {
-        if ([self _isVisible] && (self.displaysRemainingTime || self.displaysCurrentTime)){
+        if (_trackView.alpha == 1 && (self.displaysRemainingTime || self.displaysCurrentTime)){
             durationLabel.alpha = 1.0;
         }
     }
@@ -571,6 +612,7 @@
     if (sliderMode == KBSliderModeTransport) {
         _trackViewHeight = 10;
         _focusScaleFactor = 1.00;
+        [self setupTitleLabel];
     } else {
         _focusScaleFactor = 1.05;
         _trackViewHeight = 5;
@@ -833,6 +875,7 @@
 
 
 - (void)removeTransportViewsIfNecessary {
+    
     if (currentTimeLabel){
         [currentTimeLabel removeFromSuperview];
         currentTimeLabel = nil;
@@ -849,6 +892,20 @@
         [gradient removeFromSuperview];
         gradient = nil;
     }
+}
+
+- (void)setupTitleLabel {
+    if (_titleLabel){
+        [_titleLabel removeFromSuperview];
+        _titleLabel = nil;
+    }
+    _titleLabel = [[UILabel alloc] initForAutoLayout];
+    [self addSubview:_titleLabel];
+    [_titleLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+    [_titleLabel.topAnchor constraintEqualToAnchor:self.topAnchor].active = true;
+    _titleLabel.textColor = [UIColor whiteColor];
+    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+    _titleLabel.text = _title;
 }
 
 - (void)setUpTransportViews {
@@ -950,7 +1007,11 @@
     _trackView.translatesAutoresizingMaskIntoConstraints = false;
     [_trackView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
     [_trackView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
-    [_trackView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
+    if (self.sliderMode == KBSliderModeTransport){
+        [_trackView.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor constant:10].active = true;
+    } else {
+        [_trackView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
+    }
     if (_trackViewHeightConstraint) {
         [NSLayoutConstraint deactivateConstraints:@[_trackViewHeightConstraint]];
         _trackViewHeightConstraint = nil;
@@ -980,7 +1041,7 @@
 
 - (void)setUpThumbViewConstraints {
     _thumbView.translatesAutoresizingMaskIntoConstraints = false;
-    [_thumbView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
+    [_thumbView.centerYAnchor constraintEqualToAnchor:_trackView.centerYAnchor].active = true;
     if (_sliderMode == KBSliderModeTransport){
         [_thumbView.heightAnchor constraintEqualToConstant:10].active = true;
         [_thumbView.widthAnchor constraintEqualToConstant:1].active = true;
@@ -994,7 +1055,7 @@
 
 - (void)setUpScrubViewConstraints {
     _scrubView.translatesAutoresizingMaskIntoConstraints = false;
-    [_scrubView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
+    [_scrubView.centerYAnchor constraintEqualToAnchor:_trackView.centerYAnchor].active = true;
     [_scrubView.heightAnchor constraintEqualToConstant:30].active = true;
     [_scrubView.widthAnchor constraintEqualToConstant:1].active = true;
     
@@ -1020,21 +1081,14 @@
     _rightTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
     [self addGestureRecognizer:_rightTapGestureRecognizer];
     */
-    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
-    _tapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
-    _tapGestureRecognizer.allowedPressTypes = @[];
-    [self addGestureRecognizer:_tapGestureRecognizer];
     
     _leftLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longLeftPressTriggered:)];
     [self addGestureRecognizer:_leftLongPressGestureRecognizer];
     
-    //_rightLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longRightPressTriggered:)];
-    //[self addGestureRecognizer:_rightLongPressGestureRecognizer];
-    
-}
-
-- (void)longRightPressTriggered:(UILongPressGestureRecognizer *)gestureRecognizer {
-    
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
+    _tapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
+    _tapGestureRecognizer.allowedPressTypes = @[];
+    [self addGestureRecognizer:_tapGestureRecognizer];
 }
 
 - (void)longLeftPressTriggered:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -1086,7 +1140,15 @@
     
     if ([self isFocused]){
         self.transform = CGAffineTransformMakeScale(_focusScaleFactor, _focusScaleFactor);
+        currentTimeLabel.textColor = [UIColor colorWithWhite:0 alpha:1.0];
+        currentTimeLabel.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+        durationLabel.textColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+        _minimumTrackView.backgroundColor = _minimumTrackTintColor;
     } else {
+        currentTimeLabel.textColor = [UIColor colorWithWhite:0 alpha:0.5];
+        currentTimeLabel.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+        durationLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+        _minimumTrackView.backgroundColor = _defaultTrackColor;
         self.transform = CGAffineTransformIdentity;
     }
     if (self.sliderMode == KBSliderModeTransport){
@@ -1099,7 +1161,7 @@
 
 /*
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
-   NSLog(@"[Ethereal] %@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+   NSLog(@"%@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     if ([otherGestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class]) {
         return TRUE;
     }
@@ -1378,6 +1440,10 @@
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     
     [self fadeInIfNecessary];
+    if (!self.isFocused){
+        [super pressesBegan:presses withEvent:event];
+        return;
+    }
     for (UIPress *press in presses){
         switch (press.type) {
             case UIPressTypeSelect:

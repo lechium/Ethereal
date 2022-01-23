@@ -12,6 +12,7 @@
 #import "KBVideoPlaybackManager.h"
 #import "KBAVInfoViewController.h"
 #import "SDWebImageManager.h"
+#import <MediaPlayer/MediaPlayer.h>
 
 @import tvOSAVPlayerTouch;
 
@@ -47,6 +48,9 @@
 
 
 - (BOOL)avInfoPanelShowing {
+    if (self.avInfoViewController.infoStyle == KBAVInfoStyleNew) {
+        return self.transportSlider.frame.origin.y == 550;
+    }
     return self.avInfoViewController.view.alpha;
 }
 
@@ -56,10 +60,37 @@
 
 - (void)hideAVInfoView {
     if (!self.avInfoPanelShowing) return;
+    if (_avInfoViewController.infoStyle == KBAVInfoStyleNew) {
+        [self slideDownInfo];
+        return;
+    }
     [_avInfoViewController closeWithCompletion:^{
         self.transportSlider.userInteractionEnabled = true;
         self.transportSlider.hidden = false; //likely frivolous
     }];
+}
+
+- (void)slideDownInfo {
+    [_transportSlider fadeIn];
+    _transportSlider.fadeOutTransport = true;
+    [self.view layoutIfNeeded];
+    @weakify(self);
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self_weak_.transportSlider.frame = CGRectMake(100, 850, 1700, 105);
+        [self_weak_.view layoutIfNeeded];
+    } completion:nil];
+}
+
+
+- (void)slideUpInfo {
+    _transportSlider.fadeOutTransport = false;
+    [_transportSlider hideSliderOnly];
+    [self.view layoutIfNeeded];
+    @weakify(self);
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self_weak_.transportSlider.frame = CGRectMake(100, 550, 1700, 105);
+        [self_weak_.view layoutIfNeeded];
+    } completion:nil];
 }
 
 - (void)showAVInfoView {
@@ -67,6 +98,10 @@
     if (!_avInfoViewController){
         _avInfoViewController = [KBAVInfoViewController new];
         [self createAndSetMeta];
+    }
+    if (_avInfoViewController.infoStyle == KBAVInfoStyleNew) {
+        [self slideUpInfo];
+        return;
     }
     self.transportSlider.userInteractionEnabled = false;
     [self.transportSlider hideSliderAnimated:true];
@@ -108,12 +143,12 @@
 - (id<KBVideoPlayerProtocol>)player {
     return _avplayController;
 }
-
+/*
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     //NSLog(@"[Ethereal] gestureRecognizerShouldBegin: %@", gestureRecognizer);
     return true;
 }
-
+*/
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     //NSLog(@"[Ethereal] %@ shouldRecognizeSimultaneouslyWithGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     if ([gestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class] && [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
@@ -134,26 +169,26 @@
     //NSLog(@"[Ethereal] %@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     return FALSE;
 }
-
+/*
 // called before touchesBegan:withEvent: is called on the gesture recognizer for a new touch. return NO to prevent the gesture recognizer from seeing this touch
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     //NSLog(@"[Ethereal] shouldReceiveTouch: %@", gestureRecognizer);
     return TRUE;
 }
-
+*/
 // called before pressesBegan:withEvent: is called on the gesture recognizer for a new press. return NO to prevent the gesture recognizer from seeing this press
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
     //NSLog(@"[Ethereal] shouldReceivePress: %@", gestureRecognizer);
     return TRUE;
 }
-
+/*
 // called once before either -gestureRecognizer:shouldReceiveTouch: or -gestureRecognizer:shouldReceivePress:
 // return NO to prevent the gesture recognizer from seeing this event
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event {
     //NSLog(@"[Ethereal] shouldReceiveEvent: %@", gestureRecognizer);
     return TRUE;
 }
-
+*/
 
 - (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
     NSLog(@"[Ethereal] menu tapped");
@@ -201,6 +236,75 @@
     menuTap.numberOfTapsRequired = 1;
     menuTap.allowedPressTypes = @[@(UIPressTypeMenu)];
     [self.view addGestureRecognizer:menuTap];
+    
+    /*
+    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTap:)];
+    doubleTap.numberOfTapsRequired = 2;
+    doubleTap.allowedPressTypes = @[@(UIPressTypePlayPause)];
+    [self.view addGestureRecognizer:doubleTap];
+    */
+    //[self testRemoteCommandCenterStuff];
+}
+
+- (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer {
+    NSLog(@"[Ethereal] double tap");
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        AVRoutePickerView *routerPickerView = [[AVRoutePickerView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
+        routerPickerView.activeTintColor = [UIColor clearColor];
+        routerPickerView.delegate = self;
+        [self.view addSubview:routerPickerView];
+    }
+}
+
+
+- (void)routePickerViewWillBeginPresentingRoutes:(AVRoutePickerView *)routePickerView {
+    NSLog(@"[Ethereal] routePickerViewWillBeginPresentingRoutes");
+}
+//AirPlay界面结束时回调
+- (void)routePickerViewDidEndPresentingRoutes:(AVRoutePickerView *)routePickerView {
+    NSLog(@"[Ethereal] routePickerViewDidEndPresentingRoutes");
+}
+
+/*
+ let remoteCommandCenter = MPRemoteCommandCenter.shared()
+ remoteCommandCenter.skipForwardCommand.addTarget(self, action: #selector(skipForwardHandler))
+ remoteCommandCenter.skipBackwardCommand.addTarget(self, action: #selector(skipBackwardHandler))
+ */
+
+- (MPRemoteCommandHandlerStatus)testSkipForward {
+    NSLog(@"[Ethereal] testSkipForward");
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+
+- (MPRemoteCommandHandlerStatus)testSkipBackwards {
+    NSLog(@"[Ethereal] testSkipBackwards");
+    return MPRemoteCommandHandlerStatusSuccess;
+}
+
+- (void)seekForwardTest {
+    NSLog(@"[Ethereal] seekForwardTest");
+}
+
+- (void)seekBackwardsTest {
+    NSLog(@"[Ethereal] seekBackwardsTest");
+}
+
+
+
+- (void)testRemoteCommandCenterStuff {
+    MPRemoteCommandCenter *center = [MPRemoteCommandCenter sharedCommandCenter];
+    [center.skipForwardCommand addTarget:self action:@selector(testSkipForward)];
+    [center.skipBackwardCommand addTarget:self action:@selector(testSkipBackwards)];
+    [center.seekForwardCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        NSLog(@"[Ethereal] seekForwardTest");
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    [center.seekBackwardCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        NSLog(@"[Ethereal] seekBackwardCommand");
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    //[center.seekForwardCommand addTarget:self action:@selector(seekForwardTest)];
+    //[center.seekBackwardCommand addTarget:self action:@selector(seekBackwardsTest)];
 }
 
 - (void)swipeUp:(UIGestureRecognizer *)gestureRecognizer {
@@ -252,6 +356,7 @@
         meta.duration = _avplayController.duration;
         meta.image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:asset.name];
         [_avInfoViewController setMetadata:meta];
+        _transportSlider.title = asset.name;
     }
     [_avInfoViewController setSubtitleData:_avplayController.subtitleTracks];
 }
@@ -303,6 +408,7 @@
 
 - (void)stepVideoBackwards {
     self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
+    [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value - self.transportSlider.stepValue;
     [_avplayController seekto:self.transportSlider.value];
     @weakify(self);
@@ -314,6 +420,7 @@
 
 - (void)stepVideoForwards {
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
+    [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value + self.transportSlider.stepValue;
     [_avplayController seekto:self.transportSlider.value];
     @weakify(self);
@@ -326,6 +433,7 @@
 - (void)startFastForwarding {
     _ffActive = true;
     self.transportSlider.scrubMode = KBScrubModeFastForward;
+    [self.transportSlider fadeInIfNecessary];
     [_avplayController pause];
     @weakify(self);
     _ffTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:true block:^(NSTimer * _Nonnull timer) {
@@ -346,6 +454,7 @@
 - (void)startRewinding {
     _rwActive = true;
     self.transportSlider.scrubMode = KBScrubModeRewind;
+    [self.transportSlider fadeInIfNecessary];
     [_avplayController pause];
     @weakify(self);
     _rewindTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 repeats:true block:^(NSTimer * _Nonnull timer) {
@@ -364,7 +473,11 @@
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    NSLog(@"[Ethereal] type: %lu subtype: %lu press count:%lu", event.type, event.subtype, presses.count);
     for (UIPress *press in presses) {
+        NSInteger source = [[press valueForKey:@"source"] integerValue];
+        NSInteger gameControllerComp = [[press valueForKey:@"gameControllerComponent"] integerValue];
+        NSLog(@"[Ethereal] press source: %lu gcc: %lu", source, gameControllerComp);
         switch (press.type){
             case UIPressTypeMenu:
                 //[_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
@@ -549,6 +662,10 @@
             [self.view insertSubview:_glView atIndex:0];
             [self createSliderIfNecessary];
             [_glView addSubview:_transportSlider];
+            _avInfoViewController = [KBAVInfoViewController new];
+            [self createAndSetMeta];
+            _avInfoViewController.infoStyle = KBAVInfoStyleNew;
+            [_avInfoViewController attachToView:_transportSlider inController:self];
             [_transportSlider setSliderMode:KBSliderModeTransport];
             [_transportSlider setCurrentTime:0];
             _transportSlider.fadeOutTransport = true;
@@ -558,6 +675,21 @@
             _transportSlider.timeSelectedBlock = ^(CGFloat currentTime) {
                 if (currentTime < self_weak_.avPlayController.duration) {
                     [self_weak_.avPlayController seekto:currentTime];
+                }
+            };
+            _transportSlider.scanStartedBlock = ^(CGFloat currentTime, NSInteger direction) {
+                if (direction == 0){
+                    [self_weak_ startRewinding];
+                } else if (direction == 1) {
+                    [self_weak_ startFastForwarding];
+                }
+            };
+            
+            _transportSlider.scanEndedBlock = ^(NSInteger direction) {
+                if (direction == 0){
+                    [self_weak_ stopRewinding];
+                } else if (direction == 1) {
+                    [self_weak_ stopFastForwarding];
                 }
             };
             NSLog(@"setting maximum value to duration: %f",_avplayController.duration);
