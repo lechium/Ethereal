@@ -80,6 +80,8 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property BOOL displaysCurrentTime;
 @property BOOL displaysRemainingTime;
 @property (nullable) UIView *attachedView;
+@property (readwrite, assign) NSInteger rewindSpeed;
+@property (readwrite, assign) NSInteger ffSpeed;
 
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
 - (NSTimeInterval)remainingTime;

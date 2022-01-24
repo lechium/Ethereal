@@ -90,6 +90,8 @@
     UIImageView *_leftHintImageView;
     UIImageView *_rightHintImageView;
     UILabel *_titleLabel;
+    UILabel *_ffLabel;
+    UILabel *_rwLabel;
     KBScrubMode _scrubMode;
     NSLayoutConstraint *_trackViewHeightConstraint;
     NSLayoutConstraint *_currentTimeLabelWidthConstraint;
@@ -97,6 +99,8 @@
     BOOL _displaysRemainingTime;
     BOOL _hasPlayingObserver;
     NSString *_title;
+    NSInteger _ffSpeed;
+    NSInteger _rewindSpeed;
 }
 @property UITapGestureRecognizer *tapGestureRecognizer;
 @property UILongPressGestureRecognizer *leftLongPressGestureRecognizer;
@@ -146,6 +150,32 @@
 @end
 
 @implementation KBSlider
+
+- (void)setRewindSpeed:(NSInteger)rewindSpeed {
+    _rewindSpeed = rewindSpeed;
+    if (rewindSpeed < 2){
+        _rwLabel.text = @"";
+    } else {
+        _rwLabel.text = [NSString stringWithFormat:@"%lu", rewindSpeed];
+    }
+}
+
+- (NSInteger)rewindSpeed {
+    return _rewindSpeed;
+}
+
+- (void)setFfSpeed:(NSInteger)ffSpeed {
+    _ffSpeed = ffSpeed;
+    if (_ffSpeed < 2){
+        _ffLabel.text = @"";
+    } else {
+        _ffLabel.text = [NSString stringWithFormat:@"%lu", ffSpeed];
+    }
+}
+
+- (NSInteger)ffSpeed {
+    return _ffSpeed;
+}
 
 - (void)setTitle:(NSString *)title {
     _title = title;
@@ -295,7 +325,9 @@
             _rightHintImageView.image = nil;
             _leftHintImageView.image = nil;
             _leftHintImageView.alpha = 0;
+            _ffLabel.text = @"";
             _rightHintImageView.alpha = 0;
+            _rwLabel.text = @"";
             break;
             
         case KBScrubModeRewind:
@@ -908,6 +940,30 @@
     _titleLabel.text = _title;
 }
 
+- (void)setupSpeedLabels {
+    if (_ffLabel) {
+        [_ffLabel removeFromSuperview];
+        _ffLabel = nil;
+    }
+    if (_rwLabel) {
+        [_rwLabel removeFromSuperview];
+        _rwLabel = nil;
+    }
+    _ffLabel = [[UILabel alloc] initForAutoLayout];
+    [self addSubview:_ffLabel];
+    [_ffLabel.leftAnchor constraintEqualToAnchor:_rightHintImageView.rightAnchor constant:10].active = true;
+    [_ffLabel.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
+    _ffLabel.textColor = [UIColor whiteColor];
+    _ffLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+    _rwLabel = [[UILabel alloc] initForAutoLayout];
+    [self addSubview:_rwLabel];
+    [_rwLabel.rightAnchor constraintEqualToAnchor:_leftHintImageView.leftAnchor constant:-10].active = true;
+    [_rwLabel.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
+    _rwLabel.textColor = [UIColor whiteColor];
+    _rwLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+
+}
+
 - (void)setUpTransportViews {
     
     [self removeTransportViewsIfNecessary];
@@ -945,6 +1001,7 @@
     gradient = [KBGradientView standardGradientView];
     [self insertSubview:gradient atIndex:0];
     [self createHintImageViews];
+    [self setupSpeedLabels];
 }
 
 - (void)setUpTrackView {
