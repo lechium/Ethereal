@@ -260,7 +260,7 @@
     self.focusedView.layer.shadowColor = self.shadowColor;
     self.focusedView.layer.shadowRadius = self.shadowRadius;
     [self addSubview:self.focusedView];
-    UIEdgeInsets insets = UIEdgeInsetsMake(-10, -10, -10, -10);
+    UIEdgeInsets insets = UIEdgeInsetsMake(-5, -5, -5, -5);
     [self.focusedView autoPinEdgesToSuperviewEdgesWithInsets:insets];
     UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];

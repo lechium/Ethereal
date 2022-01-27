@@ -11,8 +11,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FFAVPlayerController (ProtocolAdherence) <KBVideoPlaybackProtocol>
+
 - (void)play;
 - (id)currentItem;
+- (AVPlayerTimeControlStatus) timeControlStatus;
+- (id)currentAsset;
+- (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter;
+- (void)observeStatus;
 @end
 
 NS_ASSUME_NONNULL_END

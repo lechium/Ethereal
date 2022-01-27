@@ -60,15 +60,16 @@
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [coordinator addCoordinatedAnimations:^{
-        
+        //BOOL contains = (context.focusHeading & UIFocusHeadingDown) != 0;
+        DLog(@"direction: %lu", context.focusHeading);
         if (self.isFocused) {
             if (self.focusChanged){
-                self.focusChanged(true);
+                self.focusChanged(true, context.focusHeading);
             }
             [self setSelected:true];
         } else {
             if (self.focusChanged){
-                self.focusChanged(false);
+                self.focusChanged(false, context.focusHeading);
             }
             [self setSelected:false];
         }
@@ -238,21 +239,11 @@
 }
 
 @property (nonatomic,retain) NSString * title;
-+(id)_labelFontForCellWithoutImage;
-+(id)labelForTitle;
 -(void)traitCollectionDidChange:(id)arg1 ;
 -(void)didUpdateFocusInContext:(id)arg1 withAnimationCoordinator:(id)arg2 ;
 @end
 
 @implementation KBAVInfoPanelCollectionViewTextCell
-
-+(id)_labelFontForCellWithoutImage {
-    return nil;
-}
-
-+ (id)labelForTitle {
-    return nil;
-}
 
 - (void)setTitle:(NSString *)title {
     _title = title;
@@ -301,10 +292,6 @@
         _titleLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     }
     [super didUpdateFocusInContext:arg1 withAnimationCoordinator:arg2];
-}
-
-+ (CGSize)sizeForTitle:(id)arg1 {
-    return CGSizeZero;
 }
 
 @end
@@ -385,7 +372,7 @@
     _mediaOptions = mediaOptions;
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
     CGFloat newConst = (_mediaOptions.count + 2) * layout.itemSize.width + 70; //70 is just extra padding
-    DLog(@"newconst: %f count: %lu width: %f", newConst, (_mediaOptions.count + 2), layout.itemSize.width);
+    //DLog(@"newconst: %f count: %lu width: %f", newConst, (_mediaOptions.count + 2), layout.itemSize.width);
     self.widthConstraint.constant = newConst;
     [self.collectionView reloadData];
 }
@@ -418,7 +405,6 @@
 -(BOOL)hasContent;
 -(UIView *)contentView;
 -(void)loadView;
--(CGSize)contentSizeForWidth:(double)arg1 ;
 
 @end
 
@@ -434,10 +420,6 @@
 
 - (void)loadView {
     [super loadView];
-}
-
-- (CGSize)contentSizeForWidth:(double)arg1 {
-    return CGSizeZero;
 }
 
 @end
@@ -497,8 +479,6 @@
         [_subtitleCollectionViewController.collectionView reloadData];
     }
 }
-
-
 
 @end
 
@@ -609,7 +589,7 @@
     if (_metadata.image) {
         _posterView.image = _metadata.image;
     } else {
-        DLog(@"imageURL %@:", _metadata.imageURL);
+        //DLog(@"imageURL %@:", _metadata.imageURL);
         [_posterView sd_setImageWithURL:_metadata.imageURL
                      placeholderImage:[UIImage imageNamed:@"video-icon"]];
     }
@@ -657,11 +637,11 @@
     _summaryView.cornerRadius = 0.0;
     @weakify(self);
     _summaryView.buttonWasPressed = ^(NSString *text) {
-        DLog(@"pressed button with text: %@", text);
+        //DLog(@"pressed button with text: %@", text);
         [self_weak_ showViewWithText:text];
     };
     _summaryView.focusableUpdated = ^(BOOL canFocus) {
-        DLog(@"focusable updated");
+        //DLog(@"focusable updated");
         [[self_weak_ parentViewController] setNeedsFocusUpdate];
         [[self_weak_ parentViewController] updateFocusIfNeeded];
     };
@@ -779,13 +759,13 @@
 - (NSArray *)preferredFocusEnvironments {
     if (self.tempTabBar){
         if (self.descriptionViewController.summaryView.canFocus){
-            DLog(@"allowing desc label to focus");
+            //DLog(@"allowing desc label to focus");
             return @[self.tempTabBar, self.descriptionViewController.summaryView];
         }
         return @[self.tempTabBar];
     } else if (self.infoButton) {
         if (self.descriptionViewController.summaryView.canFocus){
-            DLog(@"allowing desc label to focus");
+            //DLog(@"allowing desc label to focus");
             return @[self.infoButton, self.descriptionViewController.summaryView];
         }
         return @[self.infoButton];
@@ -924,9 +904,9 @@
     [self.infoButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:60].active = true;
     [self.infoButton.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:15].active = true;
     @weakify(self);
-    self.infoButton.focusChanged = ^(BOOL focused) {
+    self.infoButton.focusChanged = ^(BOOL focused, UIFocusHeading heading) {
         if (self_weak_.infoFocusChanged){
-            self_weak_.infoFocusChanged(focused);
+            self_weak_.infoFocusChanged(focused, heading);
         }
     };
     _visibleView = [[UIView alloc] initForAutoLayout];
@@ -959,7 +939,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //self.infoStyle = KBAVInfoStyleLegacy;
+    self.infoStyle = KBAVInfoStyleNew;
     self.view.backgroundColor = [UIColor clearColor];
     if (self.infoStyle == KBAVInfoStyleLegacy){
         [self setupLegacy];
@@ -969,10 +949,10 @@
 }
 
 - (void)updateFocusIfNeeded {
-    LOG_SELF;
+    //LOG_SELF;
     [super updateFocusIfNeeded];
     if (self.descriptionViewController.summaryView.canFocus) {
-        DLog(@"can focus?");
+        //DLog(@"can focus?");
         _tabBarBottomFocusGuide.preferredFocusEnvironments = @[self.descriptionViewController.summaryView];
     }
 }
@@ -1017,7 +997,7 @@
     self.view.alpha = 0;
     _visibleView.alpha = 1;
     [self didMoveToParentViewController:pvc];
-    [myView.topAnchor constraintEqualToAnchor:theView.bottomAnchor constant:10].active = true;
+    [myView.topAnchor constraintEqualToAnchor:theView.bottomAnchor constant:12].active = true;
     [_visibleView.leadingAnchor constraintEqualToAnchor:theView.leadingAnchor].active = true;
     [_visibleView.trailingAnchor constraintEqualToAnchor:theView.trailingAnchor].active = true;
     theView.attachedView = myView;
@@ -1143,8 +1123,8 @@
     if (group) {
         
         AVMediaSelectionOption *opt = [group defaultOption];
-        DLog(@"opt extendedLanguageTag: %@", [opt extendedLanguageTag]);
-        DLog(@"opt displayName: %@", [opt displayName]);
+        //DLog(@"opt extendedLanguageTag: %@", [opt extendedLanguageTag]);
+        //DLog(@"opt displayName: %@", [opt displayName]);
         
         KBAVInfoPanelMediaOption *sub = [[KBAVInfoPanelMediaOption alloc] initWithLanguageCode:[opt extendedLanguageTag] displayName:[opt displayName] mediaSelectionOption:opt tag:2]; //TODO: make tag smarter here
         if (type == kMACaptionAppearanceDisplayTypeAlwaysOn) {
@@ -1196,7 +1176,7 @@
         }
         //[descView.widthAnchor constraintEqualToConstant:1320].active = true;
         
-        DLog(@"desc view: %@", _descriptionViewController.contentView);
+        //DLog(@"desc view: %@", _descriptionViewController.contentView);
         [self setNeedsFocusUpdate];
         
     }
@@ -1204,7 +1184,7 @@
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    DLog(@"desc view: %@", _descriptionViewController.contentView);
+    //DLog(@"desc view: %@", _descriptionViewController.contentView);
 }
 
 - (BOOL)isHD {
@@ -1216,12 +1196,12 @@
             trackSize = track.naturalSize;
         } else {
             AVPlayerItemTrack *track = [[_playerItem tracks] firstObject]; //TODO make smarter to be certain its video
-            DLog(@"track: %@", track);
+            //DLog(@"track: %@", track);
             trackSize = [[track assetTrack] naturalSize];
             //trackSize = asset.naturalSize;
         }
         //CGSize trackSize = [track naturalSize];
-        DLog(@"trackSize: %@", NSStringFromCGSize(trackSize));
+        //DLog(@"trackSize: %@", NSStringFromCGSize(trackSize));
         return trackSize.width >= 1280;
     }
     if (_metadata){
@@ -1293,9 +1273,6 @@
     [self closeWithCompletion:nil];
 }
 
-- (void)testUIMenu {
-    
-}
 
 - (BOOL)shouldDismissView {
     if (self.infoStyle == KBAVInfoStyleNew) return true;
@@ -1304,10 +1281,7 @@
     if (self.infoStyle == KBAVInfoStyleNew) {
         cls = [UIButton class];
     }
-    DLog(@"focused: %@", [fs focusedItem]);
     return [[fs focusedItem] isKindOfClass:cls];
 }
-
-//TODO: add a 30 second timer to dismiss the view if it has been inactive, the harder part is judging inactivity with all the varying gesture recognizers across all the different involved classes.
 
 @end

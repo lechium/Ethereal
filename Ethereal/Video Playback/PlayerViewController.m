@@ -214,6 +214,7 @@
         _avplayController.delegate = self;
         _avplayController.allowBackgroundPlayback = YES;
         _avplayController.shouldAutoPlay = YES;
+        [_avplayController observeStatus];
         //_avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
     }
 }
@@ -236,6 +237,24 @@
     menuTap.numberOfTapsRequired = 1;
     menuTap.allowedPressTypes = @[@(UIPressTypeMenu)];
     [self.view addGestureRecognizer:menuTap];
+    
+    UITapGestureRecognizer *leftTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftTapHandler:)];
+    leftTap.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
+    [self.view addGestureRecognizer:leftTap];
+    
+    UITapGestureRecognizer *rightTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightTapHandler:)];
+    rightTap.allowedPressTypes = @[@(UIPressTypeRightArrow)];
+    [self.view addGestureRecognizer:rightTap];
+    
+    UILongPressGestureRecognizer *longRightPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleRightLongPress:)];
+    longRightPress.allowedPressTypes = @[@(UIPressTypeRightArrow)];
+    [longRightPress requireGestureRecognizerToFail:rightTap];
+    [self.view addGestureRecognizer:longRightPress];
+    
+    UILongPressGestureRecognizer *longLeftPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLeftLongPress:)];
+    longLeftPress.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
+    [longLeftPress requireGestureRecognizerToFail:leftTap];
+    [self.view addGestureRecognizer:longLeftPress];
     
     /*
     UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTap:)];
@@ -306,6 +325,61 @@
     //[center.seekForwardCommand addTarget:self action:@selector(seekForwardTest)];
     //[center.seekBackwardCommand addTarget:self action:@selector(seekBackwardsTest)];
 }
+
+- (void)leftTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
+    NSLog(@"[Ethereal] leftTapHandler");
+    if (!_transportSlider.isFocused) {
+        return;
+    }
+    NSLog(@"[Ethereal] passed focus check: %lu", gestureRecognizer.state);
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        NSLog(@"[Ethereal] UIGestureRecognizerStateEnded");
+        if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+            KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeLeftArrow];
+            if (speed == KBSeekSpeedNone) {
+                [_rewindTimer invalidate];
+                [_ffTimer invalidate];
+            }
+        } else {
+            [self stepVideoBackwards];
+        }
+    }
+}
+
+- (void)rightTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
+    NSLog(@"[Ethereal] rightTapHandler");
+    if (!_transportSlider.isFocused) {
+        return;
+    }
+    NSLog(@"[Ethereal] passed focus check: %lu", gestureRecognizer.state);
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        NSLog(@"[Ethereal] UIGestureRecognizerStateEnded: %lu", _transportSlider.currentSeekSpeed);
+        if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+            NSLog(@"[Ethereal] is seeking");
+            KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeRightArrow];
+            if (speed == KBSeekSpeedNone) {
+                [_rewindTimer invalidate];
+                [_ffTimer invalidate];
+            }
+        } else {
+            NSLog(@"[Ethereal] is not seeking");
+            [self stepVideoForwards];
+        }
+    }
+}
+
+- (void)handleRightLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [self startFastForwarding];
+    }
+}
+
+- (void)handleLeftLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [self startRewinding];
+    }
+}
+
 
 - (void)swipeUp:(UIGestureRecognizer *)gestureRecognizer {
     if (![self.avInfoViewController shouldDismissView]){
@@ -409,11 +483,13 @@
 - (void)stepVideoBackwards {
     self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
     [self.transportSlider fadeInIfNecessary];
-    NSTimeInterval newValue = self.transportSlider.value - self.transportSlider.stepValue;
-    [_avplayController seekto:self.transportSlider.value];
+    NSTimeInterval newValue = self.transportSlider.value - 10;
+    [_avplayController seekto:newValue];
     @weakify(self);
-    [self.transportSlider setValue:newValue animated:true completion:^{
-        self_weak_.transportSlider.scrubMode = KBScrubModeNone;
+    [self.transportSlider setValue:newValue animated:false completion:^{
+        self_weak_.transportSlider.currentTime = newValue;
+        [self_weak_.transportSlider delayedResetScrubMode];
+        //self_weak_.transportSlider.scrubMode = KBScrubModeNone;
     }];
     
 }
@@ -421,11 +497,15 @@
 - (void)stepVideoForwards {
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
     [self.transportSlider fadeInIfNecessary];
-    NSTimeInterval newValue = self.transportSlider.value + self.transportSlider.stepValue;
-    [_avplayController seekto:self.transportSlider.value];
+    NSTimeInterval newValue = self.transportSlider.value + 10;
+    //[_avplayController pause];
+    [_avplayController seekto:newValue];
     @weakify(self);
-    [self.transportSlider setValue:newValue animated:true completion:^{
-        self_weak_.transportSlider.scrubMode = KBScrubModeNone;
+    [self.transportSlider setValue:newValue animated:false completion:^{
+        self_weak_.transportSlider.currentTime = newValue;
+        [self_weak_.transportSlider delayedResetScrubMode];
+      //  [_avplayController resume];
+        //self_weak_.transportSlider.scrubMode = KBScrubModeNone;
     }];
     
 }
@@ -433,6 +513,7 @@
 - (void)startFastForwarding {
     _ffActive = true;
     self.transportSlider.scrubMode = KBScrubModeFastForward;
+    self.transportSlider.currentSeekSpeed = KBSeekSpeed1x;
     [self.transportSlider fadeInIfNecessary];
     [_avplayController pause];
     @weakify(self);
@@ -454,6 +535,7 @@
 - (void)startRewinding {
     _rwActive = true;
     self.transportSlider.scrubMode = KBScrubModeRewind;
+    self.transportSlider.currentSeekSpeed = KBSeekSpeed1x;
     [self.transportSlider fadeInIfNecessary];
     [_avplayController pause];
     @weakify(self);
@@ -473,16 +555,16 @@
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    NSLog(@"[Ethereal] type: %lu subtype: %lu press count:%lu", event.type, event.subtype, presses.count);
+    //NSLog(@"[Ethereal] type: %lu subtype: %lu press count:%lu", event.type, event.subtype, presses.count);
     for (UIPress *press in presses) {
         NSInteger source = [[press valueForKey:@"source"] integerValue];
         NSInteger gameControllerComp = [[press valueForKey:@"gameControllerComponent"] integerValue];
-        NSLog(@"[Ethereal] press source: %lu gcc: %lu", source, gameControllerComp);
+        //NSLog(@"[Ethereal] press source: %lu gcc: %lu", source, gameControllerComp);
         switch (press.type){
             case UIPressTypeMenu:
                 //[_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
                 break;
-                
+                /*
             case UIPressTypeRightArrow: {
                 if (![self avInfoPanelShowing]) {
                     _rightHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
@@ -499,6 +581,7 @@
                     }];
                 }
             }
+                 */
             default:
                 [super pressesBegan:presses withEvent:event];
                 break;
@@ -507,9 +590,25 @@
     
 }
 
+- (void)togglePlayPause {
+    if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+        [_ffTimer invalidate];
+        [_rewindTimer invalidate];
+        [_transportSlider seekResume];
+        return;
+    }
+    [_transportSlider setScrubMode:KBScrubModeNone];
+    AVPlayerState currentState = _avplayController.playerState;
+    if (currentState == kAVPlayerStatePaused) {
+        [_avplayController resume];
+    } else {
+        [_avplayController pause];
+    }
+}
+
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     //NSLog(@"[Ethereal] pressesEnded: %@", presses);
-    AVPlayerState currentState = _avplayController.playerState;
+    //AVPlayerState currentState = _avplayController.playerState;
     for (UIPress *press in presses) {
         //NSLog(@"[Ethereal] presstype: %lu", press.type);
         switch (press.type){
@@ -521,13 +620,11 @@
             case UIPressTypeSelect:
                 
                 //NSLog(@"[Ethereal] play pause");
-                if (currentState == kAVPlayerStatePaused) {
-                    [_avplayController resume];
-                } else {
-                    [_avplayController pause];
-                }
+                [self togglePlayPause];
                 break;
+                /*
             case UIPressTypeLeftArrow:
+                
                 if (![self avInfoPanelShowing]) {
                     [_leftHoldTimer invalidate];
                     if (_rwActive) {
@@ -550,7 +647,7 @@
                     }
                 }
                 break;
-                
+                */
             case UIPressTypeUpArrow:
                 if ([self.avInfoViewController shouldDismissView]){
                     [self hideAVInfoView]; //need to make this one smarter
@@ -671,6 +768,7 @@
             _transportSlider.fadeOutTransport = true;
             [_transportSlider setIsContinuous:false];
             [_transportSlider setTotalDuration:_avplayController.duration];
+            [_transportSlider setAvPlayer:self.player];
             @weakify(self);
             _transportSlider.timeSelectedBlock = ^(CGFloat currentTime) {
                 if (currentTime < self_weak_.avPlayController.duration) {

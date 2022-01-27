@@ -6,8 +6,12 @@
 //  Copyright © 2020 nito. All rights reserved.
 //
 
+//https://developer.apple.com/news/?id=33cpm46r
+//UI Labels to tvOS Playback Rates 1x = 8.0 2x = 24.0 3x = 48.0 4x = 96.0
+
 #import <UIKit/UIKit.h>
 #import <AVKit/AVKit.h>
+#import "KBVideoPlaybackProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +23,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, strong) CAGradientLayer *layer;
 +(instancetype)standardGradientView;
 @end
+
+typedef NS_ENUM(NSInteger, KBSeekDirection) {
+    KBSeekDirectionRewind,
+    KBSeekDirectionFastForward,
+};
+
+typedef NS_ENUM(NSInteger, KBSeekSpeed) {
+    KBSeekSpeedNone, //go back to normal playback speed
+    KBSeekSpeed1x,
+    KBSeekSpeed2x,
+    KBSeekSpeed3x,
+    KBSeekSpeed4x,
+};
 
 typedef NS_ENUM(NSInteger, KBScrubMode) {
     KBScrubModeNone,
@@ -70,19 +87,21 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property NSString *title; //transport mode only
 
 @property (nonatomic, copy, nullable) void (^timeSelectedBlock)(CGFloat currentTime); //transport mode only, is called when a slider value is selected when scrubbing.
-@property (nonatomic, copy, nullable) void (^scanStartedBlock)(CGFloat currentTime, NSInteger direction); //0 = rewind, 1 = ff
-@property (nonatomic, copy, nullable) void (^scanEndedBlock)(NSInteger direction);
+@property (nonatomic, copy, nullable) void (^scanStartedBlock)(CGFloat currentTime, KBSeekDirection direction); //0 = rewind, 1 = ff
+@property (nonatomic, copy, nullable) void (^scanEndedBlock)(KBSeekDirection direction);
 @property (nonatomic, copy, nullable) void (^sliderFading)(CGFloat direction, BOOL animated); //0 = out, 1 = in
 @property BOOL fadeOutTransport;
 @property KBSliderMode sliderMode;
 @property KBScrubMode scrubMode;
-@property (nonatomic, weak) AVPlayer *avPlayer; //optional
+@property (nonatomic, weak) NSObject<KBVideoPlayerProtocol> *avPlayer; //optional
 @property BOOL displaysCurrentTime;
 @property BOOL displaysRemainingTime;
 @property (nullable) UIView *attachedView;
-@property (readwrite, assign) NSInteger rewindSpeed;
-@property (readwrite, assign) NSInteger ffSpeed;
 
+@property (readwrite, assign) KBSeekSpeed currentSeekSpeed;
+
+- (void)seekResume;
+- (KBSeekSpeed)handleSeekingPressType:(UIPressType)pressType; //only matters if FF or RW
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
 - (NSTimeInterval)remainingTime;
 - (NSString *)remainingTimeFormatted;
@@ -99,9 +118,10 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 - (void)fadeIn;
 - (void)hideSliderOnly;
 - (void)fadeInIfNecessary;
+- (void)delayedResetScrubMode;
 @end
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
-//#define LOG_SELF        DLog(@"[KBSlider] %@ %@", self, NSStringFromSelector(_cmd))
+#define LOG_SELF        DLog(@"[KBSlider] %@ %@", self, NSStringFromSelector(_cmd))
 #define KBSLog(format, ...) DLog(@"[KBSlider] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
 NS_ASSUME_NONNULL_END

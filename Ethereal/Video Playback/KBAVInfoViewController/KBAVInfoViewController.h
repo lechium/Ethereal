@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, KBButtonType) {
 @property (readwrite, assign) KBButtonType buttonType;
 @property (nonatomic, strong, nullable) UILabel *titleLabel;
 @property (nonatomic, strong, nullable) UIImageView *buttonImageView;
-@property (nonatomic, copy, nullable) void (^focusChanged)(BOOL focused);
+@property (nonatomic, copy, nullable) void (^focusChanged)(BOOL focused, UIFocusHeading direction);
 +(instancetype)buttonWithType:(KBButtonType)buttonType;
 - (void)setTitle:(nullable NSString *)title forState:(UIControlState)state;
 @end
@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 @property (nonatomic, weak) AVPlayerItem *playerItem;
 @property (nonatomic, weak) id <KBAVInfoViewControllerDelegate> delegate;
 @property (nonatomic, copy, nullable) void (^playbackStatusChanged)(AVPlayerItemStatus status);
-@property (nonatomic, copy, nullable) void (^infoFocusChanged)(BOOL focused);
+@property (nonatomic, copy, nullable) void (^infoFocusChanged)(BOOL focused, UIFocusHeading direction);
 @property (readwrite, assign) KBAVInfoStyle infoStyle;
 
 @property (nonatomic, strong, nullable) NSLayoutConstraint *descriptionViewLeadingAnchor;

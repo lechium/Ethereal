@@ -12,12 +12,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol KBVideoPlayerProtocol <FFAVPlayerControllerDelegate>
+@protocol KBVideoPlayerProtocol <FFAVPlayerControllerDelegate, NSObject>
 
 - (void)play;
 - (void)pause;
 - (id)currentItem;
+- (AVPlayerTimeControlStatus) timeControlStatus;
+- (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter;
 @optional
+- (void)observeStatus;
 - (void)switchSubtitleStream:(int)index;
 @end
 

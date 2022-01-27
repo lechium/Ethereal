@@ -16,7 +16,7 @@
 
 @implementation KBSliderImages
 
-#define SliderImage(base) ([self imageWithBytesNoCopy:(void *)(base) length:sizeof(base) scale:2.0])
+#define SliderImage(base) ([self imageWithBytesNoCopy:(void *)(base) length:sizeof(base) scale:1.0])
 #define SliderImageTemplate(base) ([SliderImage(base) imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate])
 
 + (UIImage *)imageWithBytesNoCopy:(void *)bytes length:(NSUInteger)length scale:(CGFloat)scale {

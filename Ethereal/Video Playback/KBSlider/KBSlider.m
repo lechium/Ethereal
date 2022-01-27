@@ -52,7 +52,7 @@
 }
 
 +(instancetype)standardGradientView {
-    KBGradientView *view = [[KBGradientView alloc] initWithFrame:CGRectMake(-100, -30, 1920+200, 320)];
+    KBGradientView *view = [[KBGradientView alloc] initWithFrame:CGRectMake(-100, -30, 1920+200, 620)];
     view.layer.startPoint = CGPointMake(0.5, 0);
     view.layer.endPoint = CGPointMake(0.5, 1);
     view.layer.type = kCAGradientLayerAxial;
@@ -99,8 +99,12 @@
     BOOL _displaysRemainingTime;
     BOOL _hasPlayingObserver;
     NSString *_title;
-    NSInteger _ffSpeed;
-    NSInteger _rewindSpeed;
+    KBSeekSpeed _ffSpeed;
+    KBSeekSpeed _rewindSpeed;
+    KBSeekSpeed _currentSeekSpeed;
+    NSArray <NSLayoutConstraint *> *leftHintConstraints;
+    NSArray <NSLayoutConstraint *> *rightHintConstraints;
+    
 }
 @property UITapGestureRecognizer *tapGestureRecognizer;
 @property UILongPressGestureRecognizer *leftLongPressGestureRecognizer;
@@ -151,29 +155,123 @@
 
 @implementation KBSlider
 
-- (void)setRewindSpeed:(NSInteger)rewindSpeed {
+- (KBSeekSpeed)currentSeekSpeed {
+    return _currentSeekSpeed;
+}
+
+- (KBSeekSpeed)increaseSeekSpeed {
+    switch(_currentSeekSpeed) {
+        case KBSeekSpeed1x:
+            [self setCurrentSeekSpeed:KBSeekSpeed2x];
+            break;
+        case KBSeekSpeed2x:
+            [self setCurrentSeekSpeed:KBSeekSpeed3x];
+            break;
+        case KBSeekSpeed3x:
+            [self setCurrentSeekSpeed:KBSeekSpeed4x];
+            break;
+        case KBSeekSpeed4x:
+            [self setCurrentSeekSpeed:KBSeekSpeedNone];
+            self.scrubMode = KBScrubModeNone;
+            [self seekResume];
+            break;
+        default:
+            break;
+    }
+    return _currentSeekSpeed;
+}
+
+- (void)setCurrentSeekSpeed:(KBSeekSpeed)seekSpeed {
+    _currentSeekSpeed = seekSpeed;
+    switch(self.scrubMode){
+        case KBScrubModeFastForward:
+            [self setFfSpeed:seekSpeed];
+            break;
+            
+        case KBScrubModeRewind:
+            [self setRewindSpeed:seekSpeed];
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)delayedResetScrubMode {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self setScrubMode:KBScrubModeNone];
+    });
+}
+
+- (void)seekResume {
+    _currentSeekSpeed = KBSeekSpeedNone;
+    CMTime newtime = CMTimeMakeWithSeconds(self.value, 600);
+    [_avPlayer seekToTime:newtime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    [self setCurrentTime:self.value];
+    [_avPlayer play];
+}
+
+- (KBSeekSpeed)decreaseSeekSpeed {
+    switch(_currentSeekSpeed) {
+        case KBSeekSpeed1x:
+            [self setCurrentSeekSpeed:KBSeekSpeedNone];
+            self.scrubMode = KBScrubModeNone;
+            [self seekResume];
+            //[self.avPlayer play];
+            break;
+        case KBSeekSpeed2x:
+            [self setCurrentSeekSpeed:KBSeekSpeed1x];
+            break;
+        case KBSeekSpeed3x:
+            [self setCurrentSeekSpeed:KBSeekSpeed2x];
+            break;
+        case KBSeekSpeed4x:
+            [self setCurrentSeekSpeed:KBSeekSpeed3x];
+            break;
+        default:
+            break;
+    }
+    return _currentSeekSpeed;
+}
+
+//the speeds are divided by 10 because when seeking a timer runs ever .1 seconds to update the slider value/current time.
+
+- (CGFloat)realSpeed:(KBSeekSpeed)inputSpeed {
+    switch (inputSpeed) {
+        case KBSeekSpeed1x: return 8.0/10;
+        case KBSeekSpeed2x: return 24.0/10;
+        case KBSeekSpeed3x: return 48.0/10;
+        case KBSeekSpeed4x: return 96.0/10;
+        default: return 8.0/10;
+    }
+    return 8.0/10;
+}
+
+- (void)setRewindSpeed:(KBSeekSpeed)rewindSpeed {
     _rewindSpeed = rewindSpeed;
-    if (rewindSpeed < 2){
+    _stepValue = [self realSpeed:rewindSpeed];
+    if (rewindSpeed < KBSeekSpeed2x){
         _rwLabel.text = @"";
     } else {
         _rwLabel.text = [NSString stringWithFormat:@"%lu", rewindSpeed];
     }
 }
 
-- (NSInteger)rewindSpeed {
+- (KBSeekSpeed)rewindSpeed {
     return _rewindSpeed;
 }
 
-- (void)setFfSpeed:(NSInteger)ffSpeed {
+- (void)setFfSpeed:(KBSeekSpeed)ffSpeed {
     _ffSpeed = ffSpeed;
-    if (_ffSpeed < 2){
+    _stepValue = [self realSpeed:ffSpeed];
+    if (_ffSpeed < KBSeekSpeed2x){
         _ffLabel.text = @"";
     } else {
         _ffLabel.text = [NSString stringWithFormat:@"%lu", ffSpeed];
     }
 }
 
-- (NSInteger)ffSpeed {
+- (KBSeekSpeed)ffSpeed {
     return _ffSpeed;
 }
 
@@ -216,11 +314,10 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"timeControlStatus"]) {
         AVPlayerTimeControlStatus changed = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
-        DLog(@"timeControlStatusChanged: %lu", changed);
+        //DLog(@"timeControlStatusChanged: %lu", changed);
         if (changed == AVPlayerTimeControlStatusPlaying) {
             [self setScrubMode:KBScrubModeNone];
         }
-        
     }
 }
 
@@ -272,6 +369,7 @@
     _minimumValue = _defaultMinimumValue;
     _maximumValue = _defaultMaximumValue;
     _stepValue = _defaultStepValue;
+    _currentSeekSpeed = KBSeekSpeedNone;
     [self setEnabled:true];
     
 }
@@ -294,6 +392,8 @@
     [_leftHintImageView.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
     [_rightHintImageView.leftAnchor constraintEqualToAnchor:currentTimeLabel.rightAnchor constant:10].active = true;
     [_rightHintImageView.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
+    leftHintConstraints = [_leftHintImageView autoConstrainToSize:CGSizeMake(36, 40)];
+    rightHintConstraints = [_rightHintImageView autoConstrainToSize:CGSizeMake(36, 40)];
     _rightHintImageView.alpha = 0;
     _leftHintImageView.alpha = 0;
     //[_leftHintImageView setImage:[KBSliderImages backwardsImage]];
@@ -333,6 +433,8 @@
         case KBScrubModeRewind:
             _leftHintImageView.alpha = 1;
             _rightHintImageView.alpha = 0;
+            leftHintConstraints[0].constant = 32;
+            leftHintConstraints[1].constant = 32;
             _leftHintImageView.image = [KBSliderImages backwardsImage];
             [self setDisplaysRemainingTime:true];
             break;
@@ -340,6 +442,8 @@
         case KBScrubModeFastForward:
             _leftHintImageView.alpha = 0;
             _rightHintImageView.alpha = 1;
+            rightHintConstraints[0].constant = 32;
+            rightHintConstraints[1].constant = 32;
             _rightHintImageView.image = [KBSliderImages forwardsImage];
             [self setDisplaysRemainingTime:true];
             break;
@@ -347,12 +451,16 @@
         case KBScrubModeSkippingForwards:
             _leftHintImageView.alpha = 0;
             _rightHintImageView.alpha = 1;
+            rightHintConstraints[0].constant = 36;
+            rightHintConstraints[1].constant = 40;
             _rightHintImageView.image = [KBSliderImages skipForwardsImage];
             break;
             
         case KBScrubModeSkippingBackwards:
             _leftHintImageView.alpha = 1;
             _rightHintImageView.alpha = 0;
+            leftHintConstraints[0].constant = 36;
+            leftHintConstraints[1].constant = 40;
             _leftHintImageView.image = [KBSliderImages skipBackwardsImage];
             break;
         
@@ -665,7 +773,7 @@
         self.stepValue = _defaultStepValue;
     } else {
         [self hideSliderAnimated:false];
-        self.stepValue = 10;
+        self.stepValue = [self realSpeed:KBSeekSpeed1x];
     }
 }
 
@@ -839,6 +947,10 @@
                 completion();
             }
         }];
+    } else {
+        if (completion){
+            completion();
+        }
     }
 }
 
@@ -951,13 +1063,13 @@
     }
     _ffLabel = [[UILabel alloc] initForAutoLayout];
     [self addSubview:_ffLabel];
-    [_ffLabel.leftAnchor constraintEqualToAnchor:_rightHintImageView.rightAnchor constant:10].active = true;
+    [_ffLabel.leftAnchor constraintEqualToAnchor:_rightHintImageView.rightAnchor constant:5].active = true;
     [_ffLabel.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
     _ffLabel.textColor = [UIColor whiteColor];
     _ffLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
     _rwLabel = [[UILabel alloc] initForAutoLayout];
     [self addSubview:_rwLabel];
-    [_rwLabel.rightAnchor constraintEqualToAnchor:_leftHintImageView.leftAnchor constant:-10].active = true;
+    [_rwLabel.rightAnchor constraintEqualToAnchor:_leftHintImageView.leftAnchor constant:-5].active = true;
     [_rwLabel.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
     _rwLabel.textColor = [UIColor whiteColor];
     _rwLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
@@ -965,6 +1077,8 @@
 }
 
 - (void)setUpTransportViews {
+    
+    CGFloat timePadding = 10;
     
     [self removeTransportViewsIfNecessary];
     currentTimeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -984,9 +1098,9 @@
     [self addSubview:durationLabel];
     durationLabel.textAlignment = NSTextAlignmentCenter;
     [currentTimeLabel.centerXAnchor constraintEqualToAnchor:self.thumbView.centerXAnchor].active = true;
-    [currentTimeLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:5].active = true;
+    [currentTimeLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:timePadding].active = true;
     currentTimeLabel.text = [self elapsedTimeFormatted];
-    [durationLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:5].active = true;
+    [durationLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:timePadding].active = true;
     [durationLabel.trailingAnchor constraintEqualToAnchor:self.trackView.trailingAnchor].active = true;
     durationLabel.text = [NSString stringWithFormat:@"%.0f", _totalDuration];
     scrubTimeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -997,7 +1111,7 @@
     [self setUpScrubView];
     [self setUpScrubViewConstraints];
     [scrubTimeLabel.centerXAnchor constraintEqualToAnchor:self.scrubView.centerXAnchor].active = true;
-    [scrubTimeLabel.bottomAnchor constraintEqualToAnchor:self.scrubView.topAnchor constant:5].active = true;
+    [scrubTimeLabel.bottomAnchor constraintEqualToAnchor:self.scrubView.topAnchor constant:timePadding].active = true;
     gradient = [KBGradientView standardGradientView];
     [self insertSubview:gradient atIndex:0];
     [self createHintImageViews];
@@ -1120,6 +1234,40 @@
     _scrubViewCenterXConstraint.active = true;
 }
 
+/*
+ 
+ Dedicated fast forward and rewind buttons For remotes with dedicated fast forward and rewind buttons, a short press will initiate a continuous
+ seek forward or backward. Each subsequent press of that button will increase the seek rate. Once someone passes the last seek rate, the player
+ returns to its normal playback rate. If the opposite button is pressed while seeking, it decreases the seek rate; each subsequent press will do
+ the same until the player returns to its normal playback rate.
+ 
+ */
+
+- (KBSeekSpeed)handleSeekingPressType:(UIPressType)pressType {
+    NSLog(@"[Ethereal] handle Seeking Press type: %lu", pressType);
+    switch (pressType) {
+        case UIPressTypeLeftArrow:
+            if (_currentSeekSpeed != KBSeekSpeedNone){
+                if (self.scrubMode == KBScrubModeRewind) { //rewinding and left pressed, increase rewind speed
+                    [self increaseSeekSpeed];
+                } else if (self.scrubMode == KBScrubModeFastForward) { //ff and left pressed, decrease rewind speed
+                    [self decreaseSeekSpeed];
+                }
+            }
+            break;
+        case UIPressTypeRightArrow:
+            if (self.scrubMode == KBScrubModeRewind) { //rewinding and right pressed, decrase rewind speed
+                [self decreaseSeekSpeed];
+            } else if (self.scrubMode == KBScrubModeFastForward) { //ff and right pressed, increase seek speed
+                [self increaseSeekSpeed];
+            }
+            break;
+            
+        default:
+            break;
+    }
+    return _currentSeekSpeed;
+}
 
 - (void)setUpGestures {
     
@@ -1151,31 +1299,31 @@
 - (void)longLeftPressTriggered:(UILongPressGestureRecognizer *)gestureRecognizer {
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStateBegan:
-            DLog(@"long press began");
+            //DLog(@"long press began");
             if (_dPadState == DPadStateLeft){
-                DLog(@"long press left");
+                //DLog(@"long press left");
                 if (self.scanStartedBlock){
-                    self.scanStartedBlock(self.currentTime, 0);
+                    self.scanStartedBlock(self.currentTime, KBSeekDirectionRewind);
                 }
             } else if (_dPadState == DPadStateRight) {
-                DLog(@"long press right");
+                //DLog(@"long press right");
                 if (self.scanStartedBlock){
-                    self.scanStartedBlock(self.currentTime, 1);
+                    self.scanStartedBlock(self.currentTime, KBSeekDirectionFastForward);
                 }
             }
             break;
             
         case UIGestureRecognizerStateEnded:
-            DLog(@"long press ended");
+            //DLog(@"long press ended");
             if (_dPadState == DPadStateLeft){
-                DLog(@"long press left ended");
+                //DLog(@"long press left ended");
                 if (self.scanEndedBlock){
-                    self.scanEndedBlock(0);
+                    self.scanEndedBlock(KBSeekDirectionRewind);
                 }
             } else if (_dPadState == DPadStateRight) {
-                DLog(@"long press right ended");
+                //DLog(@"long press right ended");
                 if (self.scanEndedBlock){
-                    self.scanEndedBlock(1);
+                    self.scanEndedBlock(KBSeekDirectionFastForward);
                 }
             }
             break;
@@ -1308,67 +1456,12 @@
 
 #pragma mark - Actions
 
-- (void)nowPlayingGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
-    if ([self isVerticalGesture:panGestureRecognizer]){
-        //DLog(@"is vertical gesture?");
-        //return;
-    }
-    CGFloat translation = [panGestureRecognizer translationInView:self].x;
-    CGFloat velocity = [panGestureRecognizer velocityInView:self].x;
-    NSTimeInterval inBetweenTime = 0;
-    switch(panGestureRecognizer.state){
-        case UIGestureRecognizerStateBegan:
-            _touchBeganTime = [[NSDate date] timeIntervalSince1970];
-            //NSLog(@"began translation: %.0f velocity: %.0f at interval: %f dpadstate: %lu", translation, velocity, _touchBeganTime, _dPadState);
-            break;
-        
-        case UIGestureRecognizerStateChanged:
-            inBetweenTime =[[NSDate date] timeIntervalSince1970] - _touchBeganTime;
-            if (_dPadState == DPadStateRight){
-                
-                
-                //if (self.avPlayer.rate != 8.0){
-                    //NSLog(@"fast forward?");
-                //    self.avPlayer.rate = MIN(self.avPlayer.rate + 8.0, 8.0);
-                //}
-                [self setScrubMode:KBScrubModeFastForward];
-            } else if (_dPadState == DPadStateLeft){
-                //if (self.avPlayer.rate != -8.0){
-                    //NSLog(@"rewind?");
-                [self setScrubMode:KBScrubModeRewind];
-                  //  self.avPlayer.rate = MIN(self.avPlayer.rate - 8.0, - 8.0);
-                //}
-                //self.avPlayer.play;
-            } else {
-                
-                [self setScrubMode:KBScrubModeNone];
-                //self.avPlayer.rate = 1.0;
-                //[self.avPlayer play];
-            }
-            //NSLog(@"changed translation: %.0f velocity: %.0f at interval: %f, dpadstate: %lu", translation, velocity, inBetweenTime, _dPadState);
-            break;
-            
-        case UIGestureRecognizerStateEnded:
-            //self.avPlayer.rate = 1.0;
-            //[self.avPlayer play];
-            inBetweenTime =[[NSDate date] timeIntervalSince1970] - _touchBeganTime;
-            //NSLog(@"ended translation: %.0f velocity: %.0f at interval: %f", translation, velocity, inBetweenTime);
-            break;
-            
-        default:
-            break;
-    }
-    
-}
-
 - (void)panGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
     if (self.sliderMode == KBSliderModeTransport){
         if (![self _isVisible] && self.userInteractionEnabled){
             [self fadeIn];
         }
         if (self.isPlaying){
-            //NSLog(@"isplaying return");
-            //[self nowPlayingGestureWasTriggered:panGestureRecognizer];
             return;
         }
     }
