@@ -13,6 +13,8 @@
 #import "KBAVInfoViewController.h"
 #import "SDWebImageManager.h"
 #import <MediaPlayer/MediaPlayer.h>
+#import "KBSliderImages.h"
+#import "UIView+AL.h"
 
 @import tvOSAVPlayerTouch;
 
@@ -21,6 +23,7 @@
     NSTimer *_ffTimer;
 }
 @property KBSlider *transportSlider;
+@property KBButton *subtitleButton;
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
 @property KBAVInfoViewController *avInfoViewController;
 
@@ -572,9 +575,15 @@
                 
             case UIPressTypeMenu:
                 break;
+           
+            case UIPressTypeSelect:
+                if ([_transportSlider isFocused]){
+                    [self togglePlayPause];
+                }
+                break;
                 
             case UIPressTypePlayPause:
-            case UIPressTypeSelect:
+           
                 
                 //NSLog(@"[Ethereal] play pause");
                 [self togglePlayPause];
@@ -700,7 +709,37 @@
             [_transportSlider setIsContinuous:false];
             [_transportSlider setTotalDuration:_avplayController.duration];
             [_transportSlider setAvPlayer:self.player];
+            
+            _subtitleButton = [KBButton buttonWithType:KBButtonTypeImage];
+            _subtitleButton.buttonImageView.image = [KBSliderImages captionsImage];
+            _subtitleButton.alpha = 0;
+            [_subtitleButton autoConstrainToSize:CGSizeMake(68, 68)];
+            [_glView addSubview:_subtitleButton];
+            [self updateSubtitleButtonState];
+            [_subtitleButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
+            [_subtitleButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
+            _subtitleButton.layer.masksToBounds = true;
+            _subtitleButton.layer.cornerRadius = 68/2;
+            [_subtitleButton addTarget:self action:@selector(subtitleButtonClicked) forControlEvents:UIControlEventPrimaryActionTriggered];
+            
             @weakify(self);
+            
+            _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
+                if (animated) {
+                    [UIView animateWithDuration:0.3 animations:^{
+                        self_weak_.subtitleButton.alpha = direction;
+                    } completion:^(BOOL finished) {
+                        if (direction == 0) {
+                            if ([self_weak_.subtitleButton isFocused]){
+                                [self_weak_ setNeedsFocusUpdate];
+                            }
+                        }
+                    }];
+                } else {
+                    self_weak_.subtitleButton.alpha = direction;
+                }
+            };
+            
             _transportSlider.timeSelectedBlock = ^(CGFloat currentTime) {
                 if (currentTime < self_weak_.avPlayController.duration) {
                     [self_weak_.avPlayController seekto:currentTime];
@@ -729,6 +768,32 @@
         UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"The video failed to load!" message:[NSString stringWithFormat:@"The video failed to load with error: %@", error.localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:true completion:nil];
+    }
+}
+
+- (void)subtitleButtonClicked {
+    FFAVPlayerController *player = (FFAVPlayerController*)[self player];
+    if ([player respondsToSelector:@selector(switchSubtitleStream:)]){
+        if ([player enableBuiltinSubtitleRender]) {
+            [player setEnableBuiltinSubtitleRender:false];
+        } else {
+            [player setEnableBuiltinSubtitleRender:true];
+            [player switchSubtitleStream:0];
+        }
+    }
+    [self updateSubtitleButtonState];
+}
+
+- (BOOL)subtitlesOn {
+    FFAVPlayerController *player = (FFAVPlayerController*)[self player];
+    return [player enableBuiltinSubtitleRender];
+}
+
+- (void)updateSubtitleButtonState {
+    if ([self subtitlesOn]) {
+        self.subtitleButton.buttonImageView.alpha = 1.0;
+    } else {
+        self.subtitleButton.buttonImageView.alpha = 0.5;
     }
 }
 

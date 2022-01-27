@@ -27,8 +27,6 @@ typedef NS_ENUM(NSInteger, KBButtonType) {
 - (void)setTitle:(nullable NSString *)title forState:(UIControlState)state;
 @end
 
-
-
 typedef NS_ENUM(NSInteger, KBAVInfoStyle) {
     KBAVInfoStyleLegacy,
     KBAVInfoStyleNew,
