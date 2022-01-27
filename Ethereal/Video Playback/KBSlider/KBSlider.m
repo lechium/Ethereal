@@ -186,10 +186,12 @@
     switch(self.scrubMode){
         case KBScrubModeFastForward:
             [self setFfSpeed:seekSpeed];
+            [self setDisplaysRemainingTime:true];
             break;
             
         case KBScrubModeRewind:
             [self setRewindSpeed:seekSpeed];
+            [self setDisplaysRemainingTime:true];
             break;
             
         default:
@@ -401,6 +403,7 @@
 }
 
 - (void)toggleVisibleTimerLabels {
+    if (self.currentSeekSpeed != KBSeekSpeedNone) return;
     if (self.trackView.alpha == 0){
         [self fadeIn];
         self.displaysRemainingTime = true;
@@ -1462,6 +1465,9 @@
             [self fadeIn];
         }
         if (self.isPlaying){
+            return;
+        }
+        if (self.currentSeekSpeed != KBSeekSpeedNone) {
             return;
         }
     }

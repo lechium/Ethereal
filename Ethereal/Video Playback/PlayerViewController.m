@@ -351,12 +351,16 @@
 
 - (void)handleRightLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [_ffTimer invalidate];
+        [_rewindTimer invalidate];
         [self startFastForwarding];
     }
 }
 
 - (void)handleLeftLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [_ffTimer invalidate];
+        [_rewindTimer invalidate];
         [self startRewinding];
     }
 }
