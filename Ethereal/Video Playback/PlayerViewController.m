@@ -17,25 +17,12 @@
 @import tvOSAVPlayerTouch;
 
 @interface PlayerViewController () <FFAVPlayerControllerDelegate> {
-    BOOL _ffActive;
-    BOOL _rwActive;
-    NSTimer *_rightHoldTimer;
-    NSTimer *_leftHoldTimer;
     NSTimer *_rewindTimer;
     NSTimer *_ffTimer;
 }
 @property KBSlider *transportSlider;
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
 @property KBAVInfoViewController *avInfoViewController;
-
-/*
- @objc var rightHoldTimer = Timer()
- @objc var leftHoldTimer = Timer()
- @objc var rewindTimer = Timer()
- @objc var ffTimer = Timer()
- @objc var ffActive = false
- @objc var rwActive = false
- */
 
 @end
 
@@ -44,7 +31,6 @@
     UIView *_glView;
     NSURL *_mediaURL;
 }
-
 
 
 - (BOOL)avInfoPanelShowing {
@@ -327,13 +313,10 @@
 }
 
 - (void)leftTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"[Ethereal] leftTapHandler");
     if (!_transportSlider.isFocused) {
         return;
     }
-    NSLog(@"[Ethereal] passed focus check: %lu", gestureRecognizer.state);
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"[Ethereal] UIGestureRecognizerStateEnded");
         if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
             KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeLeftArrow];
             if (speed == KBSeekSpeedNone) {
@@ -347,22 +330,17 @@
 }
 
 - (void)rightTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"[Ethereal] rightTapHandler");
     if (!_transportSlider.isFocused) {
         return;
     }
-    NSLog(@"[Ethereal] passed focus check: %lu", gestureRecognizer.state);
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"[Ethereal] UIGestureRecognizerStateEnded: %lu", _transportSlider.currentSeekSpeed);
         if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
-            NSLog(@"[Ethereal] is seeking");
             KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeRightArrow];
             if (speed == KBSeekSpeedNone) {
                 [_rewindTimer invalidate];
                 [_ffTimer invalidate];
             }
         } else {
-            NSLog(@"[Ethereal] is not seeking");
             [self stepVideoForwards];
         }
     }
@@ -511,7 +489,6 @@
 }
 
 - (void)startFastForwarding {
-    _ffActive = true;
     self.transportSlider.scrubMode = KBScrubModeFastForward;
     self.transportSlider.currentSeekSpeed = KBSeekSpeed1x;
     [self.transportSlider fadeInIfNecessary];
@@ -525,7 +502,6 @@
 }
 
 - (void)stopFastForwarding {
-    _ffActive = false;
     [_ffTimer invalidate];
     [_avplayController seekto:self.transportSlider.value];
     [_avplayController setPlaybackSpeed:1.0];
@@ -533,7 +509,6 @@
 }
 
 - (void)startRewinding {
-    _rwActive = true;
     self.transportSlider.scrubMode = KBScrubModeRewind;
     self.transportSlider.currentSeekSpeed = KBSeekSpeed1x;
     [self.transportSlider fadeInIfNecessary];
@@ -547,7 +522,6 @@
 }
 
 - (void)stopRewinding {
-    _rwActive = false;
     [_rewindTimer invalidate];
     [_avplayController seekto:self.transportSlider.value];
     [_avplayController setPlaybackSpeed:1.0];
@@ -564,24 +538,7 @@
             case UIPressTypeMenu:
                 //[_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
                 break;
-                /*
-            case UIPressTypeRightArrow: {
-                if (![self avInfoPanelShowing]) {
-                    _rightHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
-                        [self startFastForwarding];
-                    }];
-                }
-            }
-                break;
-                
-            case UIPressTypeLeftArrow: {
-                if (![self avInfoPanelShowing]) {
-                    _leftHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
-                        [self startRewinding];
-                    }];
-                }
-            }
-                 */
+    
             default:
                 [super pressesBegan:presses withEvent:event];
                 break;
@@ -622,32 +579,6 @@
                 //NSLog(@"[Ethereal] play pause");
                 [self togglePlayPause];
                 break;
-                /*
-            case UIPressTypeLeftArrow:
-                
-                if (![self avInfoPanelShowing]) {
-                    [_leftHoldTimer invalidate];
-                    if (_rwActive) {
-                        self.transportSlider.scrubMode = KBScrubModeNone;
-                        [self stopRewinding];
-                    } else {
-                        [self stepVideoBackwards];
-                    }
-                }
-                break;
-                
-            case UIPressTypeRightArrow:
-                if (![self avInfoPanelShowing]) {
-                    [_rightHoldTimer invalidate];
-                    if (_ffActive) {
-                        self.transportSlider.scrubMode = KBScrubModeNone;
-                        [self stopFastForwarding];
-                    } else {
-                        [self stepVideoForwards];
-                    }
-                }
-                break;
-                */
             case UIPressTypeUpArrow:
                 if ([self.avInfoViewController shouldDismissView]){
                     [self hideAVInfoView]; //need to make this one smarter
