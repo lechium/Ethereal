@@ -10,8 +10,12 @@ DPKG_DEBIAN_PATH="$LAYOUT"/DEBIAN
 
 #you can quite likely comment this line out.
 #sudo xcode-select -s ~/Desktop/Xcode.app/Contents/Developer/
-sudo rm -rf layout/Applications/
-sudo chown -R $whoami:staff layout/
+#sudo rm -rf layout/Applications/
+#sudo chown -R $whoami:staff layout/
+
+rm -rf layout/Applications
+chown -R $whoami:staff layout
+
 #rm -rf build
 
 echo -s "Making the Application...\n"
@@ -27,11 +31,13 @@ echo "current version: $currentversion"
 packagename="com.nito.ethereal_${currentversion}_appletvos-arm64.deb"
 
 echo -s "Signing the package...\n"
-sudo ldid2 -Sappent.plist layout/Applications/Ethereal.app/Ethereal
+#sudo ldid2 -Sappent.plist layout/Applications/Ethereal.app/Ethereal
+ldid2 -Sappent.plist layout/Applications/Ethereal.app/Ethereal
 
 echo -s "Updating owners & permissions...\n"
-sudo chown -R root:wheel layout/Applications
-sudo rm -rf layout/Applications/*.app/_CodeSignature
+#sudo chown -R root:wheel layout/Applications
+#sudo rm -rf layout/Applications/*.app/_CodeSignature
+rm -rf layout/Applications/*.app/_CodeSignature
 
 echo -s "Creating deb...\n"
 echo $packagename
@@ -44,9 +50,7 @@ if [ "$#" == "1" ]; then
     ssh root@$1 "killall -9 ethereald Ethereal"
     ssh root@$1 "lsdtrip launch com.nito.Ethereal"
     #ssh root@$1 "syslog -w"
-
 fi
-
 
 
 

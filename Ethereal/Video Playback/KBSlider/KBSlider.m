@@ -186,11 +186,13 @@
     switch(self.scrubMode){
         case KBScrubModeFastForward:
             [self setFfSpeed:seekSpeed];
+            _rwLabel.text = @"";
             [self setDisplaysRemainingTime:true];
             break;
             
         case KBScrubModeRewind:
             [self setRewindSpeed:seekSpeed];
+            _ffLabel.text = @"";
             [self setDisplaysRemainingTime:true];
             break;
             
