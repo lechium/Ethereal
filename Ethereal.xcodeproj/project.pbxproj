@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3214FD8727AA3BDB00AEFBA0 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3214FD8627AA3BDB00AEFBA0 /* KBBulletinView.m */; };
+		3220EDCD27AD00D000CF05A1 /* SGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */; };
+		3220EDCF27AD03C600CF05A1 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; };
+		3220EDD027AD03C600CF05A1 /* SGPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		323DEC1D27A39033009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC0C27A39032009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m */; };
+		323DEC1E27A39033009F7DB7 /* KBAVInfoPanelContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC0E27A39032009F7DB7 /* KBAVInfoPanelContentViewController.m */; };
+		323DEC1F27A39033009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1027A39032009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.m */; };
+		323DEC2027A39033009F7DB7 /* KBButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1227A39032009F7DB7 /* KBButton.m */; };
+		323DEC2127A39033009F7DB7 /* KBAVMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1327A39032009F7DB7 /* KBAVMetaData.m */; };
+		323DEC2227A39033009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1427A39032009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.m */; };
+		323DEC2327A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1527A39032009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m */; };
+		323DEC2427A39033009F7DB7 /* KBAVInfoPanelMediaOption.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1727A39032009F7DB7 /* KBAVInfoPanelMediaOption.m */; };
+		323DEC2527A39033009F7DB7 /* KBAVInfoPanelDescriptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1927A39033009F7DB7 /* KBAVInfoPanelDescriptionViewController.m */; };
 		3247C3AB25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */; };
 		327D3FDF2324E512000EC3C1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FDE2324E512000EC3C1 /* AppDelegate.m */; };
 		327D3FE22324E512000EC3C1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FE12324E512000EC3C1 /* ViewController.m */; };
@@ -80,7 +93,41 @@
 		32E0A8062794C242006FB9B0 /* AVAsset+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A8052794C242006FB9B0 /* AVAsset+Extras.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		3220EDD127AD03C600CF05A1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3220EDD027AD03C600CF05A1 /* SGPlayer.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		3214FD8527AA3BDB00AEFBA0 /* KBBulletinView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBBulletinView.h; path = ../../../../../Downloads/KBBulletinView/KBBulletinView.h; sourceTree = "<group>"; };
+		3214FD8627AA3BDB00AEFBA0 /* KBBulletinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBBulletinView.m; path = ../../../../../Downloads/KBBulletinView/KBBulletinView.m; sourceTree = "<group>"; };
+		323DEC0B27A39032009F7DB7 /* KBAVInfoPanelMediaOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelMediaOption.h; sourceTree = "<group>"; };
+		323DEC0C27A39032009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelSubtitleCollectionViewController.m; sourceTree = "<group>"; };
+		323DEC0D27A39032009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelMediaOptionCollectionViewController.h; sourceTree = "<group>"; };
+		323DEC0E27A39032009F7DB7 /* KBAVInfoPanelContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelContentViewController.m; sourceTree = "<group>"; };
+		323DEC0F27A39032009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelSubtitleCollectionViewController.h; sourceTree = "<group>"; };
+		323DEC1027A39032009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelCollectionViewTextCell.m; sourceTree = "<group>"; };
+		323DEC1127A39032009F7DB7 /* KBAVMetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVMetaData.h; sourceTree = "<group>"; };
+		323DEC1227A39032009F7DB7 /* KBButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBButton.m; sourceTree = "<group>"; };
+		323DEC1327A39032009F7DB7 /* KBAVMetaData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVMetaData.m; sourceTree = "<group>"; };
+		323DEC1427A39032009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelMediaOptionCollectionViewController.m; sourceTree = "<group>"; };
+		323DEC1527A39032009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelSubtitlesViewController.m; sourceTree = "<group>"; };
+		323DEC1627A39032009F7DB7 /* KBAVInfoPanelDescriptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelDescriptionViewController.h; sourceTree = "<group>"; };
+		323DEC1727A39032009F7DB7 /* KBAVInfoPanelMediaOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelMediaOption.m; sourceTree = "<group>"; };
+		323DEC1827A39033009F7DB7 /* KBAVInfoPanelContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelContentViewController.h; sourceTree = "<group>"; };
+		323DEC1927A39033009F7DB7 /* KBAVInfoPanelDescriptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelDescriptionViewController.m; sourceTree = "<group>"; };
+		323DEC1A27A39033009F7DB7 /* KBButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBButton.h; sourceTree = "<group>"; };
+		323DEC1B27A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelSubtitlesViewController.h; sourceTree = "<group>"; };
+		323DEC1C27A39033009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelCollectionViewTextCell.h; sourceTree = "<group>"; };
 		3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOSAVPlayerTouch.framework; path = "com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks/tvOSAVPlayerTouch.framework"; sourceTree = "<group>"; };
 		327B3EA72327694B00377FAE /* makeLatest.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = makeLatest.sh; sourceTree = "<group>"; };
 		327D3FDA2324E512000EC3C1 /* Ethereal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ethereal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -243,6 +290,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				328719F92781450300595420 /* AVKit.framework in Frameworks */,
+				3220EDCF27AD03C600CF05A1 /* SGPlayer.framework in Frameworks */,
 				32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */,
 				328B5FDE26F6E31700303CE2 /* MediaRemote.framework in Frameworks */,
 				32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */,
@@ -526,6 +574,26 @@
 				32E0A7EB2793A36A006FB9B0 /* Categories */,
 				32E0A7F02793A36A006FB9B0 /* KBAVInfoViewController.h */,
 				32E0A7EA2793A36A006FB9B0 /* KBAVInfoViewController.m */,
+				323DEC1C27A39033009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.h */,
+				323DEC1027A39032009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.m */,
+				323DEC1827A39033009F7DB7 /* KBAVInfoPanelContentViewController.h */,
+				323DEC0E27A39032009F7DB7 /* KBAVInfoPanelContentViewController.m */,
+				323DEC1627A39032009F7DB7 /* KBAVInfoPanelDescriptionViewController.h */,
+				323DEC1927A39033009F7DB7 /* KBAVInfoPanelDescriptionViewController.m */,
+				323DEC0B27A39032009F7DB7 /* KBAVInfoPanelMediaOption.h */,
+				323DEC1727A39032009F7DB7 /* KBAVInfoPanelMediaOption.m */,
+				323DEC0D27A39032009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.h */,
+				323DEC1427A39032009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.m */,
+				323DEC0F27A39032009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.h */,
+				323DEC0C27A39032009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m */,
+				323DEC1B27A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.h */,
+				323DEC1527A39032009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m */,
+				323DEC1127A39032009F7DB7 /* KBAVMetaData.h */,
+				323DEC1327A39032009F7DB7 /* KBAVMetaData.m */,
+				3214FD8527AA3BDB00AEFBA0 /* KBBulletinView.h */,
+				3214FD8627AA3BDB00AEFBA0 /* KBBulletinView.m */,
+				323DEC1A27A39033009F7DB7 /* KBButton.h */,
+				323DEC1227A39032009F7DB7 /* KBButton.m */,
 			);
 			path = KBAVInfoViewController;
 			sourceTree = "<group>";
@@ -574,6 +642,7 @@
 				327D3FD72324E512000EC3C1 /* Frameworks */,
 				327D3FD82324E512000EC3C1 /* Resources */,
 				327D40732326D6F6000EC3C1 /* ShellScript */,
+				3220EDD127AD03C600CF05A1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -651,7 +720,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#exit 0\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atv.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$DPKG_BUILD_PATH\"/Applications\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n\n\nexit 0\n";
+			shellScript = "#exit 0\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atv.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$DPKG_BUILD_PATH\"/Applications\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\necho \"cp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\"\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -669,16 +738,23 @@
 				327D403E23265AEB000EC3C1 /* MKAnnotationView+WebCache.m in Sources */,
 				32E0A7F92793A36A006FB9B0 /* KBSlider.m in Sources */,
 				32DFF9A726F4985B004071B3 /* KBMediaAsset.m in Sources */,
+				323DEC1D27A39033009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m in Sources */,
 				327D403D23265AEB000EC3C1 /* FLAnimatedImageView+WebCache.m in Sources */,
 				327D3FE22324E512000EC3C1 /* ViewController.m in Sources */,
+				323DEC2127A39033009F7DB7 /* KBAVMetaData.m in Sources */,
 				327D40012324FCE1000EC3C1 /* PlayerViewController.m in Sources */,
 				327D404023265AEB000EC3C1 /* NSImage+WebCache.m in Sources */,
 				327D404823265AEB000EC3C1 /* UIButton+WebCache.m in Sources */,
 				327D404523265AEB000EC3C1 /* SDWebImageDownloaderOperation.m in Sources */,
 				327D405223265BA3000EC3C1 /* UIViewController+Additions.m in Sources */,
+				323DEC2027A39033009F7DB7 /* KBButton.m in Sources */,
 				327D401323265A78000EC3C1 /* ALView+PureLayout.m in Sources */,
 				32E0A7FB2793A36A006FB9B0 /* KBAVInfoViewController.m in Sources */,
 				327D404223265AEB000EC3C1 /* SDWebImageCompat.m in Sources */,
+				323DEC2527A39033009F7DB7 /* KBAVInfoPanelDescriptionViewController.m in Sources */,
+				323DEC1F27A39033009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.m in Sources */,
+				3214FD8727AA3BDB00AEFBA0 /* KBBulletinView.m in Sources */,
+				323DEC2427A39033009F7DB7 /* KBAVInfoPanelMediaOption.m in Sources */,
 				327D401423265A78000EC3C1 /* NSArray+PureLayout.m in Sources */,
 				327D404A23265AEB000EC3C1 /* UIImage+MultiFormat.m in Sources */,
 				32E0A7FE2793A36A006FB9B0 /* NSString+Truncate.m in Sources */,
@@ -700,6 +776,7 @@
 				32DFF9A326F49605004071B3 /* KBVideoPlaybackManager.m in Sources */,
 				32E0A7FD2793A36A006FB9B0 /* UIView+AL.m in Sources */,
 				327D404B23265AEB000EC3C1 /* UIImage+WebP.m in Sources */,
+				323DEC1E27A39033009F7DB7 /* KBAVInfoPanelContentViewController.m in Sources */,
 				327D404623265AEB000EC3C1 /* SDWebImageManager.m in Sources */,
 				327D403F23265AEB000EC3C1 /* NSData+ImageContentType.m in Sources */,
 				327D406923265DBE000EC3C1 /* SVIndefiniteAnimatedView.m in Sources */,
@@ -709,9 +786,12 @@
 				327D3FDF2324E512000EC3C1 /* AppDelegate.m in Sources */,
 				328B5FDB26F6A1E000303CE2 /* KBPlayerViewController.m in Sources */,
 				327D405B23265CD9000EC3C1 /* UIWindow+Additions.m in Sources */,
+				3220EDCD27AD00D000CF05A1 /* SGPlayerViewController.m in Sources */,
 				328B5FE526F6F08300303CE2 /* UIViewController+Presentation.m in Sources */,
+				323DEC2327A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m in Sources */,
 				327D404123265AEB000EC3C1 /* SDImageCache.m in Sources */,
 				328B5FF526F700A500303CE2 /* EXTRuntimeExtensions.m in Sources */,
+				323DEC2227A39033009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.m in Sources */,
 				327D405523265C3A000EC3C1 /* UIView+RecursiveFind.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

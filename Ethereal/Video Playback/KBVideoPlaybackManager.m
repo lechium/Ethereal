@@ -13,6 +13,8 @@
 #import <MediaRemote/MediaRemote.h>
 #import "NSData+Flip.h"
 #import "NSTask.h"
+#import "SGPlayerViewController.h"
+//#define USE_SG_PLAYER
 
 @interface AVPlayerViewController (hax)
 @property (nonatomic, strong) NSURL *mediaURL;

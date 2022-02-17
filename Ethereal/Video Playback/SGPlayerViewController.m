@@ -10,8 +10,10 @@
 #import <SGPlayer/SGPlayer.h>
 #import "KBSlider.h"
 
-@interface SGPlayerViewController ()
-@property (nonatomic, strong) SGPlayer *player;
+@interface SGPlayerViewController () {
+    SGPlayer *_player;
+}
+//@property (nonatomic, strong) SGPlayer *player;
 @property KBSlider *transportSlider;
 @end
 
@@ -28,12 +30,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.player = [[SGPlayer alloc] init];
+    UITapGestureRecognizer *menuTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuTapped:)];
+    menuTap.numberOfTapsRequired = 1;
+    menuTap.allowedPressTypes = @[@(UIPressTypeMenu)];
+    [self.view addGestureRecognizer:menuTap];
     // Do any additional setup after loading the view.
+}
+
+- (id <KBVideoPlayerProtocol>)player {
+    return _player;
+}
+
+- (void)setPlayer:(id<KBVideoPlayerProtocol>)player {
+    _player = player;
 }
 
 - (void)sliderMoved:(KBSlider *)slider {
     
-    SGTimeInfo time = self.player.timeInfo;
+    SGPlayer *playerCast = (SGPlayer *)self.player;
+    
+    SGTimeInfo time = playerCast.timeInfo;
     //NSTimeInterval elapsed = CMTimeGetSeconds(time.playback);
     NSTimeInterval duration = CMTimeGetSeconds(time.duration);
     CMTime seekTime = CMTimeMakeWithSeconds(slider.value, time.duration.timescale);
@@ -48,9 +64,31 @@
         if (!CMTIME_IS_NUMERIC(seekTime)) {
             seekTime = kCMTimeZero;
         }
-        [self.player seekToTime:seekTime result:^(CMTime time, NSError *error) {
+        [playerCast seekToTime:seekTime result:^(CMTime time, NSError *error) {
             //self.seeking = NO;
         }];
+    }
+}
+
+- (BOOL)avInfoPanelShowing {
+    return false;
+}
+
+- (void)hideAVInfoView {
+    
+}
+
+- (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
+    NSLog(@"[Ethereal] menu tapped");
+    if (gestRecognizer.state == UIGestureRecognizerStateEnded){
+        if ([self avInfoPanelShowing]) {
+            [self hideAVInfoView];
+        } else {
+            //[_avplayController pause];
+            [self.player pause];
+            self.player = nil;
+            [self dismissViewControllerAnimated:true completion:nil];
+        }
     }
 }
 
@@ -58,7 +96,7 @@
 {
     
     //NSLog(@"[Ethereal] pressesEnded: %@", presses);
-    SGStateInfo currentState = self.player.sstateInfo;
+    SGStateInfo currentState = [(SGPlayer *)[self player] sstateInfo];
     
     for (UIPress *press in presses)
     {
@@ -132,8 +170,10 @@
     NSLog(@"[Ethereal] URL: %@", self.mediaURL);
     SGAsset *asset = [[SGURLAsset alloc] initWithURL:_mediaURL];
     NSLog(@"[Ethereal] asset: %@", asset);
-    self.player.videoRenderer.view = self.view;
-    [self.player replaceWithAsset:asset];
+    [[(SGPlayer *)[self player] videoRenderer] setView:self.view];
+    //self.player.videoRenderer.view = self.view;
+    [(SGPlayer *)[self player] replaceWithAsset:asset];
+    //[self.player replaceWithAsset:asset];
     [self.player play];
     [_transportSlider setSliderMode:KBSliderModeTransport];
     [_transportSlider setCurrentTime:0];

@@ -15,6 +15,7 @@
 #import "KBVideoPlaybackManager.h"
 #import "UIViewController+Presentation.h"
 #import "KBAirDropHelper.h"
+#import "KBBulletinView.h"
 
 //#import "SGPlayerViewController.h"
 
@@ -24,6 +25,11 @@
 @end
 
 @implementation ViewController
+
+- (void)showSampleBulletin {
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:@"Test Title" description:@"Test Description" image:[UIImage imageNamed:@"video-icon"]];
+    [bv showForTime:5];
+}
 
 - (void)enterDirectory {
     NSIndexPath *ip = [self savedIndexPath];

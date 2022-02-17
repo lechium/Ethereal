@@ -19,6 +19,10 @@
 @import tvOSAVPlayerTouch;
 
 @interface PlayerViewController () <FFAVPlayerControllerDelegate> {
+    BOOL _ffActive;
+    BOOL _rwActive;
+    NSTimer *_rightHoldTimer;
+    NSTimer *_leftHoldTimer;
     NSTimer *_rewindTimer;
     NSTimer *_ffTimer;
 }
@@ -227,6 +231,7 @@
     menuTap.allowedPressTypes = @[@(UIPressTypeMenu)];
     [self.view addGestureRecognizer:menuTap];
     
+    /*
     UITapGestureRecognizer *leftTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftTapHandler:)];
     leftTap.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
     [self.view addGestureRecognizer:leftTap];
@@ -244,7 +249,7 @@
     longLeftPress.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
     [longLeftPress requireGestureRecognizerToFail:leftTap];
     [self.view addGestureRecognizer:longLeftPress];
-    
+    */
     /*
     UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTap:)];
     doubleTap.numberOfTapsRequired = 2;
@@ -496,6 +501,8 @@
 }
 
 - (void)startFastForwarding {
+    LOG_SELF;
+    _ffActive = true;
     self.transportSlider.scrubMode = KBScrubModeFastForward;
     self.transportSlider.currentSeekSpeed = KBSeekSpeed1x;
     [self.transportSlider fadeInIfNecessary];
@@ -509,6 +516,8 @@
 }
 
 - (void)stopFastForwarding {
+    LOG_SELF;
+    _ffActive = false;
     [_ffTimer invalidate];
     [_avplayController seekto:self.transportSlider.value];
     [_avplayController setPlaybackSpeed:1.0];
@@ -516,6 +525,7 @@
 }
 
 - (void)startRewinding {
+    _rwActive = true;
     self.transportSlider.scrubMode = KBScrubModeRewind;
     self.transportSlider.currentSeekSpeed = KBSeekSpeed1x;
     [self.transportSlider fadeInIfNecessary];
@@ -529,6 +539,7 @@
 }
 
 - (void)stopRewinding {
+    _rwActive = false;
     [_rewindTimer invalidate];
     [_avplayController seekto:self.transportSlider.value];
     [_avplayController setPlaybackSpeed:1.0];
@@ -538,14 +549,32 @@
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     //NSLog(@"[Ethereal] type: %lu subtype: %lu press count:%lu", event.type, event.subtype, presses.count);
     for (UIPress *press in presses) {
-        NSInteger source = [[press valueForKey:@"source"] integerValue];
-        NSInteger gameControllerComp = [[press valueForKey:@"gameControllerComponent"] integerValue];
+        //NSInteger source = [[press valueForKey:@"source"] integerValue];
+        //NSInteger gameControllerComp = [[press valueForKey:@"gameControllerComponent"] integerValue];
         //NSLog(@"[Ethereal] press source: %lu gcc: %lu", source, gameControllerComp);
         switch (press.type){
             case UIPressTypeMenu:
                 //[_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
                 break;
-    
+                
+            case UIPressTypeRightArrow: {
+                if (_transportSlider.isFocused) {
+                    _rightHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
+                        [self startFastForwarding];
+                    }];
+                }
+            }
+                break;
+                
+            case UIPressTypeLeftArrow: {
+                if (_transportSlider.isFocused) {
+                    _leftHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
+                        [self startRewinding];
+                    }];
+                }
+            }
+                 
+                
             default:
                 [super pressesBegan:presses withEvent:event];
                 break;
@@ -571,7 +600,7 @@
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    //NSLog(@"[Ethereal] pressesEnded: %@", presses);
+    NSLog(@"[Ethereal] pressesEnded: %@", presses);
     //AVPlayerState currentState = _avplayController.playerState;
     for (UIPress *press in presses) {
         //NSLog(@"[Ethereal] presstype: %lu", press.type);
@@ -597,6 +626,54 @@
                     [self hideAVInfoView]; //need to make this one smarter
                 }
                 
+                break;
+                
+                
+            case UIPressTypeLeftArrow:
+                
+                if (_transportSlider.isFocused) {
+                    NSLog(@"[Ethereal] slider is focused");
+                    [_leftHoldTimer invalidate];
+                    if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+                        KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeLeftArrow];
+                        if (speed == KBSeekSpeedNone) {
+                            [_rewindTimer invalidate];
+                            [_ffTimer invalidate];
+                        }
+                    } else {
+                        [self stepVideoBackwards];
+                    }
+                    /*
+                    if (_rwActive) {
+                        self.transportSlider.scrubMode = KBScrubModeNone;
+                        [self stopRewinding];
+                    } else {
+                        [self stepVideoBackwards];
+                    }*/
+                }
+                break;
+                
+            case UIPressTypeRightArrow:
+                if (_transportSlider.isFocused) {
+                    NSLog(@"[Ethereal] slider is focused");
+                    [_rightHoldTimer invalidate];
+                    /*
+                    if (_ffActive) {
+                        self.transportSlider.scrubMode = KBScrubModeNone;
+                        [self stopFastForwarding];
+                    } else {
+                        [self stepVideoForwards];
+                    } */
+                    if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+                        KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeRightArrow];
+                        if (speed == KBSeekSpeedNone) {
+                            [_rewindTimer invalidate];
+                            [_ffTimer invalidate];
+                        }
+                    } else {
+                        [self stepVideoForwards];
+                    }
+                }
                 break;
                 
             case UIPressTypeDownArrow:

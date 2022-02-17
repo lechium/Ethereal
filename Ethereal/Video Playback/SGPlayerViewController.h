@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "KBVideoPlaybackProtocol.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SGPlayerViewController : UIViewController
+@interface SGPlayerViewController : UIViewController <KBVideoPlaybackProtocol>
 @property (nonatomic, strong) NSURL *mediaURL;
 @property (nonatomic, strong) NSString *avFormatName;
+@property (nonatomic, weak) id currentAsset;
 - (instancetype)initWithMediaURL:(NSURL *)url;
+- (id <KBVideoPlayerProtocol>)player;
 @end
 
 NS_ASSUME_NONNULL_END
