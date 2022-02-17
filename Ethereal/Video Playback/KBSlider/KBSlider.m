@@ -1542,18 +1542,10 @@
 }
 
 - (void)leftTapWasTriggered {
-    LOG_SELF;
     if ([self shouldMoveScrubView]) return;
-    [self setScrubMode:KBScrubModeSkippingBackwards];
-    CGFloat newValue = [self value]-_stepValue;
-    [self setCurrentTime:newValue];
-    [self fadeInIfNecessary];
-    CMTime newtime = CMTimeMakeWithSeconds(newValue, 600);
-    [_avPlayer seekToTime:newtime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-    [self setValue:newValue animated:true completion:^{
-        [self setScrubMode:KBScrubModeNone];
-    }];
-    
+    if (self.stepVideoBlock){
+        self.stepVideoBlock(KBStepDirectionBackwards);
+    }
 }
 
 - (void)fadeInIfNecessary {
@@ -1582,17 +1574,10 @@
 }
 
 - (void)rightTapWasTriggered {
-    LOG_SELF;
     if ([self shouldMoveScrubView]) return;
-    [self setScrubMode:KBScrubModeSkippingForwards];
-    CGFloat newValue = [self value]+_stepValue;
-    [self setCurrentTime:newValue];
-    [self fadeInIfNecessary];
-    CMTime newtime = CMTimeMakeWithSeconds(newValue, 600);
-    [_avPlayer seekToTime:newtime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-    [self setValue:newValue animated:true completion:^{
-        [self setScrubMode:KBScrubModeNone];
-    }];
+    if (self.stepVideoBlock){
+        self.stepVideoBlock(KBStepDirectionForwards);
+    }
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
@@ -1608,9 +1593,11 @@
                 if(_dPadState == DPadStateLeft){
                     _panGestureRecognizer.enabled = false;
                     [self leftTapWasTriggered];
+                    return;
                 } else if (_dPadState == DPadStateRight){
                     _panGestureRecognizer.enabled = false;
                     [self rightTapWasTriggered];
+                    return;
                 } else {
                     [self triggerTransportTapIfNecessary];
                     _panGestureRecognizer.enabled = false;

@@ -24,6 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 +(instancetype)standardGradientView;
 @end
 
+typedef NS_ENUM(NSInteger, KBStepDirection) {
+    KBStepDirectionForwards,
+    KBStepDirectionBackwards,
+};
+
 typedef NS_ENUM(NSInteger, KBSeekDirection) {
     KBSeekDirectionRewind,
     KBSeekDirectionFastForward,
@@ -90,6 +95,7 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property (nonatomic, copy, nullable) void (^scanStartedBlock)(CGFloat currentTime, KBSeekDirection direction); //0 = rewind, 1 = ff
 @property (nonatomic, copy, nullable) void (^scanEndedBlock)(KBSeekDirection direction);
 @property (nonatomic, copy, nullable) void (^sliderFading)(CGFloat direction, BOOL animated); //0 = out, 1 = in
+@property (nonatomic, copy, nullable) void (^stepVideoBlock)(KBStepDirection direction);
 @property BOOL fadeOutTransport;
 @property KBSliderMode sliderMode;
 @property KBScrubMode scrubMode;

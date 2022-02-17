@@ -25,7 +25,10 @@
     NSTimer *_leftHoldTimer;
     NSTimer *_rewindTimer;
     NSTimer *_ffTimer;
+    //UIPress *_ignorePress;
 }
+
+@property UIPress *ignorePress;
 @property KBSlider *transportSlider;
 @property KBButton *subtitleButton;
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
@@ -479,7 +482,6 @@
     [self.transportSlider setValue:newValue animated:false completion:^{
         self_weak_.transportSlider.currentTime = newValue;
         [self_weak_.transportSlider delayedResetScrubMode];
-        //self_weak_.transportSlider.scrubMode = KBScrubModeNone;
     }];
     
 }
@@ -488,20 +490,16 @@
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value + 10;
-    //[_avplayController pause];
     [_avplayController seekto:newValue];
     @weakify(self);
     [self.transportSlider setValue:newValue animated:false completion:^{
         self_weak_.transportSlider.currentTime = newValue;
         [self_weak_.transportSlider delayedResetScrubMode];
-      //  [_avplayController resume];
-        //self_weak_.transportSlider.scrubMode = KBScrubModeNone;
     }];
     
 }
 
 - (void)startFastForwarding {
-    LOG_SELF;
     _ffActive = true;
     self.transportSlider.scrubMode = KBScrubModeFastForward;
     self.transportSlider.currentSeekSpeed = KBSeekSpeed1x;
@@ -516,7 +514,6 @@
 }
 
 - (void)stopFastForwarding {
-    LOG_SELF;
     _ffActive = false;
     [_ffTimer invalidate];
     [_avplayController seekto:self.transportSlider.value];
@@ -547,6 +544,7 @@
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    @weakify(self);
     //NSLog(@"[Ethereal] type: %lu subtype: %lu press count:%lu", event.type, event.subtype, presses.count);
     for (UIPress *press in presses) {
         //NSInteger source = [[press valueForKey:@"source"] integerValue];
@@ -560,7 +558,8 @@
             case UIPressTypeRightArrow: {
                 if (_transportSlider.isFocused) {
                     _rightHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
-                        [self startFastForwarding];
+                        self_weak_.ignorePress = press;
+                        [self_weak_ startFastForwarding];
                     }];
                 }
             }
@@ -569,7 +568,8 @@
             case UIPressTypeLeftArrow: {
                 if (_transportSlider.isFocused) {
                     _leftHoldTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
-                        [self startRewinding];
+                        self_weak_.ignorePress = press;
+                        [self_weak_ startRewinding];
                     }];
                 }
             }
@@ -600,9 +600,14 @@
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    NSLog(@"[Ethereal] pressesEnded: %@", presses);
+    //NSLog(@"[Ethereal] pressesEnded: %@", presses);
     //AVPlayerState currentState = _avplayController.playerState;
     for (UIPress *press in presses) {
+        if (press == _ignorePress){
+            //NSLog(@"[Ethereal] IGNORE ME!");
+            _ignorePress = nil;
+            return;
+        }
         //NSLog(@"[Ethereal] presstype: %lu", press.type);
         switch (press.type){
                 
@@ -611,6 +616,7 @@
            
             case UIPressTypeSelect:
                 if ([_transportSlider isFocused]){
+                    NSLog(@"[Ethereal] togglePlayPause");
                     [self togglePlayPause];
                 }
                 break;
@@ -826,22 +832,30 @@
                     [self_weak_.avPlayController seekto:currentTime];
                 }
             };
-            _transportSlider.scanStartedBlock = ^(CGFloat currentTime, NSInteger direction) {
-                if (direction == 0){
+            _transportSlider.scanStartedBlock = ^(CGFloat currentTime, KBSeekDirection direction) {
+                if (direction == KBSeekDirectionRewind){
                     [self_weak_ startRewinding];
-                } else if (direction == 1) {
+                } else if (direction == KBSeekDirectionFastForward) {
                     [self_weak_ startFastForwarding];
                 }
             };
             
-            _transportSlider.scanEndedBlock = ^(NSInteger direction) {
-                if (direction == 0){
+            _transportSlider.scanEndedBlock = ^(KBSeekDirection direction) {
+                if (direction == KBSeekDirectionRewind){
                     [self_weak_ stopRewinding];
-                } else if (direction == 1) {
+                } else if (direction == KBSeekDirectionFastForward) {
                     [self_weak_ stopFastForwarding];
                 }
             };
             NSLog(@"setting maximum value to duration: %f",_avplayController.duration);
+            
+            _transportSlider.stepVideoBlock = ^(KBStepDirection direction) {
+                if (direction == KBStepDirectionForwards){
+                    [self_weak_ stepVideoForwards];
+                } else if (direction == KBStepDirectionBackwards){
+                    [self_weak_ stepVideoBackwards];
+                }
+            };
             
         }
     } else {
