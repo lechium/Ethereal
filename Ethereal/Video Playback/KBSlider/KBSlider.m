@@ -11,6 +11,34 @@
 #import "KBSliderImages.h"
 #import "UIView+AL.h"
 //#import "KBAVInfoViewController.h"
+
+@interface UIPress (KBSynthetic)
+// A press is synthetic if it is a tap on the Siri remote touchpad
+// which is synthesized to an arrow press.
+- (BOOL)kb_isSynthetic;
+@end
+
+@implementation UIPress (KBSynthetic)
+
+- (BOOL)kb_isSynthetic
+{
+    /*
+     * !!! Attention: We are using private API !!!
+     * !!!  Might break in any future release  !!!
+     *
+     * For internal name changes the press might wrongly detected as non-synthetic.
+     * Since we us it to filter for only non-synthetic presses arrow taps
+     * on the Siri remote might be additionally be detected.
+     */
+    NSString *key = [@"isSyn" stringByAppendingString:@"thetic"];
+    NSNumber *value = [self valueForKey:key];
+    if ([value isKindOfClass:[NSNumber class]]) {
+        return [value boolValue];
+    }
+    return NO;
+}
+@end
+
 @interface UIGestureRecognizer (helper)
 
 - (NSString *)stringForState;
@@ -90,6 +118,7 @@
     UIImageView *_leftHintImageView;
     UIImageView *_rightHintImageView;
     UILabel *_titleLabel;
+    UILabel *_subtitleLabel;
     UILabel *_ffLabel;
     UILabel *_rwLabel;
     KBScrubMode _scrubMode;
@@ -99,6 +128,7 @@
     BOOL _displaysRemainingTime;
     BOOL _hasPlayingObserver;
     NSString *_title;
+    NSString *_subtitle;
     KBSeekSpeed _ffSpeed;
     KBSeekSpeed _rewindSpeed;
     KBSeekSpeed _currentSeekSpeed;
@@ -277,6 +307,15 @@
 
 - (KBSeekSpeed)ffSpeed {
     return _ffSpeed;
+}
+
+- (void)setSubtitle:(NSString *)subtitle {
+    _subtitle = subtitle;
+    _subtitleLabel.text = subtitle;
+}
+
+- (NSString *)subtitle {
+    return _subtitle;
 }
 
 - (void)setTitle:(NSString *)title {
@@ -491,7 +530,7 @@
         if (self.sliderFading) {
             self.sliderFading(0, true);
         }
-        NSArray *viewArray = @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel];
+        NSArray *viewArray = @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _subtitleLabel, _titleLabel];
         [UIView animateWithDuration:0.3 animations:^{
             [viewArray enumerateObjectsUsingBlock:^(UIView  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 obj.alpha = 0;
@@ -508,10 +547,10 @@
     }
     if (self.sliderMode == KBSliderModeTransport){
         if (_attachedView){
-            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel, _attachedView];
+            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel, _subtitleLabel, _attachedView];
         }
         if (_titleLabel){
-            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel];
+            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _subtitleLabel, _titleLabel];
         }
         return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView];
     } else {
@@ -757,7 +796,7 @@
     if (sliderMode == KBSliderModeTransport) {
         _trackViewHeight = 10;
         _focusScaleFactor = 1.00;
-        [self setupTitleLabel];
+        [self setupTitleLabels];
     } else {
         _focusScaleFactor = 1.05;
         _trackViewHeight = 5;
@@ -1043,10 +1082,14 @@
     }
 }
 
-- (void)setupTitleLabel {
+- (void)setupTitleLabels {
     if (_titleLabel){
         [_titleLabel removeFromSuperview];
         _titleLabel = nil;
+    }
+    if (_subtitleLabel){
+        [_subtitleLabel removeFromSuperview];
+        _subtitleLabel = nil;
     }
     _titleLabel = [[UILabel alloc] initForAutoLayout];
     [self addSubview:_titleLabel];
@@ -1055,6 +1098,15 @@
     _titleLabel.textColor = [UIColor whiteColor];
     _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
     _titleLabel.text = _title;
+    
+    _subtitleLabel = [[UILabel alloc] initForAutoLayout];
+    [self addSubview:_subtitleLabel];
+    [_subtitleLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+    [_subtitleLabel.topAnchor constraintEqualToAnchor:_titleLabel.topAnchor constant:-30].active = true;
+    _subtitleLabel.textColor = [UIColor whiteColor];
+    _subtitleLabel.font = [UIFont systemFontOfSize:23];
+    _subtitleLabel.text = _subtitle;
+    
 }
 
 - (void)setupSpeedLabels {

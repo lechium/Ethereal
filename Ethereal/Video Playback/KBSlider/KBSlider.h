@@ -15,6 +15,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+@interface UIPress (KBSynthetic)
+// A press is synthetic if it is a tap on the Siri remote touchpad
+// which is synthesized to an arrow press.
+- (BOOL)kb_isSynthetic;
+@end
+
+
 @interface NSThread (additions)
 + (NSArray *)stackFrameTruncatedTo:(NSInteger)offset;
 @end
@@ -90,6 +98,7 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property BOOL isPlaying; //transport mode only
 @property BOOL isScrubbing; //transport mode only
 @property NSString *title; //transport mode only
+@property NSString *subtitle; //transport mode onl
 
 @property (nonatomic, copy, nullable) void (^timeSelectedBlock)(CGFloat currentTime); //transport mode only, is called when a slider value is selected when scrubbing.
 @property (nonatomic, copy, nullable) void (^scanStartedBlock)(CGFloat currentTime, KBSeekDirection direction); //0 = rewind, 1 = ff

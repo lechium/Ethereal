@@ -647,6 +647,11 @@
                             [_ffTimer invalidate];
                         }
                     } else {
+                        
+                        if ([press kb_isSynthetic]){
+                            return;
+                        }
+                        
                         [self stepVideoBackwards];
                     }
                     /*
@@ -677,6 +682,9 @@
                             [_ffTimer invalidate];
                         }
                     } else {
+                        if ([press kb_isSynthetic]){
+                            return;
+                        }
                         [self stepVideoForwards];
                     }
                 }
