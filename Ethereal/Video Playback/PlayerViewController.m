@@ -15,6 +15,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBSliderImages.h"
 #import "UIView+AL.h"
+#import "KBBulletinView.h"
 
 @import tvOSAVPlayerTouch;
 
@@ -654,13 +655,7 @@
                         
                         [self stepVideoBackwards];
                     }
-                    /*
-                    if (_rwActive) {
-                        self.transportSlider.scrubMode = KBScrubModeNone;
-                        [self stopRewinding];
-                    } else {
-                        [self stepVideoBackwards];
-                    }*/
+                
                 }
                 break;
                 
@@ -668,13 +663,6 @@
                 if (_transportSlider.isFocused) {
                     NSLog(@"[Ethereal] slider is focused");
                     [_rightHoldTimer invalidate];
-                    /*
-                    if (_ffActive) {
-                        self.transportSlider.scrubMode = KBScrubModeNone;
-                        [self stopFastForwarding];
-                    } else {
-                        [self stepVideoForwards];
-                    } */
                     if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
                         KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeRightArrow];
                         if (speed == KBSeekSpeedNone) {
@@ -690,10 +678,6 @@
                 }
                 break;
                 
-            case UIPressTypeDownArrow:
-                
-                [self showAVInfoView];
-                break;
                 
             default:
                 NSLog(@"[Ethereal] unhandled type: %lu", press.type);
@@ -865,6 +849,23 @@
                 }
             };
             
+
+            _avInfoViewController.infoFocusChanged = ^(BOOL focused, UIFocusHeading direction) {
+                if (focused) {
+                    BOOL contains = (direction & UIFocusHeadingDown) != 0;
+                    if (contains) {
+                        if (![self_weak_ avInfoPanelShowing]) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self_weak_ showAVInfoView];
+                            });
+                        }
+                    } else {
+                        [self_weak_ setNeedsFocusUpdate];
+                    }
+                }
+            };
+            
+            
         }
     } else {
         NSLog(@"[Ethereal] Failed to load video!");
@@ -872,6 +873,23 @@
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:true completion:nil];
     }
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+    [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+    if ([self avInfoPanelShowing]) {
+        if ([self.transportSlider isFocused]) {
+            [self hideAVInfoView];
+        }
+    }
+}
+
+- (void)showSubtitleBulletin {
+    BOOL subtitlesOn = [self subtitlesOn];
+    NSString *title = @"Subtitles On";
+    if (!subtitlesOn) title =  @"Subtitles Off";
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:title description:nil image:[UIImage imageNamed:@"App Icon"]];
+    [bv showForTime:5];
 }
 
 - (void)subtitleButtonClicked {
@@ -885,6 +903,7 @@
         }
     }
     [self updateSubtitleButtonState];
+    [self showSubtitleBulletin];
 }
 
 - (BOOL)subtitlesOn {

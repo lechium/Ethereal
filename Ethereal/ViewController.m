@@ -28,6 +28,9 @@
 
 - (void)showSampleBulletin {
     KBBulletinView *bv = [KBBulletinView bulletinWithTitle:@"Test Title" description:@"Test Description" image:[UIImage imageNamed:@"video-icon"]];
+    NSString *famName = [[UIFont familyNames] firstObject];
+    [bv setTitleFont:[UIFont fontWithName:famName size:29]];
+    [bv setDescriptionFont:[UIFont fontWithName:famName size:23]];
     [bv showForTime:5];
 }
 
