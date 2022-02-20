@@ -786,6 +786,7 @@
             [_transportSlider setCurrentTime:0];
             _transportSlider.fadeOutTransport = true;
             [_transportSlider setIsContinuous:false];
+            NSLog(@"[Ethereal] total duration: %f", _avplayController.duration);
             [_transportSlider setTotalDuration:_avplayController.duration];
             [_transportSlider setAvPlayer:self.player];
             

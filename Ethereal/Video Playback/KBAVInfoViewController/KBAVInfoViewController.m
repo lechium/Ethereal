@@ -22,7 +22,8 @@
 #import "KBAVInfoPanelDescriptionViewController.h"
 #import "KBAVMetaData.h"
 #import "KBAVInfoPanelSubtitlesViewController.h"
-
+#import "VLCViewController.h"
+#import <TVVLCKit/TVVLCKit.h>
 
 
 @interface KBAVInfoViewController () <KBAVInfoPanelSubtitlesDelegate> {
@@ -31,6 +32,7 @@
     BOOL _observing;
     NSArray *_subtitleData;
     KBAVInfoStyle _infoStyle;
+    NSArray *_vlcSubtitleData;
 }
 @property UIView *visibleView;
 @property UIView *divider;
@@ -74,6 +76,26 @@
     return _infoStyle;
 }
 
+- (void)setVlcSubtitleData:(NSArray *)vlcSubtitleData {
+    //_vlcSubtitleData = vlcSubtitleData;
+    __block NSMutableArray *_newArray = [NSMutableArray new];
+    [vlcSubtitleData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBAVInfoPanelMediaOption *opt = [[KBAVInfoPanelMediaOption alloc] initWithLanguageCode:obj[@"language"] displayName:obj[@"language"] mediaSelectionOption:nil tag:KBSubtitleTagTypeOn index:[obj[@"index"] integerValue]];
+        @weakify(self);
+        opt.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
+            NSLog(@"[Ethereal] subtitle index selected: %lu", selected.mediaIndex);
+            VLCViewController *vlcViewController = (VLCViewController *)[self_weak_ parentViewController];
+            VLCMediaPlayer *player = [vlcViewController player];
+            [player setCurrentVideoSubTitleIndex:(int)selected.mediaIndex];
+        };
+        [_newArray addObject:opt];
+    }];
+    _vlcSubtitleData = _newArray;
+}
+
+- (NSArray *)vlcSubtitleData {
+    return _vlcSubtitleData;
+}
 
 - (void)setSubtitleData:(NSArray *)subtitleData {
     //_subtitleData = subtitleData;

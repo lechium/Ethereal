@@ -10,6 +10,21 @@
 		3220EDCD27AD00D000CF05A1 /* SGPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */; };
 		3220EDCF27AD03C600CF05A1 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; };
 		3220EDD027AD03C600CF05A1 /* SGPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		323B3E0B27C0BA69001F8204 /* VLCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323B3E0A27C0BA69001F8204 /* VLCViewController.m */; };
+		323B3E0E27C0BA9D001F8204 /* TVVLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E0C27C0BA78001F8204 /* TVVLCKit.framework */; };
+		323B3E1527C0BB1C001F8204 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1027C0BB1C001F8204 /* CoreMedia.framework */; };
+		323B3E1627C0BB1C001F8204 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1127C0BB1C001F8204 /* CoreFoundation.framework */; };
+		323B3E1727C0BB1C001F8204 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1227C0BB1C001F8204 /* CoreGraphics.framework */; };
+		323B3E1827C0BB1C001F8204 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1327C0BB1C001F8204 /* CoreText.framework */; };
+		323B3E1927C0BB1C001F8204 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1427C0BB1C001F8204 /* CoreVideo.framework */; };
+		323B3E1B27C0BB24001F8204 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1A27C0BB24001F8204 /* QuartzCore.framework */; };
+		323B3E1D27C0BB2F001F8204 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1C27C0BB2F001F8204 /* Foundation.framework */; };
+		323B3E1F27C0BB3A001F8204 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1E27C0BB3A001F8204 /* libxml2.tbd */; };
+		323B3E2127C0BB45001F8204 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E2027C0BB45001F8204 /* libc++.tbd */; };
+		323B3E2327C0BB59001F8204 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E2227C0BB59001F8204 /* CFNetwork.framework */; };
+		323B3E2527C0BB60001F8204 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E2427C0BB60001F8204 /* OpenGLES.framework */; };
+		323B3E2727C0BB68001F8204 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E2627C0BB68001F8204 /* Security.framework */; };
+		323B3E2A27C0D4D3001F8204 /* VLCMediaPlayer+ProtocolCompliance.m in Sources */ = {isa = PBXBuildFile; fileRef = 323B3E2927C0D4D3001F8204 /* VLCMediaPlayer+ProtocolCompliance.m */; };
 		323DEC1D27A39033009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC0C27A39032009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m */; };
 		323DEC1E27A39033009F7DB7 /* KBAVInfoPanelContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC0E27A39032009F7DB7 /* KBAVInfoPanelContentViewController.m */; };
 		323DEC1F27A39033009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1027A39032009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.m */; };
@@ -108,6 +123,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		323B3E0927C0BA69001F8204 /* VLCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VLCViewController.h; sourceTree = "<group>"; };
+		323B3E0A27C0BA69001F8204 /* VLCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VLCViewController.m; sourceTree = "<group>"; };
+		323B3E0C27C0BA78001F8204 /* TVVLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TVVLCKit.framework; sourceTree = "<group>"; };
+		323B3E1027C0BB1C001F8204 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		323B3E1127C0BB1C001F8204 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		323B3E1227C0BB1C001F8204 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		323B3E1327C0BB1C001F8204 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		323B3E1427C0BB1C001F8204 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		323B3E1A27C0BB24001F8204 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		323B3E1C27C0BB2F001F8204 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		323B3E1E27C0BB3A001F8204 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		323B3E2027C0BB45001F8204 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		323B3E2227C0BB59001F8204 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		323B3E2427C0BB60001F8204 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		323B3E2627C0BB68001F8204 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		323B3E2827C0D4D3001F8204 /* VLCMediaPlayer+ProtocolCompliance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VLCMediaPlayer+ProtocolCompliance.h"; sourceTree = "<group>"; };
+		323B3E2927C0D4D3001F8204 /* VLCMediaPlayer+ProtocolCompliance.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VLCMediaPlayer+ProtocolCompliance.m"; sourceTree = "<group>"; };
 		323DEC0B27A39032009F7DB7 /* KBAVInfoPanelMediaOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelMediaOption.h; sourceTree = "<group>"; };
 		323DEC0C27A39032009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelSubtitleCollectionViewController.m; sourceTree = "<group>"; };
 		323DEC0D27A39032009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelMediaOptionCollectionViewController.h; sourceTree = "<group>"; };
@@ -289,6 +321,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				323B3E2727C0BB68001F8204 /* Security.framework in Frameworks */,
+				323B3E2527C0BB60001F8204 /* OpenGLES.framework in Frameworks */,
+				323B3E2327C0BB59001F8204 /* CFNetwork.framework in Frameworks */,
+				32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */,
+				323B3E2127C0BB45001F8204 /* libc++.tbd in Frameworks */,
+				323B3E1F27C0BB3A001F8204 /* libxml2.tbd in Frameworks */,
+				323B3E1D27C0BB2F001F8204 /* Foundation.framework in Frameworks */,
+				323B3E1B27C0BB24001F8204 /* QuartzCore.framework in Frameworks */,
+				323B3E1527C0BB1C001F8204 /* CoreMedia.framework in Frameworks */,
+				323B3E1627C0BB1C001F8204 /* CoreFoundation.framework in Frameworks */,
+				323B3E1727C0BB1C001F8204 /* CoreGraphics.framework in Frameworks */,
+				323B3E1827C0BB1C001F8204 /* CoreText.framework in Frameworks */,
+				323B3E1927C0BB1C001F8204 /* CoreVideo.framework in Frameworks */,
 				328719F92781450300595420 /* AVKit.framework in Frameworks */,
 				3220EDCF27AD03C600CF05A1 /* SGPlayer.framework in Frameworks */,
 				32C584EE25BE6B130021C9FC /* libbz2.tbd in Frameworks */,
@@ -296,9 +341,9 @@
 				32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */,
 				32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */,
 				32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */,
-				32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */,
 				32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */,
 				3247C3AB25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework in Frameworks */,
+				323B3E0E27C0BA9D001F8204 /* TVVLCKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +354,7 @@
 			isa = PBXGroup;
 			children = (
 				327B3EA72327694B00377FAE /* makeLatest.sh */,
+				323B3E0C27C0BA78001F8204 /* TVVLCKit.framework */,
 				3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */,
 				328B5FE826F6F82800303CE2 /* Prefix.pch */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
@@ -458,6 +504,8 @@
 				328B5FDF26F6E70900303CE2 /* NSData+Flip.mm */,
 				328B5FCA26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.h */,
 				328B5FCB26F5CC3300303CE2 /* FFAVPlayerController+ProtocolAdherence.m */,
+				323B3E2827C0D4D3001F8204 /* VLCMediaPlayer+ProtocolCompliance.h */,
+				323B3E2927C0D4D3001F8204 /* VLCMediaPlayer+ProtocolCompliance.m */,
 				327D406D23265DFB000EC3C1 /* UIColor+Additions.h */,
 				327D406C23265DFA000EC3C1 /* UIColor+Additions.m */,
 				327D405923265CD9000EC3C1 /* UIWindow+Additions.h */,
@@ -506,6 +554,8 @@
 				327D3FFF2324FCE1000EC3C1 /* PlayerViewController.m */,
 				32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */,
 				32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */,
+				323B3E0927C0BA69001F8204 /* VLCViewController.h */,
+				323B3E0A27C0BA69001F8204 /* VLCViewController.m */,
 			);
 			path = "Video Playback";
 			sourceTree = "<group>";
@@ -526,6 +576,18 @@
 		32AD39C22328B66E0085F579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				323B3E2627C0BB68001F8204 /* Security.framework */,
+				323B3E2427C0BB60001F8204 /* OpenGLES.framework */,
+				323B3E2227C0BB59001F8204 /* CFNetwork.framework */,
+				323B3E2027C0BB45001F8204 /* libc++.tbd */,
+				323B3E1E27C0BB3A001F8204 /* libxml2.tbd */,
+				323B3E1C27C0BB2F001F8204 /* Foundation.framework */,
+				323B3E1A27C0BB24001F8204 /* QuartzCore.framework */,
+				323B3E1127C0BB1C001F8204 /* CoreFoundation.framework */,
+				323B3E1227C0BB1C001F8204 /* CoreGraphics.framework */,
+				323B3E1027C0BB1C001F8204 /* CoreMedia.framework */,
+				323B3E1327C0BB1C001F8204 /* CoreText.framework */,
+				323B3E1427C0BB1C001F8204 /* CoreVideo.framework */,
 				328719F82781450300595420 /* AVKit.framework */,
 				328B5FDD26F6E31700303CE2 /* MediaRemote.framework */,
 				328B5FD626F6746200303CE2 /* IOKit.framework */,
@@ -730,6 +792,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				32E0A7FF2793A36A006FB9B0 /* KBMoreButton.m in Sources */,
+				323B3E0B27C0BA69001F8204 /* VLCViewController.m in Sources */,
 				327D404923265AEB000EC3C1 /* UIImage+GIF.m in Sources */,
 				32E0A7FA2793A36A006FB9B0 /* KBSliderImages.m in Sources */,
 				327D401123265A78000EC3C1 /* MetadataPreviewView.m in Sources */,
@@ -780,6 +843,7 @@
 				327D404623265AEB000EC3C1 /* SDWebImageManager.m in Sources */,
 				327D403F23265AEB000EC3C1 /* NSData+ImageContentType.m in Sources */,
 				327D406923265DBE000EC3C1 /* SVIndefiniteAnimatedView.m in Sources */,
+				323B3E2A27C0D4D3001F8204 /* VLCMediaPlayer+ProtocolCompliance.m in Sources */,
 				328B5FE126F6E70900303CE2 /* NSData+Flip.mm in Sources */,
 				3280A2A926F8559D0023658B /* KBAirDropHelper.m in Sources */,
 				327D406B23265DBE000EC3C1 /* SVRadialGradientLayer.m in Sources */,

@@ -14,6 +14,7 @@
 #import "NSData+Flip.h"
 #import "NSTask.h"
 #import "SGPlayerViewController.h"
+#import "VLCViewController.h"
 //#define USE_SG_PLAYER
 
 @interface AVPlayerViewController (hax)
@@ -175,13 +176,13 @@
     } 
     //SGPlayerViewController *playerController = [[SGPlayerViewController alloc] initWithMediaURL:[NSURL fileURLWithPath:theFile]];
     if (!_currentPlayer) {
-        _currentPlayer = [PlayerViewController new];
+        _currentPlayer = [VLCViewController new];
     } else {
-        //if (![_currentPlayer isKindOfClass:PlayerViewController.class]) {
+        if (![_currentPlayer isKindOfClass:VLCViewController.class]) {
             ([[self topViewController] dismissViewControllerAnimated:true completion:nil]);
                 _currentPlayer = nil;
-                _currentPlayer = [PlayerViewController new];
-        //}
+                _currentPlayer = [VLCViewController new];
+        }
     }
     [self killIdleSleep];
     [_currentPlayer setCurrentAsset:currentAsset];

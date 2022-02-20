@@ -76,6 +76,18 @@
     _mediaSelectionOption = mediaSelectionOption;
 }
 
+
+-(id)initWithLanguageCode:(NSString * _Nullable)code displayName:(NSString *)displayName mediaSelectionOption:(AVMediaSelectionOption *_Nullable)option tag:(KBSubtitleTagType)tag index:(NSInteger)mediaIndex {
+    self = [super init];
+    if (self) {
+        _displayName = displayName;
+        _languageCode = code;
+        _mediaIndex = mediaIndex;
+        _tag = tag;
+    }
+    return self;
+}
+
 - (id)initWithLanguageCode:(NSString *_Nullable)code displayName:(NSString *)displayName mediaSelectionOption:(AVMediaSelectionOption * _Nullable)mediaSelectionOption tag:(KBSubtitleTagType)tag {
     self = [super init];
     if (self) {
