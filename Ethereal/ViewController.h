@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SettingsViewController.h"
 #import "KBMediaAsset.h"
+#import <TVVLCKit/TVVLCKit.h>
 
 @interface NSDistributedNotificationCenter : NSNotificationCenter
 + (id)defaultCenter;
@@ -24,7 +25,7 @@
 @end
 
 
-@interface ViewController : SettingsViewController
+@interface ViewController : SettingsViewController <VLCMediaThumbnailerDelegate>
 
 - (id)initWithDirectory:(NSString *)directory;
 

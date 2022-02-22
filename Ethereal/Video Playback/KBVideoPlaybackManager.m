@@ -13,9 +13,8 @@
 #import <MediaRemote/MediaRemote.h>
 #import "NSData+Flip.h"
 #import "NSTask.h"
-#import "SGPlayerViewController.h"
+//#import "SGPlayerViewController.h"
 #import "VLCViewController.h"
-//#define USE_SG_PLAYER
 
 @interface AVPlayerViewController (hax)
 @property (nonatomic, strong) NSURL *mediaURL;
@@ -119,7 +118,7 @@
         if (singleItem.error != nil){
             NSLog(@"[Ethereal] %@", [singleItem error]);
             player = nil;
-            PlayerViewController *playerController = [PlayerViewController new];
+            VLCViewController *playerController = [VLCViewController new];
             if (isLocal){
                 playerController.mediaURL = [NSURL fileURLWithPath:theFile];
             } else {

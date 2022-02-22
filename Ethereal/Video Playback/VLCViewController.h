@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVKit/AVKit.h>
 #import "KBVideoPlaybackProtocol.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VLCViewController : UIViewController
+@interface VLCViewController : UIViewController <KBVideoPlaybackProtocol, UIGestureRecognizerDelegate, AVRoutePickerViewDelegate>
 @property (nonatomic, weak) id currentAsset;
 @property (nonatomic, strong) NSURL *mediaURL;
 - (id <KBVideoPlayerProtocol>)player;

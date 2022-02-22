@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "PlayerViewController.h"
+//#import "PlayerViewController.h"
 #import <tvOSAVPlayerTouch/tvOSAVPlayerTouch.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
@@ -17,6 +17,7 @@
 #import "KBAirDropHelper.h"
 #import "KBBulletinView.h"
 
+
 //#import "SGPlayerViewController.h"
 
 @interface ViewController ()
@@ -25,6 +26,18 @@
 @end
 
 @implementation ViewController
+
+- (void)mediaThumbnailerDidTimeOut:(VLCMediaThumbnailer *)mediaThumbnailer {
+    NSLog(@"[Ethereal] thumbnailer: %@ timed out!", mediaThumbnailer);
+}
+
+- (void)mediaThumbnailer:(VLCMediaThumbnailer *)mediaThumbnailer didFinishThumbnail:(CGImageRef)thumbnail {
+    NSLog(@"[Ethereal] thumbnailer: %@ didFinishThumbnail: %@", mediaThumbnailer, thumbnail);
+    VLCMedia *media = [mediaThumbnailer media];
+    UIImage *currentImage = [UIImage imageWithCGImage:thumbnail];
+    NSLog(@"[Ethereal] saving thumbnail: %@ for key: %@", currentImage, media.url.path.lastPathComponent);
+    [[SDImageCache sharedImageCache] storeImage:currentImage forKey:media.url.path.lastPathComponent];
+}
 
 - (void)showSampleBulletin {
     KBBulletinView *bv = [KBBulletinView bulletinWithTitle:@"Test Title" description:@"Test Description" image:[UIImage imageNamed:@"video-icon"]];
@@ -100,6 +113,10 @@
                 
                 if (!currentImage){
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                        VLCMedia *media = [VLCMedia mediaWithPath:fullPath];
+                        VLCMediaThumbnailer *thumbNailer = [VLCMediaThumbnailer thumbnailerWithMedia:media andDelegate:self];
+                        [thumbNailer fetchThumbnail];
+                        /*
                         FFAVParser *mp = [[FFAVParser alloc] init];
                         if ([mp openMedia:[NSURL fileURLWithPath:fullPath] withOptions:nil]) {
                             currentImage = [mp thumbnailAtTime:fminf(20, mp.duration/2.0)];
@@ -110,6 +127,7 @@
                         }
                         // currentImage = [UIImage imageWithContentsOfFile:currentAsset.imagePath];
                         [[SDImageCache sharedImageCache] storeImage:currentImage forKey:currentAsset.name];
+                         */
                     });
                 }
                 currentAsset.selectorName = @"playFile";

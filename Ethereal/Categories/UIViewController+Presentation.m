@@ -8,10 +8,10 @@
 
 #import "UIViewController+Presentation.h"
 #import "KBPlayerViewController.h"
-#import "PlayerViewController.h"
+#import "VLCViewController.h"
 @implementation UIViewController (Presentation)
 - (void)safePresentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^__nullable)(void))completion {
-    if ([self isKindOfClass:KBPlayerViewController.class] || [self isKindOfClass:PlayerViewController.class]){
+    if ([self isKindOfClass:KBPlayerViewController.class] || [self isKindOfClass:VLCViewController.class]){
         NSLog(@"[Ethereal] this should never be presenting another view...., bail");
         return;
     }

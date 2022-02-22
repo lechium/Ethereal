@@ -7,9 +7,9 @@
 //
 
 #import "AppDelegate.h"
-#import "PlayerViewController.h"
+//#import "PlayerViewController.h"
 #import "ViewController.h"
-#import <tvOSAVPlayerTouch/tvOSAVPlayerTouch.h>
+//#import <tvOSAVPlayerTouch/tvOSAVPlayerTouch.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "NSObject+Additions.h"
