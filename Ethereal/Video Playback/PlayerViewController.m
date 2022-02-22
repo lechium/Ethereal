@@ -406,6 +406,7 @@
     _wasPlaying = false;
     [self createSliderIfNecessary];
     [self handleSubtitleOptions];
+    [self updateSubtitleButtonState];
     
 }
 //- (CGSize)videoFrameSize

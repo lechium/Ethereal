@@ -44,7 +44,7 @@ typedef NS_ENUM(NSInteger, KBAVInfoStyle) {
 @property (nonatomic, copy, nullable) void (^playbackStatusChanged)(AVPlayerItemStatus status);
 @property (nonatomic, copy, nullable) void (^infoFocusChanged)(BOOL focused, UIFocusHeading direction);
 @property (readwrite, assign) KBAVInfoStyle infoStyle;
-@property (nonatomic, strong) NSArray *vlcSubtitleData;
+@property (nonatomic, strong) NSArray <KBAVInfoPanelMediaOption *> *vlcSubtitleData;
 
 @property (nonatomic, strong, nullable) NSLayoutConstraint *descriptionViewLeadingAnchor;
 

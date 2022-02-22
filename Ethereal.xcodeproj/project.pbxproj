@@ -11,7 +11,6 @@
 		3220EDCF27AD03C600CF05A1 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; };
 		3220EDD027AD03C600CF05A1 /* SGPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		323B3E0B27C0BA69001F8204 /* VLCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323B3E0A27C0BA69001F8204 /* VLCViewController.m */; };
-		323B3E0E27C0BA9D001F8204 /* TVVLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E0C27C0BA78001F8204 /* TVVLCKit.framework */; };
 		323B3E1527C0BB1C001F8204 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1027C0BB1C001F8204 /* CoreMedia.framework */; };
 		323B3E1627C0BB1C001F8204 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1127C0BB1C001F8204 /* CoreFoundation.framework */; };
 		323B3E1727C0BB1C001F8204 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1227C0BB1C001F8204 /* CoreGraphics.framework */; };
@@ -105,6 +104,7 @@
 		32E0A7FF2793A36A006FB9B0 /* KBMoreButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A7F42793A36A006FB9B0 /* KBMoreButton.m */; };
 		32E0A8002793A36A006FB9B0 /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A7F72793A36A006FB9B0 /* KBTextPresentationViewController.m */; };
 		32E0A8062794C242006FB9B0 /* AVAsset+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A8052794C242006FB9B0 /* AVAsset+Extras.m */; };
+		32FCD85527C21B2B00F614DF /* TVVLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32FCD85427C21B2B00F614DF /* TVVLCKit.framework */; };
 		4CF77B7F27C0265F00F91237 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CF77B7D27C0265F00F91237 /* KBBulletinView.m */; };
 /* End PBXBuildFile section */
 
@@ -278,7 +278,6 @@
 		32C584E925BE6B020021C9FC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		32C584EB25BE6B0E0021C9FC /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		32C584ED25BE6B130021C9FC /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
-		32C9CCE025C049D000E0C4FF /* File */ = {isa = PBXFileReference; lastKnownFileType = text; name = File; path = ../../../../Desktop/File; sourceTree = "<group>"; };
 		32DFF9A126F49605004071B3 /* KBVideoPlaybackManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBVideoPlaybackManager.h; sourceTree = "<group>"; };
 		32DFF9A226F49605004071B3 /* KBVideoPlaybackManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBVideoPlaybackManager.m; sourceTree = "<group>"; };
 		32DFF9A526F4985B004071B3 /* KBMediaAsset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBMediaAsset.h; sourceTree = "<group>"; };
@@ -312,6 +311,8 @@
 		32E0A81027954E43006FB9B0 /* captions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = captions.h; sourceTree = "<group>"; };
 		32E2A55027970455001CB1AA /* appletv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = appletv.h; sourceTree = "<group>"; };
 		32E2A55127970455001CB1AA /* tvhifi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tvhifi.h; sourceTree = "<group>"; };
+		32FCD85127C2162800F614DF /* TVVLCKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = TVVLCKit.tbd; sourceTree = "<group>"; };
+		32FCD85427C21B2B00F614DF /* TVVLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVVLCKit.framework; path = Library/Frameworks/TVVLCKit.framework; sourceTree = "<group>"; };
 		4CF77B7D27C0265F00F91237 /* KBBulletinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBBulletinView.m; path = Ethereal/KBBulletinView.m; sourceTree = SOURCE_ROOT; };
 		4CF77B7E27C0265F00F91237 /* KBBulletinView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBBulletinView.h; path = Ethereal/KBBulletinView.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -332,6 +333,7 @@
 				323B3E1527C0BB1C001F8204 /* CoreMedia.framework in Frameworks */,
 				323B3E1627C0BB1C001F8204 /* CoreFoundation.framework in Frameworks */,
 				323B3E1727C0BB1C001F8204 /* CoreGraphics.framework in Frameworks */,
+				32FCD85527C21B2B00F614DF /* TVVLCKit.framework in Frameworks */,
 				323B3E1827C0BB1C001F8204 /* CoreText.framework in Frameworks */,
 				323B3E1927C0BB1C001F8204 /* CoreVideo.framework in Frameworks */,
 				328719F92781450300595420 /* AVKit.framework in Frameworks */,
@@ -343,7 +345,6 @@
 				32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */,
 				32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */,
 				3247C3AB25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework in Frameworks */,
-				323B3E0E27C0BA9D001F8204 /* TVVLCKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,7 +388,6 @@
 				4CF77B7E27C0265F00F91237 /* KBBulletinView.h */,
 				4CF77B7D27C0265F00F91237 /* KBBulletinView.m */,
 				3280A2AB26F85C380023658B /* Video Playback */,
-				32C9CCE025C049D000E0C4FF /* File */,
 				327D404F23265BA3000EC3C1 /* Categories */,
 				327D400223265A78000EC3C1 /* ListView */,
 				327D400723265A78000EC3C1 /* PureLayout */,
@@ -576,6 +576,8 @@
 		32AD39C22328B66E0085F579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				32FCD85427C21B2B00F614DF /* TVVLCKit.framework */,
+				32FCD85127C2162800F614DF /* TVVLCKit.tbd */,
 				323B3E2627C0BB68001F8204 /* Security.framework */,
 				323B3E2427C0BB60001F8204 /* OpenGLES.framework */,
 				323B3E2227C0BB59001F8204 /* CFNetwork.framework */,
@@ -997,6 +999,8 @@
 					"$(PROJECT_DIR)/Ethereal",
 					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Library/Frameworks",
+					"$(PROJECT_DIR)$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PREFIX_HEADER = $SRCROOT/Ethereal/Prefix.pch;
 				HEADER_SEARCH_PATHS = "$SRCROOT/include/**";
@@ -1034,6 +1038,8 @@
 					"$(PROJECT_DIR)/Ethereal",
 					"$(PROJECT_DIR)/com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Library/Frameworks",
+					"$(PROJECT_DIR)$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PREFIX_HEADER = $SRCROOT/Ethereal/Prefix.pch;
 				HEADER_SEARCH_PATHS = "$SRCROOT/include/**";

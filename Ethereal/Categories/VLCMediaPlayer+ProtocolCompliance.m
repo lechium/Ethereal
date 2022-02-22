@@ -8,20 +8,6 @@
 
 #import "VLCMediaPlayer+ProtocolCompliance.h"
 #import <objc/runtime.h>
-/*
- {
-     VLCMediaPlayerStateStopped,        ///< Player has stopped
-     VLCMediaPlayerStateOpening,        ///< Stream is opening
-     VLCMediaPlayerStateBuffering,      ///< Stream is buffering
-     VLCMediaPlayerStateEnded,          ///< Stream has ended
-     VLCMediaPlayerStateError,          ///< Player has generated an error
-     VLCMediaPlayerStatePlaying,        ///< Stream is playing
-     VLCMediaPlayerStatePaused,         ///< Stream is paused
-     VLCMediaPlayerStateESAdded,        ///< Elementary Stream added
-     VLCMediaPlayerStateESDeleted,      ///< Elementary Stream deleted
-     VLCMediaPlayerStateLengthChanged   ///< Length changed
- }
- */
 
 @interface VLCMediaPlayer() {
     //void (^_durationAvailable)(VLCTime *);
@@ -30,6 +16,14 @@
 @end
 
 @implementation VLCMediaPlayer (ProtocolCompliance) 
+
+- (void)setStreamsUpdated:(void (^)(void))streamsUpdated {
+    objc_setAssociatedObject(self, @selector(streamsUpdated), streamsUpdated, OBJC_ASSOCIATION_RETAIN);
+}
+
+-(void (^)(void))streamsUpdated {
+    return objc_getAssociatedObject(self, @selector(streamsUpdated));
+}
 
 - (void)setDurationAvailable:(void (^)(VLCTime * _Nonnull))durationAvailable {
     objc_setAssociatedObject(self, @selector(durationAvailable), durationAvailable, OBJC_ASSOCIATION_RETAIN);
@@ -75,6 +69,9 @@
                 //NSLog(@"[Ethereal] duration now: %@", self.media.length);
                 break;
             case VLCMediaPlayerStateESAdded:
+                if (self.streamsUpdated) {
+                    self.streamsUpdated();
+                }
                 //NSLog(@"[Ethereal] duration now: %@", self.media.length);
                 break;
             default:

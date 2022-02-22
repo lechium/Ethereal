@@ -93,7 +93,7 @@
     _vlcSubtitleData = _newArray;
 }
 
-- (NSArray *)vlcSubtitleData {
+- (NSArray <KBAVInfoPanelMediaOption *>*)vlcSubtitleData {
     return _vlcSubtitleData;
 }
 

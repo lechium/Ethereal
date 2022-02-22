@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)observeStatus;
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter;
 @property (nonatomic, copy, nullable) void (^durationAvailable)(VLCTime *duration);
+@property (nonatomic, copy, nullable) void (^streamsUpdated)(void);
 @end
 
 NS_ASSUME_NONNULL_END

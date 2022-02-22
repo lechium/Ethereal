@@ -14,6 +14,9 @@
 #import <TVVLCKit/TVVLCKit.h>
 #import "KBMediaAsset.h"
 #import "SDWebImageManager.h"
+#import "KBSliderImages.h"
+#import "UIView+AL.h"
+#import "KBBulletinView.h"
 
 @interface VLCViewController () {
     NSURL *_mediaURL;
@@ -47,7 +50,25 @@
     if (_mediaURL) {
         [_mediaPlayer play];
     }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(timeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
+    [self handleSubtitleOptions];
+    [self updateSubtitleButtonState];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateChanged:) name:VLCMediaPlayerStateChanged object:nil];
     //[_mediaPlayer play];
+}
+
+- (void)stateChanged:(NSNotification *)n {
+    //NSLog(@"[Ethereal] state changed: %@", n);
+    VLCMediaPlayerState state = [(VLCMediaPlayer *)[n object] state];
+    if (state == VLCMediaPlayerStateEnded) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:AVPlayerItemDidPlayToEndTimeNotification object:self];
+        _setMeta = false;
+    }
+}
+
+- (void)handleSubtitleOptions {
+    //_avplayController.enableBuiltinSubtitleRender = [KBAVInfoViewController areSubtitlesAlwaysOn];
+    
 }
 
 - (BOOL)avInfoPanelShowing {
@@ -145,14 +166,55 @@
     _transportSlider.fadeOutTransport = true;
     [_transportSlider setIsContinuous:false];
     [_transportSlider setAvPlayer:self.player];
-    [self.player observeStatus];
+    
+    _subtitleButton = [KBButton buttonWithType:KBButtonTypeImage];
+    _subtitleButton.buttonImageView.image = [KBSliderImages captionsImage];
+    _subtitleButton.alpha = 0;
+    [_subtitleButton autoConstrainToSize:CGSizeMake(68, 68)];
+    [self.view addSubview:_subtitleButton];
+    if ([self subtitlesAvailable]) {
+        NSLog(@"[Ethereal] subtitles available!");
+    } else {
+        NSLog(@"[Ethereal] subtitles not available!");
+    }
+    [self updateSubtitleButtonState];
+    [_subtitleButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
+    [_subtitleButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
+    _subtitleButton.layer.masksToBounds = true;
+    _subtitleButton.layer.cornerRadius = 68/2;
+    [_subtitleButton addTarget:self action:@selector(subtitleButtonClicked) forControlEvents:UIControlEventPrimaryActionTriggered];
+    
     @weakify(self);
-    _mediaPlayer.durationAvailable = ^(VLCTime * _Nonnull duration) {
-        [self_weak_.transportSlider setTotalDuration:duration.intValue/1000];
-        if (self_weak_.avInfoViewController.vlcSubtitleData.count != self_weak_.mediaPlayer.numberOfSubtitlesTracks){
-            [self_weak_ resetSetMeta];
+    _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
+        if (animated) {
+            [UIView animateWithDuration:0.3 animations:^{
+                self_weak_.subtitleButton.alpha = direction;
+            } completion:^(BOOL finished) {
+                if (direction == 0) {
+                    if ([self_weak_.subtitleButton isFocused]){
+                        [self_weak_ setNeedsFocusUpdate];
+                    }
+                }
+            }];
+        } else {
+            self_weak_.subtitleButton.alpha = direction;
         }
+    };
+    
+    
+    [self.player observeStatus];
+    _mediaPlayer.durationAvailable = ^(VLCTime * _Nonnull duration) {
+        NSLog(@"[Ethereal] duration available: %@", duration);
+        [self_weak_.transportSlider setTotalDuration:duration.intValue/1000];
         [self_weak_ createAndSetMeta];
+    };
+    
+    _mediaPlayer.streamsUpdated = ^{
+        if (self_weak_.avInfoViewController.vlcSubtitleData.count != self_weak_.mediaPlayer.numberOfSubtitlesTracks){
+            NSLog(@"[Ethereal] streams updated");
+            [self_weak_ resetSetMeta];
+            [self_weak_ createAndSetMeta];
+        }
     };
     
     _transportSlider.timeSelectedBlock = ^(CGFloat currentTime) {
@@ -226,7 +288,7 @@
     [longLeftPress requireGestureRecognizerToFail:_leftTap];
     [self.view addGestureRecognizer:longLeftPress];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(timeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
+    
 
 }
 
@@ -281,8 +343,62 @@
         NSDictionary *dict = @{@"language": obj, @"index": subIndices[idx]};
         [dicts addObject:dict];
     }];
-    [_avInfoViewController setVlcSubtitleData:dicts];
+    if(dicts.count > 0){
+        NSLog(@"[Ethereal] setting subtitle data: %@", dicts);
+        [_avInfoViewController setVlcSubtitleData:dicts];
+        [self updateSubtitleButtonState];
+    }
     //[_avInfoViewController setSubtitleData:_avplayController.subtitleTracks];
+}
+
+- (void)subtitleButtonClicked {
+    if (![self subtitlesAvailable]) {
+        self.subtitleButton.alpha = 0;
+        return;
+    }
+    NSArray <KBAVInfoPanelMediaOption *>*subtitleData = [_avInfoViewController vlcSubtitleData];
+    if ([self subtitlesOn]){
+        [_mediaPlayer setCurrentVideoSubTitleIndex:-1];
+    } else {
+        KBAVInfoPanelMediaOption *first = [subtitleData firstObject];
+        first.selectedBlock(first);
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self updateSubtitleButtonState];
+        [self showSubtitleBulletin];
+    });
+
+}
+
+- (void)showSubtitleBulletin {
+    BOOL subtitlesOn = [self subtitlesOn];
+    NSString *title = @"Subtitles On";
+    if (!subtitlesOn) title =  @"Subtitles Off";
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:title description:nil image:[UIImage imageNamed:@"App Icon"]];
+    [bv showForTime:5];
+}
+
+- (BOOL)subtitlesAvailable {
+    return ([_mediaPlayer numberOfSubtitlesTracks] > 0);
+}
+
+- (BOOL)subtitlesOn {
+    return [_mediaPlayer currentVideoSubTitleIndex] != -1;
+}
+
+- (void)updateSubtitleButtonState {
+    if (![self subtitlesAvailable]){
+        self.subtitleButton.buttonImageView.alpha = 0.0;
+        self.subtitleButton.userInteractionEnabled = false;
+        return;
+    }
+    self.subtitleButton.userInteractionEnabled = true;
+    if ([self subtitlesOn]) {
+        self.subtitleButton.buttonImageView.alpha = 1.0;
+    } else {
+        self.subtitleButton.buttonImageView.alpha = 0.5;
+    }
 }
 
 - (NSURL *)mediaURL {
@@ -294,6 +410,8 @@
     if ([_mediaPlayer isPlaying]){
         [_mediaPlayer stop];
     }
+    _setMeta = false;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     //[_mediaPlayer stop];
     //_mediaPlayer = nil;
 }
