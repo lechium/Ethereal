@@ -351,18 +351,55 @@
     //[_avInfoViewController setSubtitleData:_avplayController.subtitleTracks];
 }
 
+- (KBAVInfoPanelMediaOption *)selectedSubtitleStream {
+    NSInteger stream = [_mediaPlayer currentVideoSubTitleIndex];
+    if (stream != -1) {
+        NSArray *streams = [_avInfoViewController vlcSubtitleData];
+        KBAVInfoPanelMediaOption *selected = [[streams filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"mediaIndex == %lu", stream]] firstObject];
+        return selected;
+    }
+    return nil;
+}
+
+- (KBAVInfoPanelMediaOption *)nextSubtitleStream {
+    NSInteger stream = [_mediaPlayer currentVideoSubTitleIndex];
+    NSArray *subData = [_avInfoViewController vlcSubtitleData];
+    if (stream == -1) {
+        return [subData firstObject];
+    }
+    KBAVInfoPanelMediaOption *selected = [self selectedSubtitleStream];
+    NSInteger index = [subData indexOfObject:selected];
+    NSInteger nextIndex = index+1;
+    NSLog(@"[Ethereal] current index: %lu nextIndex: %lu count: %lu", index, nextIndex, subData.count);
+    if (nextIndex < subData.count) {
+        return subData[nextIndex];
+    }
+    return nil;
+}
+
+
 - (void)subtitleButtonClicked {
     if (![self subtitlesAvailable]) {
         self.subtitleButton.alpha = 0;
         return;
     }
+    KBAVInfoPanelMediaOption *next = [self nextSubtitleStream];
+    NSLog(@"[Ethereal] next subtitle item: %@", next);
+    if (next) {
+        next.selectedBlock(next);
+    } else {
+        [_mediaPlayer setCurrentVideoSubTitleIndex:-1];
+    }
+    /*
     NSArray <KBAVInfoPanelMediaOption *>*subtitleData = [_avInfoViewController vlcSubtitleData];
     if ([self subtitlesOn]){
         [_mediaPlayer setCurrentVideoSubTitleIndex:-1];
     } else {
-        KBAVInfoPanelMediaOption *first = [subtitleData firstObject];
-        first.selectedBlock(first);
-    }
+        KBAVInfoPanelMediaOption *next = [self nextSubtitleStream];
+        next.selectedBlock(next);
+        //KBAVInfoPanelMediaOption *first = [subtitleData firstObject];
+        //first.selectedBlock(first);
+    }*/
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self updateSubtitleButtonState];
@@ -374,8 +411,9 @@
 - (void)showSubtitleBulletin {
     BOOL subtitlesOn = [self subtitlesOn];
     NSString *title = @"Subtitles On";
+    NSString *desc = [[self selectedSubtitleStream] displayName];
     if (!subtitlesOn) title =  @"Subtitles Off";
-    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:title description:nil image:[UIImage imageNamed:@"App Icon"]];
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:title description:desc image:[UIImage imageNamed:@"App Icon"]];
     [bv showForTime:5];
 }
 
