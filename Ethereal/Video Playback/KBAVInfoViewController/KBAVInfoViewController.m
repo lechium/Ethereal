@@ -16,7 +16,7 @@
 #import "KBTextPresentationViewController.h"
 #import "EXTScope.h"
 #import "KBSliderImages.h"
-#import "PlayerViewController.h"
+//#import "PlayerViewController.h"
 #import "KBVideoPlaybackProtocol.h"
 #import "KBAVInfoPanelContentViewController.h"
 #import "KBAVInfoPanelDescriptionViewController.h"
@@ -97,6 +97,8 @@
     return _vlcSubtitleData;
 }
 
+/*
+
 - (void)setSubtitleData:(NSArray *)subtitleData {
     //_subtitleData = subtitleData;
     __block NSMutableArray *_newArray = [NSMutableArray new];
@@ -122,7 +124,7 @@
 - (NSArray *)subtitleData {
     return _subtitleData;
 }
-
+*/
 - (NSArray *)preferredFocusEnvironments {
     if (self.tempTabBar){
         if (self.descriptionViewController.summaryView.canFocus){
@@ -371,7 +373,6 @@
     [self addDescriptionController];
     [self.parentViewController.view setNeedsFocusUpdate];
     [self.parentViewController.view updateFocusIfNeeded];
-    //[self addSubtitleViewController];
 }
 
 - (void)showWithCompletion:(void(^_Nullable)(void))block {
@@ -461,10 +462,12 @@
     return type == kMACaptionAppearanceDisplayTypeAlwaysOn;
 }
 
+
 - (NSArray <KBAVInfoPanelMediaOption *> *)subtitleOptions {
     MACaptionAppearanceDisplayType type = MACaptionAppearanceGetDisplayType(kMACaptionAppearanceDomainUser);
     NSMutableArray *opts = [NSMutableArray new];
     AVAsset *asset = [_playerItem asset];
+    /*
     if (!_playerItem) {
         if (self.subtitleData) {
             KBAVInfoPanelMediaOption *off = [KBAVInfoPanelMediaOption optionOff];
@@ -483,7 +486,7 @@
         } else {
             return opts;
         }
-    }
+    }*/
     [opts addObject:[KBAVInfoPanelMediaOption optionOff]];
     [opts addObject:[KBAVInfoPanelMediaOption optionAuto]];
     AVMediaSelectionGroup *group = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];

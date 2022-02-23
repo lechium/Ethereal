@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3220EDD027AD03C600CF05A1 /* SGPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584DC25BE5F760021C9FC /* SGPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		323B3E0B27C0BA69001F8204 /* VLCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323B3E0A27C0BA69001F8204 /* VLCViewController.m */; };
 		323B3E1527C0BB1C001F8204 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1027C0BB1C001F8204 /* CoreMedia.framework */; };
 		323B3E1627C0BB1C001F8204 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1127C0BB1C001F8204 /* CoreFoundation.framework */; };
@@ -82,7 +81,6 @@
 		328B5FF526F700A500303CE2 /* EXTRuntimeExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FF126F700A500303CE2 /* EXTRuntimeExtensions.m */; };
 		328B5FF626F700A500303CE2 /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FF326F700A500303CE2 /* EXTScope.m */; };
 		32AD39C12328A0100085F579 /* gear-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AD39C02328A0100085F579 /* gear-small.png */; };
-		32B37FC627C4E5F300F72BEF /* tvOSAVPlayerTouch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32B37FC527C4E5F200F72BEF /* tvOSAVPlayerTouch.framework */; };
 		32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */; };
 		32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E525BE6AF10021C9FC /* AVFoundation.framework */; };
 		32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E725BE6AF80021C9FC /* libz.tbd */; };
@@ -104,24 +102,9 @@
 		4CF77B7F27C0265F00F91237 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CF77B7D27C0265F00F91237 /* KBBulletinView.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		3220EDD127AD03C600CF05A1 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				3220EDD027AD03C600CF05A1 /* SGPlayer.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		323B3E0927C0BA69001F8204 /* VLCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VLCViewController.h; sourceTree = "<group>"; };
 		323B3E0A27C0BA69001F8204 /* VLCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VLCViewController.m; sourceTree = "<group>"; };
-		323B3E0C27C0BA78001F8204 /* TVVLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TVVLCKit.framework; sourceTree = "<group>"; };
 		323B3E1027C0BB1C001F8204 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		323B3E1127C0BB1C001F8204 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		323B3E1227C0BB1C001F8204 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -338,7 +321,6 @@
 				328B5FDE26F6E31700303CE2 /* MediaRemote.framework in Frameworks */,
 				32C584EC25BE6B0E0021C9FC /* VideoToolbox.framework in Frameworks */,
 				32C584EA25BE6B020021C9FC /* libiconv.tbd in Frameworks */,
-				32B37FC627C4E5F300F72BEF /* tvOSAVPlayerTouch.framework in Frameworks */,
 				32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */,
 				32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */,
 			);
@@ -351,7 +333,6 @@
 			isa = PBXGroup;
 			children = (
 				327B3EA72327694B00377FAE /* makeLatest.sh */,
-				323B3E0C27C0BA78001F8204 /* TVVLCKit.framework */,
 				3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */,
 				328B5FE826F6F82800303CE2 /* Prefix.pch */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
@@ -703,7 +684,6 @@
 				327D3FD72324E512000EC3C1 /* Frameworks */,
 				327D3FD82324E512000EC3C1 /* Resources */,
 				327D40732326D6F6000EC3C1 /* ShellScript */,
-				3220EDD127AD03C600CF05A1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

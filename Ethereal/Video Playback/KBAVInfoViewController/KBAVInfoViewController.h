@@ -52,8 +52,10 @@ typedef NS_ENUM(NSInteger, KBAVInfoStyle) {
 - (void)showWithCompletion:(void(^_Nullable)(void))block;
 - (BOOL)isHD;
 - (BOOL)hasClosedCaptions;
+/*
 - (NSArray *)subtitleData;
 - (void)setSubtitleData:(NSArray *)subtitleData;
+ */
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
 - (void)showFromViewController:(UIViewController *)pvc;
 - (void)closeWithCompletion:(void(^_Nullable)(void))block;

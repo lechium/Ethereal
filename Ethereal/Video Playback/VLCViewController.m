@@ -204,6 +204,7 @@
     
     [self.player observeStatus];
     _mediaPlayer.durationAvailable = ^(VLCTime * _Nonnull duration) {
+        if (duration.intValue == 0) return;
         NSLog(@"[Ethereal] duration available: %@", duration);
         [self_weak_.transportSlider setTotalDuration:duration.intValue/1000];
         [self_weak_ createAndSetMeta];
@@ -212,6 +213,14 @@
     _mediaPlayer.streamsUpdated = ^{
         if (self_weak_.avInfoViewController.vlcSubtitleData.count != self_weak_.mediaPlayer.numberOfSubtitlesTracks){
             NSLog(@"[Ethereal] streams updated");
+            
+            if (self_weak_.transportSlider.totalDuration == 0) {
+                int duration = self_weak_.mediaPlayer.media.length.intValue;
+                if (duration > 0) {
+                    NSLog(@"[Ethereal] duration available: %i", duration);
+                    [self_weak_.transportSlider setTotalDuration:duration/1000];
+                }
+            }
             [self_weak_ resetSetMeta];
             [self_weak_ createAndSetMeta];
         }
@@ -338,6 +347,7 @@
     }
     NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
     NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
+    NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
     __block NSMutableArray *dicts = [NSMutableArray new];
     [subNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary *dict = @{@"language": obj, @"index": subIndices[idx]};
@@ -455,6 +465,13 @@
 }
 
 - (void)togglePlayPause {
+    if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+        [_ffTimer invalidate];
+        [_rewindTimer invalidate];
+        [_transportSlider seekResume];
+        return;
+    }
+    [_transportSlider setScrubMode:KBScrubModeNone];
     if ([_mediaPlayer isPlaying]) {
         [_mediaPlayer pause];
     } else {
