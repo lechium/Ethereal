@@ -14,7 +14,7 @@ typedef NS_ENUM(NSInteger, KBSubtitleTagType) {
 @property (nonatomic,readonly) NSString * displayName;
 @property (nonatomic,readonly) NSString * languageCode;
 @property (nonatomic,readonly) AVMediaSelectionOption * mediaSelectionOption;
-@property (readonly) NSInteger mediaIndex; //VLC specific
+@property (readwrite, assign) NSInteger mediaIndex; //VLC specific
 @property (nonatomic,readonly) BOOL selected;
 @property (nonatomic, copy, nullable) void (^selectedBlock)(KBAVInfoPanelMediaOption *selected);
 @property (readonly) KBSubtitleTagType tag;

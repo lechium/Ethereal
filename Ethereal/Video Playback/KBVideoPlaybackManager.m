@@ -111,6 +111,41 @@
     } else {
         singleItem = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:theFile]];
     }
+    //just for now to force VLC To do the network playback
+    if ([[singleItem asset] isPlayable] && isLocal)  {
+        NSLog(@"[Ethereal] playable!");
+        KBQueuePlayer *player = [KBQueuePlayer playerWithPlayerItem:singleItem];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            KBPlayerViewController  *playerView = [[KBPlayerViewController alloc] init];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
+            playerView.player = player;
+            if (block) {
+                block(playerView, true);
+            } else {
+                [[self topViewController] safePresentViewController:playerView animated:YES completion:nil];
+                [playerView.player play];
+            }
+            
+        });
+    } else {
+        NSLog(@"[Ethereal] we are not playable!");
+        VLCViewController *playerController = [VLCViewController new];
+        if (isLocal){
+            playerController.mediaURL = [NSURL fileURLWithPath:theFile];
+        } else {
+            playerController.mediaURL = [NSURL URLWithString:theFile];
+        }
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+        [self killIdleSleep];
+        if (block){
+            block(playerController, true);
+        } else {
+            [[self topViewController] safePresentViewController:playerController animated:true completion:nil];
+        }
+    }
+    return;
+    
     __block KBQueuePlayer *player = [KBQueuePlayer playerWithPlayerItem:singleItem];
     [player play];
     

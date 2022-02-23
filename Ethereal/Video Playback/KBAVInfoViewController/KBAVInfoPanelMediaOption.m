@@ -23,7 +23,7 @@
 
 - (NSString *)description {
     NSString *og = [super description];
-    return [NSString stringWithFormat:@"%@ %@ option: %@, selected: %d", og, _displayName, _mediaSelectionOption, _selected];
+    return [NSString stringWithFormat:@"%@ %@ option: %@, selected: %d mediaIndex: %lu", og, _displayName, _mediaSelectionOption, _selected, _mediaIndex];
 }
 
 -(BOOL)selected {

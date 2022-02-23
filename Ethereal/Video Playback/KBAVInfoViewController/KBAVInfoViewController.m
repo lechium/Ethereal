@@ -76,16 +76,38 @@
     return _infoStyle;
 }
 
+
+
 - (void)setVlcSubtitleData:(NSArray *)vlcSubtitleData {
     //_vlcSubtitleData = vlcSubtitleData;
+    if (_vlcSubtitleData.count > 0){
+        //see if we can just update current subtitle data indexes instead of creating entirely new ones.
+        if (_vlcSubtitleData.count == vlcSubtitleData.count) {
+            NSLog(@"[Ethereal] size matches");
+            [_vlcSubtitleData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSInteger newIndex = [vlcSubtitleData[idx][@"index"] integerValue];
+                NSLog(@"[Ethereal] old mediaIndex: %lu updatedMediaIndex: %lu", obj.mediaIndex, newIndex);
+                obj.mediaIndex = newIndex;
+                if ([obj selected]){
+                    NSLog(@"[Ethereal] this guy is selected: %@", obj);
+                    VLCViewController *vlcViewController = (VLCViewController *)[self parentViewController];
+                    VLCMediaPlayer *player = [vlcViewController player];
+                    [player setCurrentVideoSubTitleIndex:newIndex];
+                }
+            }];
+            return;
+        }
+    }
     __block NSMutableArray *_newArray = [NSMutableArray new];
     [vlcSubtitleData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         KBAVInfoPanelMediaOption *opt = [[KBAVInfoPanelMediaOption alloc] initWithLanguageCode:obj[@"language"] displayName:obj[@"language"] mediaSelectionOption:nil tag:KBSubtitleTagTypeOn index:[obj[@"index"] integerValue]];
         @weakify(self);
         opt.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
             NSLog(@"[Ethereal] subtitle index selected: %lu", selected.mediaIndex);
+            [selected setIsSelected:true];
             VLCViewController *vlcViewController = (VLCViewController *)[self_weak_ parentViewController];
             VLCMediaPlayer *player = [vlcViewController player];
+            [vlcViewController setSelectedMediaOptionIndex:idx];
             [player setCurrentVideoSubTitleIndex:(int)selected.mediaIndex];
         };
         [_newArray addObject:opt];

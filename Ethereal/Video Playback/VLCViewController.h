@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id currentAsset;
 @property (nonatomic, strong) NSURL *mediaURL;
 - (id <KBVideoPlayerProtocol>)player;
+- (void)setSelectedMediaOptionIndex:(long long)selectedMediaOptionIndex;
 @end
 
 NS_ASSUME_NONNULL_END

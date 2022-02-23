@@ -27,6 +27,7 @@
     NSTimer *_rewindTimer;
     NSTimer *_ffTimer;
     BOOL _setMeta;
+    NSInteger _selectedMediaOptionIndex;
 }
 @property UIView *videoView;
 @property VLCMediaPlayer *mediaPlayer;
@@ -48,7 +49,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (_mediaURL) {
-        [_mediaPlayer play];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _mediaPlayer.drawable = _videoView;
+            [_mediaPlayer play];
+        });
+
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(timeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
     [self handleSubtitleOptions];
@@ -60,9 +65,17 @@
 - (void)stateChanged:(NSNotification *)n {
     //NSLog(@"[Ethereal] state changed: %@", n);
     VLCMediaPlayerState state = [(VLCMediaPlayer *)[n object] state];
+    NSLog(@"[Ethereal] playerState changed: %@", VLCMediaPlayerStateToString(state));
     if (state == VLCMediaPlayerStateEnded) {
         [[NSNotificationCenter defaultCenter] postNotificationName:AVPlayerItemDidPlayToEndTimeNotification object:self];
         _setMeta = false;
+    } else if (state == VLCMediaPlayerStateESAdded) {
+        NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
+        NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
+        if (subNames.count > 0) {
+            NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
+            [self refreshSubtitleDetails];
+        }
     }
 }
 
@@ -147,11 +160,12 @@
 - (void)viewDidLoad {
     LOG_SELF;
     [super viewDidLoad];
+   
     _setMeta = false;
     _videoView = [[UIView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:_videoView];
     _mediaPlayer = [VLCMediaPlayer new];
-    _mediaPlayer.drawable = _videoView;
+    //_mediaPlayer.drawable = _videoView;
     if (_mediaURL) {
         _mediaPlayer.media = [VLCMedia mediaWithURL:_mediaURL];
     }
@@ -324,27 +338,7 @@
     _mediaPlayer.media = [VLCMedia mediaWithURL:mediaURL];
 }
 
-- (void)createAndSetMeta {
-    if (_setMeta) return;
-    CGSize frameSize = [_mediaPlayer videoSize];
-    KBMediaAsset *asset = [self currentAsset];
-    if (!_avInfoViewController) if (!_avInfoViewController){
-        _avInfoViewController = [KBAVInfoViewController new];
-    }
-    if (asset) {
-        KBAVMetaData *meta = [KBAVMetaData new];
-        if (frameSize.width >= 1280){
-            meta.isHD = true;
-        }
-        meta.title = asset.name;
-        meta.duration = _mediaPlayer.media.length.intValue/1000;
-        meta.image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:asset.name];
-        [_avInfoViewController setMetadata:meta];
-        _transportSlider.title = asset.name;
-        _setMeta = true;
-        NSDictionary *metaDict = [_mediaPlayer.media metaDictionary];
-        NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
-    }
+- (void)refreshSubtitleDetails {
     NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
     NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
     NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
@@ -358,6 +352,38 @@
         [_avInfoViewController setVlcSubtitleData:dicts];
         [self updateSubtitleButtonState];
     }
+}
+
+- (void)createAndSetMeta {
+    if (_setMeta) return;
+    CGSize frameSize = [_mediaPlayer videoSize];
+    KBMediaAsset *asset = [self currentAsset];
+    if (!_avInfoViewController) if (!_avInfoViewController){
+        _avInfoViewController = [KBAVInfoViewController new];
+    }
+    if (asset) {
+        KBAVMetaData *meta = [KBAVMetaData new];
+        if (frameSize.width >= 1280){
+            meta.isHD = true;
+        }
+        NSDictionary *metaDict = [_mediaPlayer.media metaDictionary];
+        NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
+        if (asset.name == nil){
+            asset.name = metaDict[@"title"];
+        }
+        meta.title = asset.name;
+        meta.duration = _mediaPlayer.media.length.intValue/1000;
+        meta.image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:asset.name];
+        [_avInfoViewController setMetadata:meta];
+        _transportSlider.title = asset.name;
+        _setMeta = true;
+        
+    } else {
+        NSDictionary *metaDict = [_mediaPlayer.media metaDictionary];
+        NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
+        _transportSlider.title = metaDict[@"title"];
+    }
+    [self refreshSubtitleDetails];
     //[_avInfoViewController setSubtitleData:_avplayController.subtitleTracks];
 }
 
@@ -498,6 +524,17 @@
     }
 }
 
+- (void)setSelectedMediaOptionIndex:(long long)selectedMediaOptionIndex {
+    _selectedMediaOptionIndex = selectedMediaOptionIndex;
+    [self.avInfoViewController.vlcSubtitleData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx == selectedMediaOptionIndex) {
+            [obj setIsSelected:true];
+        } else {
+            [obj setIsSelected:false];
+        }
+    }];
+}
+
 - (void)createSliderIfNecessary {
     if (!_transportSlider) {
         _transportSlider = [[KBSlider alloc] initWithFrame:CGRectMake(100, 850, 1700, 105)];
@@ -506,6 +543,10 @@
 }
 
 - (void)stepVideoBackwards {
+    if (_mediaPlayer.state == VLCMediaPlayerStateBuffering){
+        NSLog(@"[Ethereal] buffering, bail!");
+        return;
+    }
     self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value - 10;
@@ -520,6 +561,10 @@
 }
 
 - (void)stepVideoForwards {
+    if (_mediaPlayer.state == VLCMediaPlayerStateBuffering){
+        NSLog(@"[Ethereal] buffering, bail!");
+        return;
+    }
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value + 10;
