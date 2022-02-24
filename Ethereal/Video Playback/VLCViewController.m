@@ -148,6 +148,10 @@
     if (gestRecognizer.state == UIGestureRecognizerStateEnded){
         if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
+        } else if ([self contextViewVisible]) {
+            [_visibleContextView showContextView:false fromView:nil completion:^{
+                [self killContextView];
+            }];
         } else {
             [_mediaPlayer stop];
             [self dismissViewControllerAnimated:true completion:nil];

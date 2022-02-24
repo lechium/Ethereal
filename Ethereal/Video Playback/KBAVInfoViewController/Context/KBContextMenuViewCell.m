@@ -16,6 +16,7 @@
     UIImageView *_leadingImageView;
     UIImageView *_trailingImageView;
     UIStackView *_stackView;
+    UIView *_selectedView;
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -32,10 +33,22 @@
         _trailingImageView.contentMode = UIViewContentModeScaleAspectFit;
         [_trailingImageView autoConstrainToSize:CGSizeMake(28, 26)];
         [_stackView setArrangedViews:@[_leadingImageView, _label, _trailingImageView]];
+        [self _setupSelectedView];
         [self.contentView addSubview:_stackView];
         [_stackView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 15, 0, 15)];
+        
     }
     return self;
+}
+
+- (void)_setupSelectedView {
+    _selectedView = [[UIView alloc] initForAutoLayout];
+    [self.contentView addSubview:_selectedView];
+    _selectedView.layer.cornerRadius = 15;
+    _selectedView.layer.masksToBounds = true;
+    [_selectedView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+    _selectedView.alpha = 0;
+    _selectedView.backgroundColor = [UIColor whiteColor];
 }
 
 - (UIImageView *)trailingImageView {
@@ -69,16 +82,18 @@
     
     [coordinator addCoordinatedAnimations:^{
         if (self.focused) {
-            self.backgroundColor = [UIColor whiteColor];
+            //self.backgroundColor = [UIColor whiteColor];
             self.label.textColor = [UIColor colorWithWhite:0 alpha:0.6];
             self.trailingImageView.tintColor = [UIColor colorWithWhite:0 alpha:0.6];
             self.transform = CGAffineTransformMakeScale(1.05, 1.05);
+            _selectedView.alpha = 1.0;
             
         } else {
             self.transform = CGAffineTransformIdentity;
             self.label.textColor = [UIColor colorWithWhite:1.0 alpha:0.6];
             self.trailingImageView.tintColor = [UIColor colorWithWhite:1.0 alpha:0.6];
-            self.backgroundColor = nil;
+            //self.backgroundColor = nil;
+            _selectedView.alpha = 0.0;
         }
     } completion:nil];
    

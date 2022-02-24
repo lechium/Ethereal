@@ -10,7 +10,29 @@
 #import "UIView+AL.h"
 #import "KBContextMenuViewCell.h"
 
-@implementation KBContextMenuView
+@interface KBContextCollectionHeaderView: UICollectionReusableView
+@property (nonatomic, strong) UILabel *label;
+@end
+
+@implementation KBContextCollectionHeaderView
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        _label = [[UILabel alloc] initForAutoLayout];
+        [self addSubview:_label];
+        [_label autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 15, 0, 0)];
+        _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+        _label.textColor = [UIColor colorWithWhite:1.0 alpha:0.6];
+    }
+    return self;
+}
+
+@end
+
+@implementation KBContextMenuView {
+    UIView *_backgroundView;
+}
 
 - (void)killContextView {
     if (self.delegate){
@@ -21,34 +43,55 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.layer.masksToBounds = true;
-        self.layer.cornerRadius = 27;
+        _backgroundView = [[UIView alloc] initForAutoLayout];
+        self.backgroundColor = nil;
+        [self addSubview:_backgroundView];
+        [_backgroundView autoPinEdgesToSuperviewEdges];
+        _backgroundView.layer.masksToBounds = true;
+        _backgroundView.layer.cornerRadius = 27;
         UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraDark];
         UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
         blurView.translatesAutoresizingMaskIntoConstraints = false;
         UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
         UIVisualEffectView *vibrancyEffectView = [[UIVisualEffectView alloc] initWithEffect:vibrancyEffect];
         vibrancyEffectView.translatesAutoresizingMaskIntoConstraints = false;
-        [self addSubview:blurView];
+        [_backgroundView addSubview:blurView];
         [blurView autoPinEdgesToSuperviewEdges];
-        [self addSubview:vibrancyEffectView];
+        [_backgroundView addSubview:vibrancyEffectView];
         [vibrancyEffectView autoPinEdgesToSuperviewEdges];
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
         layout.scrollDirection = UICollectionViewScrollDirectionVertical; //CGRectMake(0, 0, 659, 35)
         layout.itemSize = CGSizeMake(400,70);
-        layout.minimumLineSpacing = 10;
+        layout.minimumLineSpacing = 0;
         layout.minimumInteritemSpacing = 0;
+        layout.sectionHeadersPinToVisibleBounds = true;
         //layout.minimumLineSpacing = 80;
         _collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
         _collectionView.translatesAutoresizingMaskIntoConstraints = false;
+        _collectionView.clipsToBounds = false;
         [self addSubview:_collectionView];
         [self.collectionView registerClass:KBContextMenuViewCell.class forCellWithReuseIdentifier:@"cell"];
         [_collectionView autoPinEdgesToSuperviewEdges];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
+        [_collectionView registerClass:KBContextCollectionHeaderView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"Header"];
         //self.layer.anchorPoint = CGPointMake(0, 0);
     }
     return self;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    KBContextCollectionHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Header" forIndexPath:indexPath];
+    header.label.text = @"SUBTITLES";
+    return header;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    CGRect frameRect =  [UIScreen mainScreen].bounds;
+    CGSize retval;
+    retval =  CGSizeMake(frameRect.size.width, 70);
+    return retval;
 }
 
 - (NSIndexPath *)indexPathForPreferredFocusedViewInCollectionView:(UICollectionView *)collectionView {
@@ -103,7 +146,8 @@
         self.alpha = 0;
         self.layer.anchorPoint = CGPointMake(0, 1);
         self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);
-        [self autoConstrainToSize:CGSizeMake(400, 269)];
+        CGFloat height = 70 + (self.mediaOptions.count * 70);
+        [self autoConstrainToSize:CGSizeMake(400, height)];
         //self.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [viewController.view addSubview:self];
         [self.collectionView reloadData];
