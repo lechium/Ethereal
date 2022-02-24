@@ -129,10 +129,10 @@
 
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^)(void))block {
     if (!show) {
-        [UIView animateWithDuration:0.5 animations:^{
+        //self.layer.anchorPoint = CGPointMake(1, 0);
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);;
             self.alpha = 0.0;
-            self.layer.anchorPoint = CGPointMake(1, 0);
             [self layoutIfNeeded];
         } completion:^(BOOL finished) {
             [self removeFromSuperview];
@@ -153,14 +153,17 @@
         [self.collectionView reloadData];
         [self.trailingAnchor constraintEqualToAnchor:self.sourceView.trailingAnchor constant:0].active = true;
         [self.bottomAnchor constraintEqualToAnchor:self.sourceView.topAnchor constant:-10].active = true;
-        [UIView animateWithDuration:0.5 animations:^{
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.transform = CGAffineTransformIdentity;
             self.alpha = 1.0;
             self.layer.anchorPoint = CGPointMake(0.5, 0.5);
             [self layoutIfNeeded];
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];
-        }];
+            if (block) {
+                block();
+            }
+        } completion:nil];
        
     }
 }

@@ -327,6 +327,11 @@
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+    if ([self.subtitleButton isFocused]){
+        self.transportSlider.fadeOutTransport = false;
+    } else if ([self.transportSlider isFocused]) {
+        self.transportSlider.fadeOutTransport = true;
+    }
     if ([self avInfoPanelShowing]) {
         if ([self.transportSlider isFocused]) {
             [self hideAVInfoView];
@@ -488,33 +493,17 @@
         _visibleContextView.delegate = self;
         _visibleContextView.sourceView = self.subtitleButton;
         _visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
-        [_visibleContextView showContextView:true fromView:self];
+        [_visibleContextView showContextView:true fromView:self completion:^{
+            [self setNeedsFocusUpdate];
+            [self updateFocusIfNeeded];
+        }];
     }
-    return;
-    //[self testShowContextView];
-    KBAVInfoPanelMediaOption *next = [self nextSubtitleStream];
-    NSLog(@"[Ethereal] next subtitle item: %@", next);
-    if (next) {
-        next.selectedBlock(next);
-    } else {
-        [_mediaPlayer setCurrentVideoSubTitleIndex:-1];
-    }
-    /*
-    NSArray <KBAVInfoPanelMediaOption *>*subtitleData = [_avInfoViewController vlcSubtitleData];
-    if ([self subtitlesOn]){
-        [_mediaPlayer setCurrentVideoSubTitleIndex:-1];
-    } else {
-        KBAVInfoPanelMediaOption *next = [self nextSubtitleStream];
-        next.selectedBlock(next);
-        //KBAVInfoPanelMediaOption *first = [subtitleData firstObject];
-        //first.selectedBlock(first);
-    }*/
-    
+ /*
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self updateSubtitleButtonState];
+        //[self updateSubtitleButtonState];
         [self showSubtitleBulletin];
     });
-
+*/
 }
 
 - (void)showSubtitleBulletin {
