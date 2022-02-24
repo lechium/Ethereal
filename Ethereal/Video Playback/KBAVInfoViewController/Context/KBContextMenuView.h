@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id delegate;
 @property (nonatomic, strong) UICollectionView *collectionView;
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController;
-- (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^)(void))block;
+- (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block;
 @end
 
 NS_ASSUME_NONNULL_END

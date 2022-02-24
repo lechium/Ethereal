@@ -127,7 +127,7 @@
     });
 }
 
-- (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^)(void))block {
+- (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block {
     if (!show) {
         //self.layer.anchorPoint = CGPointMake(1, 0);
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
