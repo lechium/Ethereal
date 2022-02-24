@@ -30,6 +30,8 @@
 		323DEC2327A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1527A39032009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m */; };
 		323DEC2427A39033009F7DB7 /* KBAVInfoPanelMediaOption.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1727A39032009F7DB7 /* KBAVInfoPanelMediaOption.m */; };
 		323DEC2527A39033009F7DB7 /* KBAVInfoPanelDescriptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323DEC1927A39033009F7DB7 /* KBAVInfoPanelDescriptionViewController.m */; };
+		324DB6CF27C75391000BAF8E /* KBContextMenuViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 324DB6CE27C75391000BAF8E /* KBContextMenuViewCell.m */; };
+		324DB6D227C75A65000BAF8E /* KBContextMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 324DB6D127C75A65000BAF8E /* KBContextMenuView.m */; };
 		327D3FDF2324E512000EC3C1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FDE2324E512000EC3C1 /* AppDelegate.m */; };
 		327D3FE22324E512000EC3C1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327D3FE12324E512000EC3C1 /* ViewController.m */; };
 		327D3FE52324E512000EC3C1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 327D3FE32324E512000EC3C1 /* Main.storyboard */; };
@@ -138,6 +140,10 @@
 		323DEC1B27A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelSubtitlesViewController.h; sourceTree = "<group>"; };
 		323DEC1C27A39033009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelCollectionViewTextCell.h; sourceTree = "<group>"; };
 		3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOSAVPlayerTouch.framework; path = "com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks/tvOSAVPlayerTouch.framework"; sourceTree = "<group>"; };
+		324DB6CD27C75391000BAF8E /* KBContextMenuViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBContextMenuViewCell.h; sourceTree = "<group>"; };
+		324DB6CE27C75391000BAF8E /* KBContextMenuViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuViewCell.m; sourceTree = "<group>"; };
+		324DB6D027C75A65000BAF8E /* KBContextMenuView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBContextMenuView.h; sourceTree = "<group>"; };
+		324DB6D127C75A65000BAF8E /* KBContextMenuView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuView.m; sourceTree = "<group>"; };
 		327B3EA72327694B00377FAE /* makeLatest.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = makeLatest.sh; sourceTree = "<group>"; };
 		327D3FDA2324E512000EC3C1 /* Ethereal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ethereal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		327D3FDD2324E512000EC3C1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -329,6 +335,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		324DB6CC27C7533E000BAF8E /* Context */ = {
+			isa = PBXGroup;
+			children = (
+				324DB6CD27C75391000BAF8E /* KBContextMenuViewCell.h */,
+				324DB6CE27C75391000BAF8E /* KBContextMenuViewCell.m */,
+				324DB6D027C75A65000BAF8E /* KBContextMenuView.h */,
+				324DB6D127C75A65000BAF8E /* KBContextMenuView.m */,
+			);
+			path = Context;
+			sourceTree = "<group>";
+		};
 		327D3FD12324E512000EC3C1 = {
 			isa = PBXGroup;
 			children = (
@@ -615,6 +632,7 @@
 		32E0A7E92793A36A006FB9B0 /* KBAVInfoViewController */ = {
 			isa = PBXGroup;
 			children = (
+				324DB6CC27C7533E000BAF8E /* Context */,
 				32E0A7EB2793A36A006FB9B0 /* Categories */,
 				32E0A7F02793A36A006FB9B0 /* KBAVInfoViewController.h */,
 				32E0A7EA2793A36A006FB9B0 /* KBAVInfoViewController.m */,
@@ -790,6 +808,7 @@
 				327D405223265BA3000EC3C1 /* UIViewController+Additions.m in Sources */,
 				4CF77B7F27C0265F00F91237 /* KBBulletinView.m in Sources */,
 				323DEC2027A39033009F7DB7 /* KBButton.m in Sources */,
+				324DB6CF27C75391000BAF8E /* KBContextMenuViewCell.m in Sources */,
 				327D401323265A78000EC3C1 /* ALView+PureLayout.m in Sources */,
 				32E0A7FB2793A36A006FB9B0 /* KBAVInfoViewController.m in Sources */,
 				327D404223265AEB000EC3C1 /* SDWebImageCompat.m in Sources */,
@@ -827,6 +846,7 @@
 				327D3FDF2324E512000EC3C1 /* AppDelegate.m in Sources */,
 				328B5FDB26F6A1E000303CE2 /* KBPlayerViewController.m in Sources */,
 				327D405B23265CD9000EC3C1 /* UIWindow+Additions.m in Sources */,
+				324DB6D227C75A65000BAF8E /* KBContextMenuView.m in Sources */,
 				328B5FE526F6F08300303CE2 /* UIViewController+Presentation.m in Sources */,
 				323DEC2327A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m in Sources */,
 				327D404123265AEB000EC3C1 /* SDImageCache.m in Sources */,

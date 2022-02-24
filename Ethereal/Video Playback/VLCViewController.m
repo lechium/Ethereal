@@ -17,6 +17,7 @@
 #import "KBSliderImages.h"
 #import "UIView+AL.h"
 #import "KBBulletinView.h"
+#import "KBContextMenuView.h"
 
 @interface VLCViewController () {
     NSURL *_mediaURL;
@@ -28,6 +29,7 @@
     NSTimer *_ffTimer;
     BOOL _setMeta;
     NSInteger _selectedMediaOptionIndex;
+    KBContextMenuView *_visibleContextView;
 }
 @property UIView *videoView;
 @property VLCMediaPlayer *mediaPlayer;
@@ -203,6 +205,9 @@
         if (animated) {
             [UIView animateWithDuration:0.3 animations:^{
                 self_weak_.subtitleButton.alpha = direction;
+                if ([self_weak_ contextViewVisible] && direction == 0){
+                    //[self_weak_ testShowContextView];
+                }
             } completion:^(BOOL finished) {
                 if (direction == 0) {
                     if ([self_weak_.subtitleButton isFocused]){
@@ -310,9 +315,10 @@
     longLeftPress.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
     [longLeftPress requireGestureRecognizerToFail:_leftTap];
     [self.view addGestureRecognizer:longLeftPress];
-    
-    
+}
 
+- (BOOL)contextViewVisible {
+    return (_visibleContextView);
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
@@ -413,12 +419,75 @@
     return nil;
 }
 
+- (NSArray *) preferredFocusEnvironments {
+    if ([self contextViewVisible]){
+        return @[_visibleContextView, self.transportSlider];
+    }
+    if ([self avInfoPanelShowing]) {
+        return @[_avInfoViewController.tempTabBar, self.transportSlider];
+    }
+    return @[self.transportSlider];
+}
+
+- (KBContextMenuView *)visibleContextView {
+    return _visibleContextView;
+}
+- (void)killContextView {
+    _visibleContextView = nil;
+}
+- (void)testShowContextView {
+    @weakify(self);
+    if (_visibleContextView) {
+        [UIView animateWithDuration:0.5 animations:^{
+            self_weak_.visibleContextView.transform = CGAffineTransformScale(self_weak_.visibleContextView.transform, 0.01, 0.01);;
+            self_weak_.visibleContextView.alpha = 0.0;
+            self_weak_.visibleContextView.layer.anchorPoint = CGPointMake(1, 0);
+            [self_weak_.visibleContextView layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            [self_weak_.visibleContextView removeFromSuperview];
+            [self_weak_ killContextView];
+        }];
+    } else {
+        _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
+        _visibleContextView.alpha = 0;
+        _visibleContextView.layer.anchorPoint = CGPointMake(0, 1);
+        _visibleContextView.transform = CGAffineTransformScale(_visibleContextView.transform, 0.01, 0.01);
+        [_visibleContextView autoConstrainToSize:CGSizeMake(400, 269)];
+        _visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
+        [self.view addSubview:_visibleContextView];
+        [_visibleContextView.collectionView reloadData];
+        [_visibleContextView.trailingAnchor constraintEqualToAnchor:self.subtitleButton.trailingAnchor constant:0].active = true;
+        [_visibleContextView.bottomAnchor constraintEqualToAnchor:self.subtitleButton.topAnchor constant:-10].active = true;
+        [UIView animateWithDuration:0.5 animations:^{
+            self_weak_.visibleContextView.transform = CGAffineTransformIdentity;
+            self_weak_.visibleContextView.alpha = 1.0;
+            self_weak_.visibleContextView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+            [self_weak_.visibleContextView layoutIfNeeded];
+            [self_weak_ setNeedsFocusUpdate];
+            [self_weak_ updateFocusIfNeeded];
+        }];
+       
+    }
+}
 
 - (void)subtitleButtonClicked {
     if (![self subtitlesAvailable]) {
         self.subtitleButton.alpha = 0;
         return;
     }
+    if ([self contextViewVisible]){
+        [_visibleContextView showContextView:false fromView:nil completion:^{
+            [self killContextView];
+        }];
+    } else {
+        _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
+        _visibleContextView.delegate = self;
+        _visibleContextView.sourceView = self.subtitleButton;
+        _visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
+        [_visibleContextView showContextView:true fromView:self];
+    }
+    return;
+    //[self testShowContextView];
     KBAVInfoPanelMediaOption *next = [self nextSubtitleStream];
     NSLog(@"[Ethereal] next subtitle item: %@", next);
     if (next) {
