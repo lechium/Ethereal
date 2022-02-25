@@ -28,6 +28,7 @@
         [_label autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 25, 0, 0)];
         _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
         _label.textColor = [UIColor colorWithWhite:1.0 alpha:0.6];
+        self.translatesAutoresizingMaskIntoConstraints = false;
     }
     return self;
 }
@@ -103,7 +104,7 @@
 {
     CGRect frameRect =  [UIScreen mainScreen].bounds;
     CGSize retval;
-    retval =  CGSizeMake(frameRect.size.width, 70);
+    retval =  CGSizeMake(frameRect.size.width, 59);
     return retval;
 }
 
@@ -144,20 +145,30 @@
     self.selectedMediaOptionIndex = indexPath.row;
     KBContextMenuSection *currentSection = _representation.sections[indexPath.section];
     KBAction *opt = currentSection.items[indexPath.row];
-    opt.state = KBMenuElementStateOn;
-    opt.handler(opt);
-    [currentSection.items enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx != indexPath.row){
-            [(KBAction*)obj setState:KBMenuElementStateOff];
-        }
-    }];
-    [self.collectionView reloadData];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self showContextView:false completion:^{
-            [self killContextView];
+   // opt.state = KBMenuElementStateOn;
+    if (currentSection.singleSelection){
+        opt.state = KBMenuElementStateOn;
+        [currentSection.items enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (idx != indexPath.row){
+                [(KBAction*)obj setState:KBMenuElementStateOff];
+            }
         }];
-    });
-        
+    } else {
+        if (opt.state == KBMenuElementStateOn) {
+            opt.state = KBMenuElementStateOff;
+        } else if (opt.state == KBMenuElementStateOff) {
+            opt.state = KBMenuElementStateOn;
+        }
+    }
+    opt.handler(opt);
+    [self.collectionView reloadData];
+    if (currentSection.singleSelection) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self showContextView:false completion:^{
+                [self killContextView];
+            }];
+        });
+    }
 }
 
 -(void)setAnchorPoint:(CGPoint)anchorPoint forView:(UIView *)view {
@@ -215,7 +226,7 @@
         [viewController.view addSubview:self];
         [self.collectionView reloadData];
         [self.trailingAnchor constraintEqualToAnchor:self.sourceView.trailingAnchor constant:0].active = true;
-        [self.bottomAnchor constraintEqualToAnchor:self.sourceView.topAnchor constant:-10].active = true;
+        [self.bottomAnchor constraintEqualToAnchor:self.sourceView.topAnchor constant:-36].active = true;
         [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.transform = CGAffineTransformIdentity;
             self.alpha = 1.0;

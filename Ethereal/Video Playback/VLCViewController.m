@@ -423,23 +423,25 @@
         }
         [menuArray addObject:action];
     }];
-    KBMenu *menu = [KBMenu menuWithTitle:@"Audio" children:menuArray];
+    KBMenu *menu = [KBMenu menuWithTitle:@"Audio" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
     return menu;
 }
 
 - (KBMenu *)createAudioMenuOld {
-    KBAction *testItemOne = [KBAction actionWithTitle:@"Test Item One" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+    KBAction *testItemOne = [KBAction actionWithTitle:@"Full Dynamic Range" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
-    KBAction *testItemsThree = [KBAction actionWithTitle:@"Test Item Two" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+    testItemOne.state = KBMenuElementStateOn;
+    KBAction *testItemsThree = [KBAction actionWithTitle:@"Reduce Loud Sounds" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
-    KBAction *testItemTwo = [KBAction actionWithTitle:@"Test Item Two" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+    KBAction *testItemTwo = [KBAction actionWithTitle:@"Unknown" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
-    KBMenu *firstMenu = [KBMenu menuWithTitle:@"AUDIO RANGE" children:@[testItemOne, testItemsThree]];
-    KBMenu *secondMenu = [KBMenu menuWithTitle:@"AUDIO TRACKS" children:@[testItemTwo]];
-    return [KBMenu menuWithTitle:@"Audio" children:@[firstMenu, secondMenu]];
+    testItemTwo.state = KBMenuElementStateOn;
+    KBMenu *firstMenu = [KBMenu menuWithTitle:@"Audio Range" image:nil identifier:nil options:KBMenuOptionsDisplayInline children:@[testItemOne, testItemsThree]];
+    KBMenu *secondMenu = [KBMenu menuWithTitle:@"Audio Track" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:@[testItemTwo]];
+    return [KBMenu menuWithTitle:@"Audio" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:@[firstMenu, secondMenu]];
 }
 
 - (KBMenu *)createSubtitleMenu {
@@ -458,7 +460,7 @@
         }
         [menuArray addObject:action];
     }];
-    KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" children:menuArray];
+    KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
     return menu;
 }
 
@@ -722,10 +724,6 @@
 }
 
 - (void)stepVideoBackwards {
-    if (_mediaPlayer.state == VLCMediaPlayerStateBuffering){
-        NSLog(@"[Ethereal] buffering, bail!");
-        return;
-    }
     self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value - 10;
@@ -740,10 +738,6 @@
 }
 
 - (void)stepVideoForwards {
-    if (_mediaPlayer.state == VLCMediaPlayerStateBuffering){
-        NSLog(@"[Ethereal] buffering, bail!");
-        return;
-    }
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value + 10;

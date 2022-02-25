@@ -1514,6 +1514,9 @@
 #pragma mark - Actions
 
 - (void)panGestureWasTriggered:(UIPanGestureRecognizer *)panGestureRecognizer {
+    if (![self isFocused]) {
+        return;
+    }
     if (self.sliderMode == KBSliderModeTransport){
         if (![self _isVisible] && self.userInteractionEnabled){
             [self fadeIn];

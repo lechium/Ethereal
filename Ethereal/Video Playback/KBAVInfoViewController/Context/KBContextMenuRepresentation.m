@@ -39,6 +39,7 @@
             KBContextMenuSection *section = [KBContextMenuSection new];
             section.items = menu.children;
             section.title = menu.title;
+            section.singleSelection = (menu.options & KBMenuOptionsSingleSelection) != 0;
             [sections addObject:section];
             *stop = true;
         } else if ([obj isMemberOfClass:KBMenu.class]) {
@@ -46,6 +47,7 @@
             KBContextMenuSection *section = [KBContextMenuSection new];
             section.items = menuObj.children;
             section.title = menuObj.title;
+            section.singleSelection = (menuObj.options & KBMenuOptionsSingleSelection) != 0;
             [sections addObject:section];
         }
     }];
