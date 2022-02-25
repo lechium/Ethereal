@@ -38,6 +38,7 @@
 
 @property KBSlider *transportSlider;
 @property KBButton *subtitleButton;
+@property KBButton *audioButton;
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
 @property KBAVInfoViewController *avInfoViewController;
 @property UITapGestureRecognizer *leftTap;
@@ -194,6 +195,13 @@
     _subtitleButton.alpha = 0;
     [_subtitleButton autoConstrainToSize:CGSizeMake(68, 68)];
     [self.view addSubview:_subtitleButton];
+    
+    _audioButton = [KBButton buttonWithType:KBButtonTypeImage];
+    _audioButton.buttonImageView.image = [KBSliderImages audioImage];
+    _audioButton.alpha = 0;
+    [_audioButton autoConstrainToSize:CGSizeMake(68, 68)];
+    [self.view addSubview:_audioButton];
+    
     if ([self subtitlesAvailable]) {
         NSLog(@"[Ethereal] subtitles available!");
     } else {
@@ -201,28 +209,37 @@
     }
     [self updateSubtitleButtonState];
     [_subtitleButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
-    [_subtitleButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
+    //[_subtitleButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
     _subtitleButton.layer.masksToBounds = true;
     _subtitleButton.layer.cornerRadius = 68/2;
     [_subtitleButton addTarget:self action:@selector(subtitleButtonClicked:) forControlEvents:UIControlEventPrimaryActionTriggered];
+    
+    [_audioButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
+    [_audioButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
+    _audioButton.layer.masksToBounds = true;
+    _audioButton.layer.cornerRadius = 68/2;
+    [_audioButton addTarget:self action:@selector(audioButtonClicked:) forControlEvents:UIControlEventPrimaryActionTriggered];
+    [_audioButton.leftAnchor constraintEqualToAnchor:_subtitleButton.rightAnchor constant:0].active = true;
     
     @weakify(self);
     _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
         if (animated) {
             [UIView animateWithDuration:0.3 animations:^{
                 self_weak_.subtitleButton.alpha = direction;
+                self_weak_.audioButton.alpha = direction;
                 if ([self_weak_ contextViewVisible] && direction == 0){
                     //[self_weak_ testShowContextView];
                 }
             } completion:^(BOOL finished) {
                 if (direction == 0) {
-                    if ([self_weak_.subtitleButton isFocused]){
+                    if ([self_weak_.subtitleButton isFocused] || [self_weak_.audioButton isFocused]){
                         [self_weak_ setNeedsFocusUpdate];
                     }
                 }
             }];
         } else {
             self_weak_.subtitleButton.alpha = direction;
+            self_weak_.audioButton.alpha = direction;
         }
     };
     
@@ -508,12 +525,12 @@
 
 - (NSArray *) preferredFocusEnvironments {
     if ([self contextViewVisible]){
-        return @[_visibleContextView, self.transportSlider];
+        return @[_visibleContextView];
     }
     if ([self avInfoPanelShowing]) {
         return @[_avInfoViewController.tempTabBar, self.transportSlider];
     }
-    return @[self.transportSlider];
+    return @[self.transportSlider, self.subtitleButton, self.audioButton];
 }
 
 - (KBContextMenuView *)visibleContextView {
@@ -522,40 +539,40 @@
 - (void)killContextView {
     _visibleContextView = nil;
     self.subtitleButton.opened = false;
+    self.audioButton.opened = false;
+    self.transportSlider.userInteractionEnabled = true;
+    self.subtitleButton.userInteractionEnabled = true;
 }
-- (void)testShowContextView {
-    @weakify(self);
-    if (_visibleContextView) {
-        [UIView animateWithDuration:0.5 animations:^{
-            self_weak_.visibleContextView.transform = CGAffineTransformScale(self_weak_.visibleContextView.transform, 0.01, 0.01);;
-            self_weak_.visibleContextView.alpha = 0.0;
-            self_weak_.visibleContextView.layer.anchorPoint = CGPointMake(1, 0);
-            [self_weak_.visibleContextView layoutIfNeeded];
-        } completion:^(BOOL finished) {
-            [self_weak_.visibleContextView removeFromSuperview];
-            [self_weak_ killContextView];
+
+- (void)audioButtonClicked:(KBButton *)button {
+    
+    if ([self contextViewVisible]){
+        [_visibleContextView showContextView:false fromView:nil completion:^{
+            button.opened = false;
+            [self killContextView];
         }];
     } else {
         _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
-        _visibleContextView.alpha = 0;
-        _visibleContextView.layer.anchorPoint = CGPointMake(0, 1);
-        _visibleContextView.transform = CGAffineTransformScale(_visibleContextView.transform, 0.01, 0.01);
-        [_visibleContextView autoConstrainToSize:CGSizeMake(400, 269)];
-        _visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
-        [self.view addSubview:_visibleContextView];
-        [_visibleContextView.collectionView reloadData];
-        [_visibleContextView.trailingAnchor constraintEqualToAnchor:self.subtitleButton.trailingAnchor constant:0].active = true;
-        [_visibleContextView.bottomAnchor constraintEqualToAnchor:self.subtitleButton.topAnchor constant:-10].active = true;
-        [UIView animateWithDuration:0.5 animations:^{
-            self_weak_.visibleContextView.transform = CGAffineTransformIdentity;
-            self_weak_.visibleContextView.alpha = 1.0;
-            self_weak_.visibleContextView.layer.anchorPoint = CGPointMake(0.5, 0.5);
-            [self_weak_.visibleContextView layoutIfNeeded];
-            [self_weak_ setNeedsFocusUpdate];
-            [self_weak_ updateFocusIfNeeded];
+        _visibleContextView.delegate = self;
+        _visibleContextView.sourceView = self.audioButton;
+        _visibleContextView.menu = [self createAudioMenu];
+        _visibleContextView.representation = [KBContextMenuRepresentation representationForMenu:_visibleContextView.menu];
+        //NSLog(@"[Ethereal] sub rep: %@", _visibleContextView.representation.sections);
+        //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
+        [_visibleContextView showContextView:true fromView:self completion:^{
+            button.opened = true;
+            self.transportSlider.userInteractionEnabled = false;
+            self.subtitleButton.userInteractionEnabled = false;
+            [self setNeedsFocusUpdate];
+            [self updateFocusIfNeeded];
         }];
-       
     }
+ /*
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //[self updateSubtitleButtonState];
+        [self showSubtitleBulletin];
+    });
+*/
 }
 
 - (void)subtitleButtonClicked:(KBButton *)button {
@@ -578,6 +595,8 @@
         //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [_visibleContextView showContextView:true fromView:self completion:^{
             button.opened = true;
+            self.transportSlider.userInteractionEnabled = false;
+            self.subtitleButton.userInteractionEnabled = false;
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];
         }];
