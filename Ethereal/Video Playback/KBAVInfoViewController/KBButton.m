@@ -5,11 +5,42 @@
     KBButtonType _buttonType;
     BOOL _selected;
     UIView *_selectedView;
+    BOOL _opened;
 }
 
 @end
 
 @implementation KBButton
+
+- (void)setOpened:(BOOL)opened {
+    _opened = opened;
+    if (opened) {
+        _selectedView.alpha = 1.0;
+        _selectedView.backgroundColor = [UIColor darkGrayColor];
+        if (self.buttonImageView){
+            self.buttonImageView.tintColor = [UIColor whiteColor];
+        }
+        if ([self isFocused]){
+            _selectedView.backgroundColor = [UIColor whiteColor];
+            if (self.buttonImageView){
+                self.buttonImageView.tintColor = [UIColor darkGrayColor];
+            }
+        }
+    } else {
+        _selectedView.alpha = 0.0;
+        if (self.isFocused){
+            _selectedView.alpha = 1.0;
+        }
+        _selectedView.backgroundColor = [UIColor whiteColor];
+        if (self.buttonImageView){
+            self.buttonImageView.tintColor = [UIColor darkGrayColor];
+        }
+    }
+}
+
+- (BOOL)opened {
+    return _opened;
+}
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     [super pressesEnded:presses withEvent:event];
@@ -65,6 +96,7 @@
 
 +(instancetype)buttonWithType:(KBButtonType)buttonType {
     KBButton *button = [[KBButton alloc] init];
+    button.opened = false;
     if (buttonType == KBButtonTypeText){
         [button _setupLabelView];
     } else if (buttonType == KBButtonTypeImage) {
@@ -78,7 +110,7 @@
     [self addSubview:_selectedView];
     [_selectedView autoPinEdgesToSuperviewEdges];
     _selectedView.alpha = 0;
-    _selectedView.backgroundColor = [UIColor darkGrayColor];
+    _selectedView.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)_setupLabelView {
@@ -106,8 +138,18 @@
     _selected = selected;
     if (selected){
         _selectedView.alpha = 1.0;
+        _selectedView.backgroundColor = [UIColor whiteColor];
+        if (self.buttonImageView){
+            self.buttonImageView.tintColor = [UIColor darkGrayColor];
+        }
     } else {
         _selectedView.alpha = 0;
+        if (self.buttonImageView){
+            self.buttonImageView.tintColor = [UIColor whiteColor];
+        }
+        if (self.opened){
+            self.opened = true; //hacky but might work
+        }
     }
 }
 

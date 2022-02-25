@@ -12,6 +12,11 @@
 #import "KBMenu.h"
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol KBContextMenuSourceDelegate <NSObject>
+
+@property BOOL opened;
+
+@end
 
 @protocol KBContextMenuViewDelegate <NSObject>
 

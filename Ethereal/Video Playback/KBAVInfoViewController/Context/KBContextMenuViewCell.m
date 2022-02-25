@@ -35,7 +35,7 @@
         [_stackView setArrangedViews:@[_leadingImageView, _label, _trailingImageView]];
         [self _setupSelectedView];
         [self.contentView addSubview:_stackView];
-        [_stackView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 15, 0, 15)];
+        [_stackView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 25, 0, 25)];
         
     }
     return self;

@@ -203,7 +203,7 @@
     [_subtitleButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
     _subtitleButton.layer.masksToBounds = true;
     _subtitleButton.layer.cornerRadius = 68/2;
-    [_subtitleButton addTarget:self action:@selector(subtitleButtonClicked) forControlEvents:UIControlEventPrimaryActionTriggered];
+    [_subtitleButton addTarget:self action:@selector(subtitleButtonClicked:) forControlEvents:UIControlEventPrimaryActionTriggered];
     
     @weakify(self);
     _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
@@ -465,6 +465,7 @@
 }
 - (void)killContextView {
     _visibleContextView = nil;
+    self.subtitleButton.opened = false;
 }
 - (void)testShowContextView {
     @weakify(self);
@@ -501,13 +502,14 @@
     }
 }
 
-- (void)subtitleButtonClicked {
+- (void)subtitleButtonClicked:(KBButton *)button {
     if (![self subtitlesAvailable]) {
         self.subtitleButton.alpha = 0;
         return;
     }
     if ([self contextViewVisible]){
         [_visibleContextView showContextView:false fromView:nil completion:^{
+            button.opened = false;
             [self killContextView];
         }];
     } else {
@@ -517,6 +519,7 @@
         _visibleContextView.menu = [self createSubtitleMenu];
         //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [_visibleContextView showContextView:true fromView:self completion:^{
+            button.opened = true;
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];
         }];
@@ -552,12 +555,14 @@
         self.subtitleButton.userInteractionEnabled = false;
         return;
     }
+    self.subtitleButton.buttonImageView.alpha = 1.0;
     self.subtitleButton.userInteractionEnabled = true;
+    /*
     if ([self subtitlesOn]) {
         self.subtitleButton.buttonImageView.alpha = 1.0;
     } else {
         self.subtitleButton.buttonImageView.alpha = 0.5;
-    }
+    }*/
 }
 
 - (NSURL *)mediaURL {
