@@ -101,6 +101,9 @@
 		32E0A8002793A36A006FB9B0 /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A7F72793A36A006FB9B0 /* KBTextPresentationViewController.m */; };
 		32E0A8062794C242006FB9B0 /* AVAsset+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A8052794C242006FB9B0 /* AVAsset+Extras.m */; };
 		32FCD85527C21B2B00F614DF /* TVVLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32FCD85427C21B2B00F614DF /* TVVLCKit.framework */; };
+		4C9E46A527C841BD000487F2 /* KBMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9E46A427C841BD000487F2 /* KBMenu.m */; };
+		4C9E46A827C8420B000487F2 /* KBMenuElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9E46A727C8420B000487F2 /* KBMenuElement.m */; };
+		4C9E46AB27C84C3F000487F2 /* KBAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9E46AA27C84C3F000487F2 /* KBAction.m */; };
 		4CF77B7F27C0265F00F91237 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CF77B7D27C0265F00F91237 /* KBBulletinView.m */; };
 /* End PBXBuildFile section */
 
@@ -299,6 +302,12 @@
 		32E2A55127970455001CB1AA /* tvhifi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tvhifi.h; sourceTree = "<group>"; };
 		32FCD85127C2162800F614DF /* TVVLCKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = TVVLCKit.tbd; sourceTree = "<group>"; };
 		32FCD85427C21B2B00F614DF /* TVVLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVVLCKit.framework; path = Library/Frameworks/TVVLCKit.framework; sourceTree = "<group>"; };
+		4C9E46A327C841BD000487F2 /* KBMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBMenu.h; sourceTree = "<group>"; };
+		4C9E46A427C841BD000487F2 /* KBMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBMenu.m; sourceTree = "<group>"; };
+		4C9E46A627C8420B000487F2 /* KBMenuElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBMenuElement.h; sourceTree = "<group>"; };
+		4C9E46A727C8420B000487F2 /* KBMenuElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBMenuElement.m; sourceTree = "<group>"; };
+		4C9E46A927C84C3F000487F2 /* KBAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBAction.h; sourceTree = "<group>"; };
+		4C9E46AA27C84C3F000487F2 /* KBAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBAction.m; sourceTree = "<group>"; };
 		4CF77B7D27C0265F00F91237 /* KBBulletinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBBulletinView.m; path = Ethereal/KBBulletinView.m; sourceTree = SOURCE_ROOT; };
 		4CF77B7E27C0265F00F91237 /* KBBulletinView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBBulletinView.h; path = Ethereal/KBBulletinView.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -342,6 +351,12 @@
 				324DB6CE27C75391000BAF8E /* KBContextMenuViewCell.m */,
 				324DB6D027C75A65000BAF8E /* KBContextMenuView.h */,
 				324DB6D127C75A65000BAF8E /* KBContextMenuView.m */,
+				4C9E46A627C8420B000487F2 /* KBMenuElement.h */,
+				4C9E46A727C8420B000487F2 /* KBMenuElement.m */,
+				4C9E46A927C84C3F000487F2 /* KBAction.h */,
+				4C9E46AA27C84C3F000487F2 /* KBAction.m */,
+				4C9E46A327C841BD000487F2 /* KBMenu.h */,
+				4C9E46A427C841BD000487F2 /* KBMenu.m */,
 			);
 			path = Context;
 			sourceTree = "<group>";
@@ -828,7 +843,9 @@
 				327D406A23265DBE000EC3C1 /* SVProgressHUD.m in Sources */,
 				327D3FEA2324E515000EC3C1 /* main.m in Sources */,
 				32E0A8002793A36A006FB9B0 /* KBTextPresentationViewController.m in Sources */,
+				4C9E46AB27C84C3F000487F2 /* KBAction.m in Sources */,
 				327D404423265AEB000EC3C1 /* SDWebImageDownloader.m in Sources */,
+				4C9E46A827C8420B000487F2 /* KBMenuElement.m in Sources */,
 				327D404C23265AEB000EC3C1 /* UIImageView+HighlightedWebCache.m in Sources */,
 				327D404323265AEB000EC3C1 /* SDWebImageDecoder.m in Sources */,
 				328B5FF626F700A500303CE2 /* EXTScope.m in Sources */,
@@ -849,6 +866,7 @@
 				324DB6D227C75A65000BAF8E /* KBContextMenuView.m in Sources */,
 				328B5FE526F6F08300303CE2 /* UIViewController+Presentation.m in Sources */,
 				323DEC2327A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.m in Sources */,
+				4C9E46A527C841BD000487F2 /* KBMenu.m in Sources */,
 				327D404123265AEB000EC3C1 /* SDImageCache.m in Sources */,
 				328B5FF526F700A500303CE2 /* EXTRuntimeExtensions.m in Sources */,
 				323DEC2227A39033009F7DB7 /* KBAVInfoPanelMediaOptionCollectionViewController.m in Sources */,

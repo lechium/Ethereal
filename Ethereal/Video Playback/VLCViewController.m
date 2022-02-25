@@ -17,7 +17,8 @@
 #import "KBSliderImages.h"
 #import "UIView+AL.h"
 #import "KBBulletinView.h"
-#import "KBContextMenuView.h"
+#import "KBAction.h"
+#import "KBMenu.h"
 
 @interface VLCViewController () {
     NSURL *_mediaURL;
@@ -149,7 +150,7 @@
         if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
         } else if ([self contextViewVisible]) {
-            [_visibleContextView showContextView:false fromView:nil completion:^{
+            [_visibleContextView showContextView:false completion:^{
                 [self killContextView];
             }];
         } else {
@@ -369,6 +370,27 @@
     }
 }
 
+- (KBMenu *)createSubtitleMenu {
+    NSArray<KBAVInfoPanelMediaOption *> *vlcSubtitleData = [_avInfoViewController vlcSubtitleData];
+    __block NSMutableArray *menuArray = [NSMutableArray new];
+    [vlcSubtitleData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBAction *action = [KBAction actionWithTitle:obj.displayName image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+            action.state = KBMenuElementStateOn;
+            if (obj.selectedBlock){
+                obj.selectedBlock(obj);
+            }
+        }];
+        action.state = KBMenuElementStateOff;
+        if (obj.selected){
+            action.state = KBMenuElementStateOn;
+        }
+        [menuArray addObject:action];
+    }];
+    KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" children:menuArray];
+    NSLog(@"[Ethereal] menu: %@", menu);
+    return menu;
+}
+
 - (void)createAndSetMeta {
     if (_setMeta) return;
     CGSize frameSize = [_mediaPlayer videoSize];
@@ -492,7 +514,8 @@
         _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
         _visibleContextView.delegate = self;
         _visibleContextView.sourceView = self.subtitleButton;
-        _visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
+        _visibleContextView.menu = [self createSubtitleMenu];
+        //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [_visibleContextView showContextView:true fromView:self completion:^{
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];

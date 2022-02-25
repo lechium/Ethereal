@@ -82,7 +82,11 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     KBContextCollectionHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Header" forIndexPath:indexPath];
-    header.label.text = @"SUBTITLES";
+    if (self.menu) {
+        header.label.text = [self.menu.title uppercaseString];
+    } else {
+        header.label.text = @"SUBTITLES";
+    }
     return header;
 }
 
@@ -100,31 +104,74 @@
 
 -  (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     KBContextMenuViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-    KBAVInfoPanelMediaOption *opt = [self mediaOptions][indexPath.row];
-    cell.label.text = opt.displayName;
-    [cell setSelected:opt.selected animated:false];
+    if (self.mediaOptions) {
+        KBAVInfoPanelMediaOption *opt = [self mediaOptions][indexPath.row];
+        cell.label.text = opt.displayName;
+        [cell setSelected:opt.selected animated:false];
+    } else if (self.menu) {
+        KBAction *opt = (KBAction*)self.menu.children[indexPath.row];
+        cell.label.text = opt.title;
+        [cell setSelected:(opt.state == KBMenuElementStateOn) animated:false];
+    }
+  
     //cell.title = opt.displayName;
     //[cell setSelected:opt.selected];
     return cell;
 }
 
 -(NSInteger)collectionView:(id)arg1 numberOfItemsInSection:(NSInteger)arg2 {
-    return _mediaOptions.count;
+    if (_mediaOptions){
+        return _mediaOptions.count;
+    }
+    return _menu.children.count;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     self.selectedMediaOptionIndex = indexPath.row;
-    KBAVInfoPanelMediaOption *subtitleItem = self.mediaOptions[indexPath.row];
-    [subtitleItem setIsSelected:true];
-    if (subtitleItem.selectedBlock){
-        subtitleItem.selectedBlock(subtitleItem);
+    if (self.mediaOptions) {
+        KBAVInfoPanelMediaOption *subtitleItem = self.mediaOptions[indexPath.row];
+        [subtitleItem setIsSelected:true];
+        if (subtitleItem.selectedBlock){
+            subtitleItem.selectedBlock(subtitleItem);
+        }
+    } else if (self.menu) {
+        KBAction *opt = (KBAction*)self.menu.children[indexPath.row];
+        opt.state = KBMenuElementStateOn;
+        opt.handler(opt);
+        [self.menu.children enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (idx != indexPath.row){
+                [(KBAction*)obj setState:KBMenuElementStateOff];
+            }
+        }];
     }
     [self.collectionView reloadData];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self showContextView:false fromView:nil completion:^{
+        [self showContextView:false completion:^{
             [self killContextView];
         }];
     });
+        
+}
+
+-(void)setAnchorPoint:(CGPoint)anchorPoint forView:(UIView *)view {
+    CGPoint newPoint = CGPointMake(view.bounds.size.width * anchorPoint.x,
+                                   view.bounds.size.height * anchorPoint.y);
+    CGPoint oldPoint = CGPointMake(view.bounds.size.width * view.layer.anchorPoint.x,
+                                   view.bounds.size.height * view.layer.anchorPoint.y);
+
+    newPoint = CGPointApplyAffineTransform(newPoint, view.transform);
+    oldPoint = CGPointApplyAffineTransform(oldPoint, view.transform);
+
+    CGPoint position = view.layer.position;
+
+    position.x -= oldPoint.x;
+    position.x += newPoint.x;
+
+    position.y -= oldPoint.y;
+    position.y += newPoint.y;
+
+    view.layer.position = position;
+    view.layer.anchorPoint = anchorPoint;
 }
 
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block {
@@ -146,7 +193,11 @@
         self.alpha = 0;
         self.layer.anchorPoint = CGPointMake(0, 1);
         self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);
-        CGFloat height = 70 + (self.mediaOptions.count * 70);
+        NSInteger itemCount = self.mediaOptions.count;
+        if (self.menu){
+            itemCount = self.menu.children.count;
+        }
+        CGFloat height = 70 + (itemCount * 70);
         [self autoConstrainToSize:CGSizeMake(400, height)];
         //self.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [viewController.view addSubview:self];
@@ -170,6 +221,10 @@
 
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController {
     [self showContextView:show fromView:viewController completion:nil];
+}
+
+- (void)showContextView:(BOOL)show completion:(void (^)(void))block {
+    [self showContextView:show fromView:nil completion:block];
 }
 
 /*
