@@ -10,6 +10,8 @@
 #import "UIView+AL.h"
 #import "KBContextMenuViewCell.h"
 
+#define ANIMATION_DURATION 0.3
+
 @interface KBContextCollectionHeaderView: UICollectionReusableView
 @property (nonatomic, strong) UILabel *label;
 @end
@@ -75,6 +77,7 @@
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
         [_collectionView registerClass:KBContextCollectionHeaderView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"Header"];
+        //[self setAnchorPoint:CGPointMake(0, 1) forView:self];
         //self.layer.anchorPoint = CGPointMake(0, 0);
     }
     return self;
@@ -177,7 +180,7 @@
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block {
     if (!show) {
         //self.layer.anchorPoint = CGPointMake(1, 0);
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);;
             self.alpha = 0.0;
             [self layoutIfNeeded];
@@ -191,7 +194,7 @@
     } else {
         //_visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
         self.alpha = 0;
-        self.layer.anchorPoint = CGPointMake(0, 1);
+        //self.layer.anchorPoint = CGPointMake(0, 1);
         self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);
         NSInteger itemCount = self.mediaOptions.count;
         if (self.menu){
@@ -204,10 +207,10 @@
         [self.collectionView reloadData];
         [self.trailingAnchor constraintEqualToAnchor:self.sourceView.trailingAnchor constant:0].active = true;
         [self.bottomAnchor constraintEqualToAnchor:self.sourceView.topAnchor constant:-10].active = true;
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.transform = CGAffineTransformIdentity;
             self.alpha = 1.0;
-            self.layer.anchorPoint = CGPointMake(0.5, 0.5);
+            //self.layer.anchorPoint = CGPointMake(0.5, 0.5);
             [self layoutIfNeeded];
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];

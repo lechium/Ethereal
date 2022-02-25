@@ -33,7 +33,11 @@
         }
         _selectedView.backgroundColor = [UIColor whiteColor];
         if (self.buttonImageView){
-            self.buttonImageView.tintColor = [UIColor whiteColor];
+            if ([self isFocused]) {
+                self.buttonImageView.tintColor = [UIColor darkGrayColor];
+            } else {
+                self.buttonImageView.tintColor = [UIColor whiteColor];
+            }
         }
     }
 }
