@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KBMenu.h"
+#import "KBContextMenuSection.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KBContextMenuRepresentation : NSObject {
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray *_sections;    // 24 = 0x18
 }
 
-@property(readonly, copy, nonatomic) NSArray *sections; // @synthesize sections=_sections;
+@property(readonly, copy, nonatomic) NSArray <KBContextMenuSection *>*sections; // @synthesize sections=_sections;
 @property(readonly, copy, nonatomic) NSArray *menuElements; // @synthesize menuElements=_menuElements;
 + (instancetype)representationForMenu:(KBMenu *)menu;
 - (id)initWithMenu:(KBMenu *)menu;

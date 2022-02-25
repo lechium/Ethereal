@@ -88,14 +88,8 @@
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]){
         KBContextCollectionHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Header" forIndexPath:indexPath];
-        KBContextMenuSection *section = _representation.sections[indexPath.row];
+        KBContextMenuSection *section = _representation.sections[indexPath.section];
         header.label.text = [section.title uppercaseString];
-        /*
-        if (self.menu) {
-            header.label.text = [self.menu.title uppercaseString];
-        } else {
-            header.label.text = @"SUBTITLES";
-        }*/
         return header;
     } else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
         UICollectionReusableView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
@@ -115,7 +109,7 @@
 
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    if (section > 0){
+    if (section > 0 || [collectionView numberOfSections] == 1){
         return CGSizeZero;
     }
     CGRect frameRect =  [UIScreen mainScreen].bounds;
@@ -138,26 +132,10 @@
     KBAction *opt = section.items[indexPath.row];
     cell.label.text = opt.title;
     [cell setSelected:(opt.state == KBMenuElementStateOn) animated:false];
-    /*
-    if (self.mediaOptions) {
-        KBAVInfoPanelMediaOption *opt = [self mediaOptions][indexPath.row];
-        cell.label.text = opt.displayName;
-        [cell setSelected:opt.selected animated:false];
-    } else if (self.menu) {
-        KBAction *opt = (KBAction*)self.menu.children[indexPath.row];
-        cell.label.text = opt.title;
-        [cell setSelected:(opt.state == KBMenuElementStateOn) animated:false];
-    }
-  */
-    //cell.title = opt.displayName;
-    //[cell setSelected:opt.selected];
     return cell;
 }
 
 -(NSInteger)collectionView:(id)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (_mediaOptions){
-        return _mediaOptions.count;
-    }
     KBContextMenuSection *currentSection = _representation.sections[section];
     return currentSection.items.count;
 }
@@ -168,28 +146,11 @@
     KBAction *opt = currentSection.items[indexPath.row];
     opt.state = KBMenuElementStateOn;
     opt.handler(opt);
-    [self.menu.children enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [currentSection.items enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (idx != indexPath.row){
             [(KBAction*)obj setState:KBMenuElementStateOff];
         }
     }];
-    /*
-    if (self.mediaOptions) {
-        KBAVInfoPanelMediaOption *subtitleItem = self.mediaOptions[indexPath.row];
-        [subtitleItem setIsSelected:true];
-        if (subtitleItem.selectedBlock){
-            subtitleItem.selectedBlock(subtitleItem);
-        }
-    } else if (self.menu) {
-        KBAction *opt = (KBAction*)self.menu.children[indexPath.row];
-        opt.state = KBMenuElementStateOn;
-        opt.handler(opt);
-        [self.menu.children enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (idx != indexPath.row){
-                [(KBAction*)obj setState:KBMenuElementStateOff];
-            }
-        }];
-    } */
     [self.collectionView reloadData];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self showContextView:false completion:^{
@@ -220,6 +181,15 @@
     view.layer.anchorPoint = anchorPoint;
 }
 
+- (NSInteger)itemCount {
+    __block NSInteger count = 0;
+    NSArray <KBContextMenuSection *> * sections = self.representation.sections;
+    [sections enumerateObjectsUsingBlock:^(KBContextMenuSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        count = count + obj.items.count;
+    }];
+    return count + sections.count;
+}
+
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block {
     if (!show) {
         //self.layer.anchorPoint = CGPointMake(1, 0);
@@ -239,16 +209,9 @@
         self.alpha = 0;
         //self.layer.anchorPoint = CGPointMake(0, 1);
         self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);
-        NSInteger itemCount = self.mediaOptions.count;
-        if (self.menu){
-            itemCount = self.menu.children.count;
-        }
-        CGFloat height = 70 + (itemCount * 70);
-        if (self.collectionView.numberOfSections > 1){
-            height = height + 140;
-        }
+        NSInteger itemCount = [self itemCount];
+        CGFloat height = (itemCount * 70);
         [self autoConstrainToSize:CGSizeMake(400, height)];
-        //self.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [viewController.view addSubview:self];
         [self.collectionView reloadData];
         [self.trailingAnchor constraintEqualToAnchor:self.sourceView.trailingAnchor constant:0].active = true;
@@ -276,13 +239,5 @@
 - (void)showContextView:(BOOL)show completion:(void (^)(void))block {
     [self showContextView:show fromView:nil completion:block];
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
 
 @end

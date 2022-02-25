@@ -64,10 +64,6 @@
     [self updateSubtitleButtonState];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateChanged:) name:VLCMediaPlayerStateChanged object:nil];
     //[_mediaPlayer play];
-    KBMenu *audioMenu = [self createAudioMenu];
-    NSLog(@"[Ethereal] audioMenu: %@", audioMenu);
-    KBContextMenuRepresentation *rep = [KBContextMenuRepresentation representationForMenu:audioMenu];
-    NSLog(@"[Ethereal] sections: %@", rep.sections);
 }
 
 - (void)stateChanged:(NSNotification *)n {
@@ -379,10 +375,13 @@
     KBAction *testItemOne = [KBAction actionWithTitle:@"Test Item One" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
+    KBAction *testItemsThree = [KBAction actionWithTitle:@"Test Item Two" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+        NSLog(@"[Ethereal] %@ selected", action);
+    }];
     KBAction *testItemTwo = [KBAction actionWithTitle:@"Test Item Two" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
-    KBMenu *firstMenu = [KBMenu menuWithTitle:@"AUDIO RANGE" children:@[testItemOne]];
+    KBMenu *firstMenu = [KBMenu menuWithTitle:@"AUDIO RANGE" children:@[testItemOne, testItemsThree]];
     KBMenu *secondMenu = [KBMenu menuWithTitle:@"AUDIO TRACKS" children:@[testItemTwo]];
     return [KBMenu menuWithTitle:@"Audio" children:@[firstMenu, secondMenu]];
 }

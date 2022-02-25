@@ -8,7 +8,6 @@
 
 #import "KBContextMenuRepresentation.h"
 #import "KBAction.h"
-#import "KBContextMenuSection.h"
 
 @interface KBContextMenuRepresentation()
 @property (nonatomic, weak) KBMenu *menu;
