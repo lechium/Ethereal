@@ -355,6 +355,24 @@
     _mediaPlayer.media = [VLCMedia mediaWithURL:mediaURL];
 }
 
+- (void)refreshAudioDetails {
+    NSArray *audioNames = [_mediaPlayer audioTrackNames];
+    NSArray *audioIndices = [_mediaPlayer audioTrackIndexes];
+    NSInteger selectedIndex = [_mediaPlayer currentAudioTrackIndex];
+    NSLog(@"[Ethereal] audioNames: %@ audioIndices: %@ selectedIndex: %lu", audioNames, audioIndices, selectedIndex);
+    __block NSMutableArray *dicts = [NSMutableArray new];
+    [audioNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSNumber *index = audioIndices[idx];
+        BOOL selected = [index integerValue] == selectedIndex;
+        NSDictionary *dict = @{@"language": obj, @"index": index, @"selected": [NSNumber numberWithBool:selected]};
+        [dicts addObject:dict];
+    }];
+    if(dicts.count > 0){
+        NSLog(@"[Ethereal] setting audio data: %@", dicts);
+        [_avInfoViewController setVlcAudioData:dicts];
+    }
+}
+
 - (void)refreshSubtitleDetails {
     NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
     NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
@@ -372,6 +390,27 @@
 }
 
 - (KBMenu *)createAudioMenu {
+    NSArray<KBAVInfoPanelMediaOption *> *vlcAudioData = [_avInfoViewController vlcAudioData];
+    __block NSMutableArray *menuArray = [NSMutableArray new];
+    [vlcAudioData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBAction *action = [KBAction actionWithTitle:obj.displayName image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+            action.state = KBMenuElementStateOn;
+            if (obj.selectedBlock){
+                obj.selectedBlock(obj);
+            }
+        }];
+        action.state = KBMenuElementStateOff;
+        if (obj.selected){
+            action.state = KBMenuElementStateOn;
+        }
+        [menuArray addObject:action];
+    }];
+    KBMenu *menu = [KBMenu menuWithTitle:@"Audio" children:menuArray];
+    NSLog(@"[Ethereal] menu: %@", menu);
+    return menu;
+}
+
+- (KBMenu *)createAudioMenuOld {
     KBAction *testItemOne = [KBAction actionWithTitle:@"Test Item One" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
@@ -437,6 +476,7 @@
         _transportSlider.title = metaDict[@"title"];
     }
     [self refreshSubtitleDetails];
+    [self refreshAudioDetails];
     //[_avInfoViewController setSubtitleData:_avplayController.subtitleTracks];
 }
 

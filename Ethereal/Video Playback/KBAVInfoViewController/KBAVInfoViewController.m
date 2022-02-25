@@ -33,6 +33,7 @@
     NSArray *_subtitleData;
     KBAVInfoStyle _infoStyle;
     NSArray *_vlcSubtitleData;
+    NSArray *_vlcAudioData;
 }
 @property UIView *visibleView;
 @property UIView *divider;
@@ -76,7 +77,42 @@
     return _infoStyle;
 }
 
-
+- (void)setVlcAudioData:(NSArray *)vlcAudioData {
+    if (_vlcAudioData.count > 0){
+        //see if we can just update current subtitle data indexes instead of creating entirely new ones.
+        if (_vlcAudioData.count == vlcAudioData.count) {
+            NSLog(@"[Ethereal] size matches");
+            [_vlcAudioData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSInteger newIndex = [vlcAudioData[idx][@"index"] integerValue];
+                NSLog(@"[Ethereal] old mediaIndex: %lu updatedMediaIndex: %lu", obj.mediaIndex, newIndex);
+                obj.mediaIndex = newIndex;
+                if ([obj selected]){
+                    NSLog(@"[Ethereal] this guy is selected: %@", obj);
+                    VLCViewController *vlcViewController = (VLCViewController *)[self parentViewController];
+                    VLCMediaPlayer *player = [vlcViewController player];
+                    [player setCurrentAudioTrackIndex:newIndex];
+                }
+            }];
+            return;
+        }
+    }
+    __block NSMutableArray *_newArray = [NSMutableArray new];
+    [vlcAudioData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBAVInfoPanelMediaOption *opt = [[KBAVInfoPanelMediaOption alloc] initWithLanguageCode:obj[@"language"] displayName:obj[@"language"] mediaSelectionOption:nil tag:KBSubtitleTagTypeOn index:[obj[@"index"] integerValue]];
+        [opt setIsSelected:[obj[@"selected"] boolValue]];
+        @weakify(self);
+        opt.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
+            NSLog(@"[Ethereal] audio index selected: %lu", selected.mediaIndex);
+            [selected setIsSelected:true];
+            VLCViewController *vlcViewController = (VLCViewController *)[self_weak_ parentViewController];
+            VLCMediaPlayer *player = [vlcViewController player];
+            [vlcViewController setSelectedMediaOptionIndex:idx];
+            [player setCurrentAudioTrackIndex:(int)selected.mediaIndex];
+        };
+        [_newArray addObject:opt];
+    }];
+    _vlcAudioData = _newArray;
+}
 
 - (void)setVlcSubtitleData:(NSArray *)vlcSubtitleData {
     //_vlcSubtitleData = vlcSubtitleData;
