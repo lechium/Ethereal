@@ -30,7 +30,8 @@
     NSTimer *_rewindTimer;
     NSTimer *_ffTimer;
     BOOL _setMeta;
-    NSInteger _selectedMediaOptionIndex;
+    NSInteger _selectedSubtitleOptionIndex;
+    NSInteger _selectedAudioOptionIndex;
     KBContextMenuView *_visibleContextView;
 }
 @property UIView *videoView;
@@ -78,7 +79,7 @@
         NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
         NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
         if (subNames.count > 0) {
-            NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
+            //NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
             [self refreshSubtitleDetails];
         }
     }
@@ -376,7 +377,7 @@
     NSArray *audioNames = [_mediaPlayer audioTrackNames];
     NSArray *audioIndices = [_mediaPlayer audioTrackIndexes];
     NSInteger selectedIndex = [_mediaPlayer currentAudioTrackIndex];
-    NSLog(@"[Ethereal] audioNames: %@ audioIndices: %@ selectedIndex: %lu", audioNames, audioIndices, selectedIndex);
+    //NSLog(@"[Ethereal] audioNames: %@ audioIndices: %@ selectedIndex: %lu", audioNames, audioIndices, selectedIndex);
     __block NSMutableArray *dicts = [NSMutableArray new];
     [audioNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSNumber *index = audioIndices[idx];
@@ -385,7 +386,7 @@
         [dicts addObject:dict];
     }];
     if(dicts.count > 0){
-        NSLog(@"[Ethereal] setting audio data: %@", dicts);
+        //NSLog(@"[Ethereal] setting audio data: %@", dicts);
         [_avInfoViewController setVlcAudioData:dicts];
     }
 }
@@ -393,14 +394,14 @@
 - (void)refreshSubtitleDetails {
     NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
     NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
-    NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
+    //NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
     __block NSMutableArray *dicts = [NSMutableArray new];
     [subNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary *dict = @{@"language": obj, @"index": subIndices[idx]};
         [dicts addObject:dict];
     }];
     if(dicts.count > 0){
-        NSLog(@"[Ethereal] setting subtitle data: %@", dicts);
+        //NSLog(@"[Ethereal] setting subtitle data: %@", dicts);
         [_avInfoViewController setVlcSubtitleData:dicts];
         [self updateSubtitleButtonState];
     }
@@ -423,7 +424,6 @@
         [menuArray addObject:action];
     }];
     KBMenu *menu = [KBMenu menuWithTitle:@"Audio" children:menuArray];
-    NSLog(@"[Ethereal] menu: %@", menu);
     return menu;
 }
 
@@ -459,7 +459,6 @@
         [menuArray addObject:action];
     }];
     KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" children:menuArray];
-    NSLog(@"[Ethereal] menu: %@", menu);
     return menu;
 }
 
@@ -476,7 +475,7 @@
             meta.isHD = true;
         }
         NSDictionary *metaDict = [_mediaPlayer.media metaDictionary];
-        NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
+        //NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
         if (asset.name == nil){
             asset.name = metaDict[@"title"];
         }
@@ -489,7 +488,7 @@
         
     } else {
         NSDictionary *metaDict = [_mediaPlayer.media metaDictionary];
-        NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
+        //NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
         _transportSlider.title = metaDict[@"title"];
     }
     [self refreshSubtitleDetails];
@@ -542,6 +541,7 @@
     self.audioButton.opened = false;
     self.transportSlider.userInteractionEnabled = true;
     self.subtitleButton.userInteractionEnabled = true;
+    self.audioButton.userInteractionEnabled = true;
 }
 
 - (void)audioButtonClicked:(KBButton *)button {
@@ -563,6 +563,7 @@
             button.opened = true;
             self.transportSlider.userInteractionEnabled = false;
             self.subtitleButton.userInteractionEnabled = false;
+            self.audioButton.userInteractionEnabled = false;
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];
         }];
@@ -691,8 +692,19 @@
     }
 }
 
-- (void)setSelectedMediaOptionIndex:(long long)selectedMediaOptionIndex {
-    _selectedMediaOptionIndex = selectedMediaOptionIndex;
+- (void)setSelectedAudioOptionIndex:(long long)selectedMediaOptionIndex {
+    _selectedAudioOptionIndex = selectedMediaOptionIndex;
+    [self.avInfoViewController.vlcAudioData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx == selectedMediaOptionIndex) {
+            [obj setIsSelected:true];
+        } else {
+            [obj setIsSelected:false];
+        }
+    }];
+}
+
+- (void)setSelectedSubtitleOptionIndex:(long long)selectedMediaOptionIndex {
+    _selectedSubtitleOptionIndex = selectedMediaOptionIndex;
     [self.avInfoViewController.vlcSubtitleData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (idx == selectedMediaOptionIndex) {
             [obj setIsSelected:true];

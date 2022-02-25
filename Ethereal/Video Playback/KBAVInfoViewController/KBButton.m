@@ -101,6 +101,7 @@
 +(instancetype)buttonWithType:(KBButtonType)buttonType {
     KBButton *button = [[KBButton alloc] init];
     button.opened = false;
+    button.buttonType = buttonType;
     if (buttonType == KBButtonTypeText){
         [button _setupLabelView];
     } else if (buttonType == KBButtonTypeImage) {
@@ -142,9 +143,11 @@
     _selected = selected;
     if (selected){
         _selectedView.alpha = 1.0;
-        _selectedView.backgroundColor = [UIColor whiteColor];
-        if (self.buttonImageView){
+        if (self.buttonType == KBButtonTypeImage){
+            _selectedView.backgroundColor = [UIColor whiteColor];
             self.buttonImageView.tintColor = [UIColor darkGrayColor];
+        } else {
+            _selectedView.backgroundColor = [UIColor darkGrayColor];
         }
     } else {
         _selectedView.alpha = 0;
