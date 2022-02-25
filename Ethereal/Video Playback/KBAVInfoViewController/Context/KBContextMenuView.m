@@ -70,13 +70,13 @@
         //layout.minimumLineSpacing = 80;
         _collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:layout];
         _collectionView.translatesAutoresizingMaskIntoConstraints = false;
-        _collectionView.clipsToBounds = false;
         [self addSubview:_collectionView];
         [self.collectionView registerClass:KBContextMenuViewCell.class forCellWithReuseIdentifier:@"cell"];
         [_collectionView autoPinEdgesToSuperviewEdges];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
         [_collectionView registerClass:KBContextCollectionHeaderView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"Header"];
+        [_collectionView registerClass:UICollectionReusableView.class forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"Footer"];
         //[self setAnchorPoint:CGPointMake(0, 1) forView:self];
         //self.layer.anchorPoint = CGPointMake(0, 0);
     }
@@ -84,13 +84,20 @@
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    KBContextCollectionHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Header" forIndexPath:indexPath];
-    if (self.menu) {
-        header.label.text = [self.menu.title uppercaseString];
-    } else {
-        header.label.text = @"SUBTITLES";
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader]){
+        KBContextCollectionHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Header" forIndexPath:indexPath];
+        if (self.menu) {
+            header.label.text = [self.menu.title uppercaseString];
+        } else {
+            header.label.text = @"SUBTITLES";
+        }
+        return header;
+    } else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
+        UICollectionReusableView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
+        footer.backgroundColor = [UIColor blackColor];
+        return footer;
     }
-    return header;
+    return nil;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
@@ -101,8 +108,23 @@
     return retval;
 }
 
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
+    if (section > 0){
+        return CGSizeZero;
+    }
+    CGRect frameRect =  [UIScreen mainScreen].bounds;
+    CGSize retval;
+    retval =  CGSizeMake(frameRect.size.width, 10);
+    return retval;
+}
+
 - (NSIndexPath *)indexPathForPreferredFocusedViewInCollectionView:(UICollectionView *)collectionView {
     return [NSIndexPath indexPathForItem:0 inSection:0];
+}
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
 }
 
 -  (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -122,7 +144,10 @@
     return cell;
 }
 
--(NSInteger)collectionView:(id)arg1 numberOfItemsInSection:(NSInteger)arg2 {
+-(NSInteger)collectionView:(id)collectionView numberOfItemsInSection:(NSInteger)section {
+    if (section == 1) {
+        return 0;
+    }
     if (_mediaOptions){
         return _mediaOptions.count;
     }
@@ -201,6 +226,9 @@
             itemCount = self.menu.children.count;
         }
         CGFloat height = 70 + (itemCount * 70);
+        if (self.collectionView.numberOfSections > 1){
+            height = height + 140;
+        }
         [self autoConstrainToSize:CGSizeMake(400, height)];
         //self.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [viewController.view addSubview:self];
@@ -214,6 +242,7 @@
             [self layoutIfNeeded];
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];
+            self.collectionView.clipsToBounds = false;
             if (block) {
                 block();
             }

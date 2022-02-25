@@ -19,6 +19,7 @@
 #import "KBBulletinView.h"
 #import "KBAction.h"
 #import "KBMenu.h"
+#import "KBContextMenuRepresentation.h"
 
 @interface VLCViewController () {
     NSURL *_mediaURL;
@@ -63,6 +64,10 @@
     [self updateSubtitleButtonState];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateChanged:) name:VLCMediaPlayerStateChanged object:nil];
     //[_mediaPlayer play];
+    KBMenu *audioMenu = [self createAudioMenu];
+    NSLog(@"[Ethereal] audioMenu: %@", audioMenu);
+    KBContextMenuRepresentation *rep = [KBContextMenuRepresentation representationForMenu:audioMenu];
+    NSLog(@"[Ethereal] sections: %@", rep.sections);
 }
 
 - (void)stateChanged:(NSNotification *)n {
@@ -368,6 +373,18 @@
         [_avInfoViewController setVlcSubtitleData:dicts];
         [self updateSubtitleButtonState];
     }
+}
+
+- (KBMenu *)createAudioMenu {
+    KBAction *testItemOne = [KBAction actionWithTitle:@"Test Item One" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+        NSLog(@"[Ethereal] %@ selected", action);
+    }];
+    KBAction *testItemTwo = [KBAction actionWithTitle:@"Test Item Two" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+        NSLog(@"[Ethereal] %@ selected", action);
+    }];
+    KBMenu *firstMenu = [KBMenu menuWithTitle:@"AUDIO RANGE" children:@[testItemOne]];
+    KBMenu *secondMenu = [KBMenu menuWithTitle:@"AUDIO TRACKS" children:@[testItemTwo]];
+    return [KBMenu menuWithTitle:@"Audio" children:@[firstMenu, secondMenu]];
 }
 
 - (KBMenu *)createSubtitleMenu {

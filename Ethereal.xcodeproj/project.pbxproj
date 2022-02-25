@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3219EAFD27C8CC6000DEDF9C /* KBContextMenuRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3219EAFC27C8CC6000DEDF9C /* KBContextMenuRepresentation.m */; };
+		3219EB0127C8D1FA00DEDF9C /* KBContextMenuSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 3219EB0027C8D1FA00DEDF9C /* KBContextMenuSection.m */; };
 		323B3E0B27C0BA69001F8204 /* VLCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323B3E0A27C0BA69001F8204 /* VLCViewController.m */; };
 		323B3E1527C0BB1C001F8204 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1027C0BB1C001F8204 /* CoreMedia.framework */; };
 		323B3E1627C0BB1C001F8204 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323B3E1127C0BB1C001F8204 /* CoreFoundation.framework */; };
@@ -108,6 +110,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3219EAFB27C8CC6000DEDF9C /* KBContextMenuRepresentation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBContextMenuRepresentation.h; sourceTree = "<group>"; };
+		3219EAFC27C8CC6000DEDF9C /* KBContextMenuRepresentation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuRepresentation.m; sourceTree = "<group>"; };
+		3219EAFF27C8D1FA00DEDF9C /* KBContextMenuSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextMenuSection.h; sourceTree = "<group>"; };
+		3219EB0027C8D1FA00DEDF9C /* KBContextMenuSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuSection.m; sourceTree = "<group>"; };
 		323B3E0927C0BA69001F8204 /* VLCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VLCViewController.h; sourceTree = "<group>"; };
 		323B3E0A27C0BA69001F8204 /* VLCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VLCViewController.m; sourceTree = "<group>"; };
 		323B3E1027C0BB1C001F8204 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -347,6 +353,8 @@
 		324DB6CC27C7533E000BAF8E /* Context */ = {
 			isa = PBXGroup;
 			children = (
+				3219EAFF27C8D1FA00DEDF9C /* KBContextMenuSection.h */,
+				3219EB0027C8D1FA00DEDF9C /* KBContextMenuSection.m */,
 				324DB6CD27C75391000BAF8E /* KBContextMenuViewCell.h */,
 				324DB6CE27C75391000BAF8E /* KBContextMenuViewCell.m */,
 				324DB6D027C75A65000BAF8E /* KBContextMenuView.h */,
@@ -357,6 +365,8 @@
 				4C9E46AA27C84C3F000487F2 /* KBAction.m */,
 				4C9E46A327C841BD000487F2 /* KBMenu.h */,
 				4C9E46A427C841BD000487F2 /* KBMenu.m */,
+				3219EAFB27C8CC6000DEDF9C /* KBContextMenuRepresentation.h */,
+				3219EAFC27C8CC6000DEDF9C /* KBContextMenuRepresentation.m */,
 			);
 			path = Context;
 			sourceTree = "<group>";
@@ -844,9 +854,11 @@
 				327D3FEA2324E515000EC3C1 /* main.m in Sources */,
 				32E0A8002793A36A006FB9B0 /* KBTextPresentationViewController.m in Sources */,
 				4C9E46AB27C84C3F000487F2 /* KBAction.m in Sources */,
+				3219EB0127C8D1FA00DEDF9C /* KBContextMenuSection.m in Sources */,
 				327D404423265AEB000EC3C1 /* SDWebImageDownloader.m in Sources */,
 				4C9E46A827C8420B000487F2 /* KBMenuElement.m in Sources */,
 				327D404C23265AEB000EC3C1 /* UIImageView+HighlightedWebCache.m in Sources */,
+				3219EAFD27C8CC6000DEDF9C /* KBContextMenuRepresentation.m in Sources */,
 				327D404323265AEB000EC3C1 /* SDWebImageDecoder.m in Sources */,
 				328B5FF626F700A500303CE2 /* EXTScope.m in Sources */,
 				32DFF9A326F49605004071B3 /* KBVideoPlaybackManager.m in Sources */,

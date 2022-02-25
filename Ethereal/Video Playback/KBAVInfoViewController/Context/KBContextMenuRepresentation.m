@@ -1,0 +1,57 @@
+//
+//  KBContextMenuRepresentation.m
+//  Ethereal
+//
+//  Created by kevinbradley on 2/25/22.
+//  Copyright © 2022 nito. All rights reserved.
+//
+
+#import "KBContextMenuRepresentation.h"
+#import "KBAction.h"
+#import "KBContextMenuSection.h"
+
+@interface KBContextMenuRepresentation()
+@property (nonatomic, weak) KBMenu *menu;
+@end
+
+@implementation KBContextMenuRepresentation
+
+@synthesize sections = _sections;
+@synthesize menuElements = _menuElements;
+
+- (id)initWithMenu:(KBMenu *)menu {
+    self = [super init];
+    if (self) {
+        _menuElements = [menu children];
+        [self _buildMenuSectionsWithMenuElements:_menuElements ofMenu:menu];;
+    }
+    return self;
+}
+
++ (instancetype)representationForMenu:(KBMenu *)menu {
+    KBContextMenuRepresentation *rep = [[KBContextMenuRepresentation alloc] initWithMenu:menu];
+    return rep;
+}
+
+- (void)_buildMenuSectionsWithMenuElements:(NSArray *)elements ofMenu:(KBMenu *)menu{
+    __block NSMutableArray *sections = [NSMutableArray new];
+    [menu.children enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isMemberOfClass:KBAction.class]){
+            KBContextMenuSection *section = [KBContextMenuSection new];
+            section.items = menu.children;
+            section.title = menu.title;
+            [sections addObject:section];
+            *stop = true;
+        } else if ([obj isMemberOfClass:KBMenu.class]) {
+            KBMenu *menuObj = (KBMenu *)obj;
+            KBContextMenuSection *section = [KBContextMenuSection new];
+            section.items = menuObj.children;
+            section.title = menuObj.title;
+            [sections addObject:section];
+        }
+    }];
+    _sections = sections;
+    NSLog(@"[Ethereal] generated sections: %@", sections);
+}
+
+@end
