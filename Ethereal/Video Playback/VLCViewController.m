@@ -534,6 +534,8 @@
         _visibleContextView.delegate = self;
         _visibleContextView.sourceView = self.subtitleButton;
         _visibleContextView.menu = [self createSubtitleMenu];
+        KBContextMenuRepresentation *subRep = [KBContextMenuRepresentation representationForMenu:_visibleContextView.menu];
+        NSLog(@"[Ethereal] sub rep: %@", subRep.sections);
         //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [_visibleContextView showContextView:true fromView:self completion:^{
             button.opened = true;

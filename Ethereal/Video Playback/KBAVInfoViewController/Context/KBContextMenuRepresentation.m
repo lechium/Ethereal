@@ -51,7 +51,6 @@
         }
     }];
     _sections = sections;
-    NSLog(@"[Ethereal] generated sections: %@", sections);
 }
 
 @end
