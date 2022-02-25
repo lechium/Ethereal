@@ -10,6 +10,7 @@
 #import "KBAVInfoPanelMediaOption.h"
 #import "KBAction.h"
 #import "KBMenu.h"
+#import "KBContextMenuRepresentation.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol KBContextMenuSourceDelegate <NSObject>
@@ -29,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong) UIView *sourceView;
 @property (nonatomic,retain) NSArray <KBAVInfoPanelMediaOption *>* mediaOptions;
 @property (nonatomic,strong) KBMenu *menu;
+@property (nonatomic,strong) KBContextMenuRepresentation *representation;
 @property (assign,nonatomic) long long selectedMediaOptionIndex;
 @property (nonatomic, weak) id <KBContextMenuViewDelegate> delegate;
 @property (nonatomic, strong) UICollectionView *collectionView;

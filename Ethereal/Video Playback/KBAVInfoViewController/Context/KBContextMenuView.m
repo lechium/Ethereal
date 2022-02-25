@@ -9,6 +9,8 @@
 #import "KBContextMenuView.h"
 #import "UIView+AL.h"
 #import "KBContextMenuViewCell.h"
+#import "KBContextMenuRepresentation.h"
+#import "KBContextMenuSection.h"
 
 #define ANIMATION_DURATION 0.3
 
@@ -86,11 +88,14 @@
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]){
         KBContextCollectionHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Header" forIndexPath:indexPath];
+        KBContextMenuSection *section = _representation.sections[indexPath.row];
+        header.label.text = [section.title uppercaseString];
+        /*
         if (self.menu) {
             header.label.text = [self.menu.title uppercaseString];
         } else {
             header.label.text = @"SUBTITLES";
-        }
+        }*/
         return header;
     } else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
         UICollectionReusableView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"Footer" forIndexPath:indexPath];
@@ -124,11 +129,16 @@
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
+    return _representation.sections.count;
 }
 
 -  (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     KBContextMenuViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+    KBContextMenuSection *section = _representation.sections[indexPath.section];
+    KBAction *opt = section.items[indexPath.row];
+    cell.label.text = opt.title;
+    [cell setSelected:(opt.state == KBMenuElementStateOn) animated:false];
+    /*
     if (self.mediaOptions) {
         KBAVInfoPanelMediaOption *opt = [self mediaOptions][indexPath.row];
         cell.label.text = opt.displayName;
@@ -138,24 +148,32 @@
         cell.label.text = opt.title;
         [cell setSelected:(opt.state == KBMenuElementStateOn) animated:false];
     }
-  
+  */
     //cell.title = opt.displayName;
     //[cell setSelected:opt.selected];
     return cell;
 }
 
 -(NSInteger)collectionView:(id)collectionView numberOfItemsInSection:(NSInteger)section {
-    if (section == 1) {
-        return 0;
-    }
     if (_mediaOptions){
         return _mediaOptions.count;
     }
-    return _menu.children.count;
+    KBContextMenuSection *currentSection = _representation.sections[section];
+    return currentSection.items.count;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     self.selectedMediaOptionIndex = indexPath.row;
+    KBContextMenuSection *currentSection = _representation.sections[indexPath.section];
+    KBAction *opt = currentSection.items[indexPath.row];
+    opt.state = KBMenuElementStateOn;
+    opt.handler(opt);
+    [self.menu.children enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx != indexPath.row){
+            [(KBAction*)obj setState:KBMenuElementStateOff];
+        }
+    }];
+    /*
     if (self.mediaOptions) {
         KBAVInfoPanelMediaOption *subtitleItem = self.mediaOptions[indexPath.row];
         [subtitleItem setIsSelected:true];
@@ -171,7 +189,7 @@
                 [(KBAction*)obj setState:KBMenuElementStateOff];
             }
         }];
-    }
+    } */
     [self.collectionView reloadData];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self showContextView:false completion:^{
