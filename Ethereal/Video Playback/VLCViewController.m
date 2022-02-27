@@ -359,6 +359,23 @@
     }
 }
 
+/*
+ {
+     if context.previouslyFocusedView == subtitleButton && context.nextFocusedView == transportSlider && context.focusHeading == .left {
+         return false
+     }
+     //print ("previous: \(context.previouslyFocusedView) next: \(context.nextFocusedView)")
+     return true
+ }
+ */
+
+- (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
+    if (context.previouslyFocusedView == self.subtitleButton && context.nextFocusedView == self.transportSlider && context.focusHeading == UIFocusHeadingLeft) {
+        return false;
+    }
+    return true;
+}
+
 - (void)timeChanged:(NSNotification *)n {
     //NSLog(@"[Ethereal] time changed: %@", n);
     self.transportSlider.currentTime = self.mediaPlayer.time.intValue / 1000;
@@ -600,6 +617,7 @@
             button.opened = true;
             self.transportSlider.userInteractionEnabled = false;
             self.subtitleButton.userInteractionEnabled = false;
+            self.audioButton.userInteractionEnabled = false;
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];
         }];

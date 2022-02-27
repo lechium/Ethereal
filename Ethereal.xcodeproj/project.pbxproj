@@ -85,6 +85,7 @@
 		328B5FF526F700A500303CE2 /* EXTRuntimeExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FF126F700A500303CE2 /* EXTRuntimeExtensions.m */; };
 		328B5FF626F700A500303CE2 /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 328B5FF326F700A500303CE2 /* EXTScope.m */; };
 		32AD39C12328A0100085F579 /* gear-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AD39C02328A0100085F579 /* gear-small.png */; };
+		32B43B5427CB2E51004D8788 /* KBContextCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B43B5227CB2E51004D8788 /* KBContextCollectionHeaderView.m */; };
 		32C584E425BE6AEC0021C9FC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E325BE6AEC0021C9FC /* AudioToolbox.framework */; };
 		32C584E625BE6AF10021C9FC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E525BE6AF10021C9FC /* AVFoundation.framework */; };
 		32C584E825BE6AF80021C9FC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C584E725BE6AF80021C9FC /* libz.tbd */; };
@@ -264,6 +265,8 @@
 		32AD39C02328A0100085F579 /* gear-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gear-small.png"; sourceTree = SOURCE_ROOT; };
 		32AD39C4232982270085F579 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = SOURCE_ROOT; };
 		32B37FC527C4E5F200F72BEF /* tvOSAVPlayerTouch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOSAVPlayerTouch.framework; path = Library/Frameworks/tvOSAVPlayerTouch.framework; sourceTree = "<group>"; };
+		32B43B5227CB2E51004D8788 /* KBContextCollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextCollectionHeaderView.m; sourceTree = "<group>"; };
+		32B43B5327CB2E51004D8788 /* KBContextCollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextCollectionHeaderView.h; sourceTree = "<group>"; };
 		32C584DC25BE5F760021C9FC /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = "<group>"; };
 		32C584DE25BE5FE30021C9FC /* SGPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerViewController.h; sourceTree = "<group>"; };
 		32C584DF25BE5FE30021C9FC /* SGPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlayerViewController.m; sourceTree = "<group>"; };
@@ -353,6 +356,8 @@
 		324DB6CC27C7533E000BAF8E /* Context */ = {
 			isa = PBXGroup;
 			children = (
+				32B43B5327CB2E51004D8788 /* KBContextCollectionHeaderView.h */,
+				32B43B5227CB2E51004D8788 /* KBContextCollectionHeaderView.m */,
 				3219EAFF27C8D1FA00DEDF9C /* KBContextMenuSection.h */,
 				3219EB0027C8D1FA00DEDF9C /* KBContextMenuSection.m */,
 				324DB6CD27C75391000BAF8E /* KBContextMenuViewCell.h */,
@@ -821,6 +826,7 @@
 				327D404723265AEB000EC3C1 /* SDWebImagePrefetcher.m in Sources */,
 				32E0A8062794C242006FB9B0 /* AVAsset+Extras.m in Sources */,
 				327D403E23265AEB000EC3C1 /* MKAnnotationView+WebCache.m in Sources */,
+				32B43B5427CB2E51004D8788 /* KBContextCollectionHeaderView.m in Sources */,
 				32E0A7F92793A36A006FB9B0 /* KBSlider.m in Sources */,
 				32DFF9A726F4985B004071B3 /* KBMediaAsset.m in Sources */,
 				323DEC1D27A39033009F7DB7 /* KBAVInfoPanelSubtitleCollectionViewController.m in Sources */,

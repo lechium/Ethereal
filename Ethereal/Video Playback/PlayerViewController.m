@@ -877,6 +877,13 @@
     }
 }
 
+- (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
+    if (context.previouslyFocusedView == self.subtitleButton && context.nextFocusedView == self.transportSlider && context.focusHeading == UIFocusHeadingLeft) {
+        return false;
+    }
+    return true;
+}
+
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
     if ([self avInfoPanelShowing]) {

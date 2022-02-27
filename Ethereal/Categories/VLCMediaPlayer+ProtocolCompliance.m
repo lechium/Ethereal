@@ -17,6 +17,8 @@
 
 @implementation VLCMediaPlayer (ProtocolCompliance) 
 
+@dynamic player;
+
 - (void)setStreamsUpdated:(void (^)(void))streamsUpdated {
     objc_setAssociatedObject(self, @selector(streamsUpdated), streamsUpdated, OBJC_ASSOCIATION_RETAIN);
 }
@@ -34,7 +36,7 @@
 }
 
 - (void)seekToTime:(CMTime)time toleranceBefore:(CMTime)toleranceBefore toleranceAfter:(CMTime)toleranceAfter {
-    VLCTime *newTime = [VLCTime timeWithInt:(time.value/time.timescale) * 1000];
+    VLCTime *newTime = [VLCTime timeWithInt:(int)(time.value/time.timescale) * 1000];
     [self setTime:newTime];
 }
 
@@ -87,6 +89,7 @@
 }
 
 - (AVPlayerTimeControlStatus) timeControlStatus {
+    if (self.isPlaying) return AVPlayerTimeControlStatusPlaying;
     switch (self.state) {
         case VLCMediaPlayerStatePaused: return AVPlayerTimeControlStatusPaused;
         case VLCMediaPlayerStateStopped: return AVPlayerTimeControlStatusPaused;
@@ -97,6 +100,10 @@
             break;
     }
     return AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate;
+}
+
+- (void)setCurrentAsset:(id)asset {
+    
 }
 
 - (id)currentAsset {
