@@ -11,29 +11,11 @@
 #import "KBContextMenuViewCell.h"
 #import "KBContextMenuRepresentation.h"
 #import "KBContextMenuSection.h"
+#import "KBContextCollectionHeaderView.h"
 
 #define ANIMATION_DURATION 0.3
 
-@interface KBContextCollectionHeaderView: UICollectionReusableView
-@property (nonatomic, strong) UILabel *label;
-@end
 
-@implementation KBContextCollectionHeaderView
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        _label = [[UILabel alloc] initForAutoLayout];
-        [self addSubview:_label];
-        [_label autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 25, 0, 0)];
-        _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-        _label.textColor = [UIColor colorWithWhite:1.0 alpha:0.6];
-        self.translatesAutoresizingMaskIntoConstraints = false;
-    }
-    return self;
-}
-
-@end
 
 @implementation KBContextMenuView {
     UIView *_backgroundView;
@@ -100,12 +82,9 @@
     return nil;
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
-{
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
     CGRect frameRect =  [UIScreen mainScreen].bounds;
-    CGSize retval;
-    retval =  CGSizeMake(frameRect.size.width, 59);
-    return retval;
+    return CGSizeMake(frameRect.size.width, 59);
 }
 
 
@@ -114,9 +93,7 @@
         return CGSizeZero;
     }
     CGRect frameRect =  [UIScreen mainScreen].bounds;
-    CGSize retval;
-    retval =  CGSizeMake(frameRect.size.width, 10);
-    return retval;
+    return CGSizeMake(frameRect.size.width, 10);
 }
 
 - (NSIndexPath *)indexPathForPreferredFocusedViewInCollectionView:(UICollectionView *)collectionView {
