@@ -156,6 +156,10 @@
             [_visibleContextView showContextView:false completion:^{
                 [self killContextView];
             }];
+        } else if ([self.transportSlider isScrubbing]) {
+            [self.transportSlider setIsScrubbing:false];
+            [self.transportSlider setCurrentTime:self.transportSlider.currentTime];
+            [self.player play];
         } else {
             [_mediaPlayer stop];
             [self dismissViewControllerAnimated:true completion:nil];
@@ -348,8 +352,10 @@
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
     if ([self.subtitleButton isFocused]){
-        self.transportSlider.fadeOutTransport = false;
+       // self.transportSlider.fadeOutTransport = false;
+        [self.transportSlider setFadeOutTime:8.0];
     } else if ([self.transportSlider isFocused]) {
+        [self.transportSlider setFadeOutTime:3.0];
         self.transportSlider.fadeOutTransport = true;
     }
     if ([self avInfoPanelShowing]) {

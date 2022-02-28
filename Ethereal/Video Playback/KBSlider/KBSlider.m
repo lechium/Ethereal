@@ -134,6 +134,8 @@
     KBSeekSpeed _currentSeekSpeed;
     NSArray <NSLayoutConstraint *> *leftHintConstraints;
     NSArray <NSLayoutConstraint *> *rightHintConstraints;
+    NSTimeInterval _fadeOutTime;
+    BOOL _isScrubbing;
     
 }
 @property UITapGestureRecognizer *tapGestureRecognizer;
@@ -154,19 +156,19 @@
 @property CGFloat decelerationMaxVelocity;
 @property CGFloat fineTunningVelocityThreshold;
 
-@property NSMutableDictionary *thumbViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
+@property NSMutableDictionary *thumbViewImages;
 @property UIImageView *thumbView;
 
-@property NSMutableDictionary *scrubViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
+@property NSMutableDictionary *scrubViewImages;
 @property UIImageView *scrubView;
 
-@property NSMutableDictionary *trackViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
+@property NSMutableDictionary *trackViewImages;
 @property UIImageView *trackView;
 
-@property NSMutableDictionary *minimumTrackViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
+@property NSMutableDictionary *minimumTrackViewImages;
 @property UIImageView *minimumTrackView;
 
-@property NSMutableDictionary *maximumTrackViewImages; //[UInt: UIImage] - not an allowed dict type in obj-c
+@property NSMutableDictionary *maximumTrackViewImages;
 @property UIImageView *maximumTrackView;
 
 @property UIPanGestureRecognizer *panGestureRecognizer;
@@ -174,6 +176,7 @@
 @property UITapGestureRecognizer *rightTapGestureRecognizer;
 @property NSLayoutConstraint *thumbViewCenterXConstraint;
 @property NSLayoutConstraint *scrubViewCenterXConstraint;
+@property NSLayoutConstraint *currentTimeLabelCenterXConstraint;
 @property DPadState dPadState; //.select
 
 @property NSTimer *deceleratingTimer;
@@ -184,6 +187,34 @@
 @end
 
 @implementation KBSlider
+
+- (BOOL)isScrubbing {
+    return _isScrubbing;
+}
+
+- (void)setIsScrubbing:(BOOL)isScrubbing {
+    _isScrubbing = isScrubbing;
+    if (isScrubbing) {
+        //scrubTimeLabel.alpha = 1;
+        if (self.currentTimeLabelCenterXConstraint) {
+            [NSLayoutConstraint deactivateConstraints:@[self.currentTimeLabelCenterXConstraint]];
+            self.currentTimeLabelCenterXConstraint = nil;
+        }
+        self.currentTimeLabelCenterXConstraint = [currentTimeLabel.centerXAnchor constraintEqualToAnchor:self.scrubView.centerXAnchor];
+        self.currentTimeLabelCenterXConstraint.active = true;
+        self.scrubView.hidden = false;
+        
+    } else {
+        //scrubTimeLabel.alpha = 0;
+        if (self.currentTimeLabelCenterXConstraint) {
+            [NSLayoutConstraint deactivateConstraints:@[self.currentTimeLabelCenterXConstraint]];
+            self.currentTimeLabelCenterXConstraint = nil;
+        }
+        self.currentTimeLabelCenterXConstraint = [currentTimeLabel.centerXAnchor constraintEqualToAnchor:self.thumbView.centerXAnchor];
+        self.currentTimeLabelCenterXConstraint.active = true;
+        self.scrubView.hidden = true;
+    }
+}
 
 - (KBSeekSpeed)currentSeekSpeed {
     return _currentSeekSpeed;
@@ -413,6 +444,7 @@
     _maximumValue = _defaultMaximumValue;
     _stepValue = _defaultStepValue;
     _currentSeekSpeed = KBSeekSpeedNone;
+    _fadeOutTime = 3.0;
     [self setEnabled:true];
     
 }
@@ -511,9 +543,20 @@
     }
 }
 
+- (void)setFadeOutTime:(NSTimeInterval)fadeOutTime {
+    _fadeOutTime = fadeOutTime;
+    if ([_fadeOutTimer isValid]){
+        [self _startFadeOutTimer]; //restart the timer with its new interval
+    }
+}
+
+- (NSTimeInterval)fadeOutTime {
+    return _fadeOutTime;
+}
+
 - (void)_startFadeOutTimer {
     [self stopFadeOutTimer];
-    _fadeOutTimer = [NSTimer scheduledTimerWithTimeInterval:3.0 repeats:false block:^(NSTimer * _Nonnull timer) {
+    _fadeOutTimer = [NSTimer scheduledTimerWithTimeInterval:_fadeOutTime repeats:false block:^(NSTimer * _Nonnull timer) {
         [self fadeOut];
     }];
 }
@@ -862,7 +905,8 @@
         return;
     }
     _scrubViewCenterXConstraint.constant = offset;
-    scrubTimeLabel.text = [self scrubTimeFormatted];
+    //scrubTimeLabel.text = [self scrubTimeFormatted];
+    currentTimeLabel.text = [self scrubTimeFormatted];
 }
 
 - (CGFloat)value {
@@ -1154,7 +1198,8 @@
     [durationLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleCaption2]];
     [self addSubview:durationLabel];
     durationLabel.textAlignment = NSTextAlignmentCenter;
-    [currentTimeLabel.centerXAnchor constraintEqualToAnchor:self.thumbView.centerXAnchor].active = true;
+    self.currentTimeLabelCenterXConstraint = [currentTimeLabel.centerXAnchor constraintEqualToAnchor:self.thumbView.centerXAnchor];
+    self.currentTimeLabelCenterXConstraint.active = true;
     [currentTimeLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:timePadding].active = true;
     currentTimeLabel.text = [self elapsedTimeFormatted];
     [durationLabel.topAnchor constraintEqualToAnchor:self.thumbView.bottomAnchor constant:timePadding].active = true;

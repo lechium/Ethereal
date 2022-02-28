@@ -100,6 +100,8 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 @property NSString *title; //transport mode only
 @property NSString *subtitle; //transport mode onl
 
+@property NSTimeInterval fadeOutTime;
+
 @property (nonatomic, copy, nullable) void (^timeSelectedBlock)(CGFloat currentTime); //transport mode only, is called when a slider value is selected when scrubbing.
 @property (nonatomic, copy, nullable) void (^scanStartedBlock)(CGFloat currentTime, KBSeekDirection direction); //0 = rewind, 1 = ff
 @property (nonatomic, copy, nullable) void (^scanEndedBlock)(KBSeekDirection direction);
