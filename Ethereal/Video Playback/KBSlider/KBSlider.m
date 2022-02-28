@@ -478,6 +478,7 @@
 - (void)toggleVisibleTimerLabels {
     if (self.currentSeekSpeed != KBSeekSpeedNone) return;
     if (self.trackView.alpha == 0){
+        //NSLog(@"[Ethereal] fade in");
         [self fadeIn];
         self.displaysRemainingTime = true;
         return;
@@ -485,11 +486,14 @@
     if (self.displaysRemainingTime) {
         [self setDisplaysCurrentTime:true];
     } else if (self.displaysCurrentTime) {
+        //NSLog(@"[Ethereal] display current time");
         [self setDisplaysCurrentTime:false];
         currentTimeLabel.alpha = 0;
         durationLabel.alpha = 0;
-    } else {
         [self fadeOut];
+
+    } else {
+        self.displaysRemainingTime = true;
         //[self setDisplaysRemainingTime:true];
     }
 }
@@ -541,6 +545,11 @@
             break;
         
     }
+}
+
+- (void)resetHideTimer {
+    LOG_SELF;
+    [self _startFadeOutTimer];
 }
 
 - (void)setFadeOutTime:(NSTimeInterval)fadeOutTime {
@@ -906,7 +915,9 @@
     }
     _scrubViewCenterXConstraint.constant = offset;
     //scrubTimeLabel.text = [self scrubTimeFormatted];
-    currentTimeLabel.text = [self scrubTimeFormatted];
+    if ([self isScrubbing]){
+        currentTimeLabel.text = [self scrubTimeFormatted];
+    }
 }
 
 - (CGFloat)value {

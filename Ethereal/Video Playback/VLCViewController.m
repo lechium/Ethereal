@@ -112,6 +112,7 @@
 - (void)slideDownInfo {
     [_transportSlider fadeIn];
     _transportSlider.fadeOutTransport = true;
+    [_transportSlider setFadeOutTime:3.0];
     [self.view layoutIfNeeded];
     @weakify(self);
     [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
@@ -122,7 +123,8 @@
 
 
 - (void)slideUpInfo {
-    _transportSlider.fadeOutTransport = false;
+    //_transportSlider.fadeOutTransport = false;
+    [_transportSlider setFadeOutTime:20.0];
     [_transportSlider hideSliderOnly];
     [self.view layoutIfNeeded];
     @weakify(self);
@@ -228,6 +230,7 @@
     
     @weakify(self);
     _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
+        [self dismissContextViewIfNecessary];
         if (animated) {
             [UIView animateWithDuration:0.3 animations:^{
                 self_weak_.subtitleButton.alpha = direction;
@@ -351,6 +354,10 @@
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+    NSLog(@"[Ethereal] updated focused view: %@", context.nextFocusedView);
+    if ([context.nextFocusedView isKindOfClass:UICollectionViewCell.class]){
+        [self.transportSlider resetHideTimer];
+    }
     if ([self.subtitleButton isFocused]){
        // self.transportSlider.fadeOutTransport = false;
         [self.transportSlider setFadeOutTime:8.0];
@@ -560,6 +567,16 @@
 - (KBContextMenuView *)visibleContextView {
     return _visibleContextView;
 }
+
+- (void)dismissContextViewIfNecessary {
+    [_visibleContextView showContextView:false fromView:nil completion:^{
+        //button.opened = false;
+        [self.subtitleButton setOpened:false];
+        [self.audioButton setOpened:false];
+        [self killContextView];
+    }];
+}
+
 - (void)killContextView {
     _visibleContextView = nil;
     self.subtitleButton.opened = false;
@@ -823,7 +840,7 @@
     //NSLog(@"[Ethereal] shouldReceivePress: %@", gestureRecognizer);
     if (gestureRecognizer == _leftTap || gestureRecognizer == _rightTap){
         if ([press kb_isSynthetic]){
-            NSLog(@"[Ethereal] no synth for you!");
+            //NSLog(@"[Ethereal] no synth for you!");
             return FALSE;
         }
     }
@@ -887,6 +904,9 @@
     //NSLog(@"[Ethereal] pressesEnded: %@", presses);
     //AVPlayerState currentState = _avplayController.playerState;
     for (UIPress *press in presses) {
+        if ([press kb_isSynthetic]) {
+            return;
+        }
         //NSLog(@"[Ethereal] presstype: %lu", press.type);
         switch (press.type){
                 

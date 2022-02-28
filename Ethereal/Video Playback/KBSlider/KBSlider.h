@@ -136,7 +136,9 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 - (void)hideSliderOnly;
 - (void)fadeInIfNecessary;
 - (void)delayedResetScrubMode;
+- (void)resetHideTimer;
 @end
+
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 //#define LOG_SELF        DLog(@"[KBSlider] %@ %@", self, NSStringFromSelector(_cmd))
