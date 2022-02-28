@@ -51,7 +51,7 @@
     _detailsStackView.alignment = UIStackViewAlignmentTop; //1
     UIStackView *middleStack = [[UIStackView alloc] initForAutoLayout];
     middleStack.axis = UILayoutConstraintAxisHorizontal;
-    middleStack.distribution = UIStackViewDistributionEqualSpacing;
+    middleStack.distribution = UIStackViewDistributionFillProportionally;
     middleStack.spacing = 10;
     //duration | genre | year | CC | HD
     [middleStack setArrangedViews:@[_durationLabel, _genreLabel, _yearLabel, _ccBadge, _videoResolutionBadge]];

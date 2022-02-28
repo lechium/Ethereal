@@ -134,6 +134,9 @@
                 }
             }];
             return;
+        } else if (vlcSubtitleData.count < _vlcSubtitleData.count){
+            NSLog(@"[Ethereal] smaller data set, discard!");
+            return;
         }
     }
     __block NSMutableArray *_newArray = [NSMutableArray new];
