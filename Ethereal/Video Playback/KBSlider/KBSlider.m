@@ -10,6 +10,7 @@
 #import <GameController/GameController.h>
 #import "KBSliderImages.h"
 #import "UIView+AL.h"
+#import "UIColor+Additions.h"
 //#import "KBAVInfoViewController.h"
 
 @interface UIPress (KBSynthetic)
@@ -136,6 +137,8 @@
     NSArray <NSLayoutConstraint *> *rightHintConstraints;
     NSTimeInterval _fadeOutTime;
     BOOL _isScrubbing;
+    UIVisualEffectView *_blurView;
+    UIVisualEffectView *_vibrancyEffectView;
     
 }
 @property UITapGestureRecognizer *tapGestureRecognizer;
@@ -409,7 +412,7 @@
 
 - (void)initializeDefaults {
     _hasPlayingObserver = false;
-    _defaultFadeOut = true;
+    _defaultFadeOut = false;
     _fadeOutTransport = _defaultFadeOut;
     _scrubMode = KBScrubModeNone;
     _trackViewHeight = 5;
@@ -421,7 +424,8 @@
     _defaultIsContinuous = true;
     _defaultThumbTintColor = [UIColor whiteColor];
     _defaultTrackColor = [UIColor grayColor];
-    _defaultMininumTrackTintColor = [UIColor blueColor];
+    //_defaultMininumTrackTintColor = [UIColor colorFromHex:@"0000FF" alpha:0.5];
+    _defaultMininumTrackTintColor = [[UIColor blueColor] copyWithAlpha:0.5];
     _defaultFocusScaleFactor = 1.05;
     _defaultStepValue = 0.1;
     _decelerationRate = 0.92;
@@ -491,7 +495,7 @@
         currentTimeLabel.alpha = 0;
         durationLabel.alpha = 0;
         [self fadeOut];
-
+        
     } else {
         self.displaysRemainingTime = true;
         //[self setDisplaysRemainingTime:true];
@@ -543,7 +547,7 @@
             leftHintConstraints[1].constant = 40;
             _leftHintImageView.image = [KBSliderImages skipBackwardsImage];
             break;
-        
+            
     }
 }
 
@@ -582,13 +586,13 @@
         if (self.sliderFading) {
             self.sliderFading(0, true);
         }
-        NSArray *viewArray = @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _subtitleLabel, _titleLabel];
+        NSArray *viewArray = @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _subtitleLabel, _titleLabel, _blurView, _vibrancyEffectView];
         [UIView animateWithDuration:0.3 animations:^{
             [viewArray enumerateObjectsUsingBlock:^(UIView  *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 obj.alpha = 0;
             }];
         }];
-       
+        
     }
 }
 
@@ -599,12 +603,12 @@
     }
     if (self.sliderMode == KBSliderModeTransport){
         if (_attachedView){
-            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel, _subtitleLabel, _attachedView];
+            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _titleLabel, _subtitleLabel, _attachedView, _blurView, _vibrancyEffectView];
         }
         if (_titleLabel){
-            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _subtitleLabel, _titleLabel];
+            return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _subtitleLabel, _titleLabel, _blurView, _vibrancyEffectView];
         }
-        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView];
+        return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView, durationLabel, currentTimeLabel, gradient, _scrubView, _leftHintImageView, _rightHintImageView, _blurView, _vibrancyEffectView];
     } else {
         return @[self.thumbView, self.trackView, self.minimumTrackView, self.maximumTrackView];
     }
@@ -1185,7 +1189,7 @@
     [_rwLabel.centerYAnchor constraintEqualToAnchor:currentTimeLabel.centerYAnchor].active = true;
     _rwLabel.textColor = [UIColor whiteColor];
     _rwLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
-
+    
 }
 
 - (void)setUpTransportViews {
@@ -1239,29 +1243,33 @@
     _trackView = [UIImageView new];
     _trackView.layer.cornerRadius = _trackViewHeight/2;
     _trackView.backgroundColor = _defaultTrackColor;
-    /*
+    
     if (self.sliderMode == KBSliderModeTransport){
         
         UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-        UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        _blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
         UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
-        UIVisualEffectView *vibrancyEffectView = [[UIVisualEffectView alloc] initWithEffect:vibrancyEffect];
-        [self addSubview:blurView];
-        [blurView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
-        [blurView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
-        [blurView.heightAnchor constraintEqualToConstant:_trackViewHeight].active = true;
-        //[blurView autoPinEdgesToSuperviewEdges];
-        [self addSubview:vibrancyEffectView];
+        _vibrancyEffectView = [[UIVisualEffectView alloc] initWithEffect:vibrancyEffect];
+        [self addSubview:_blurView];
+        _vibrancyEffectView.translatesAutoresizingMaskIntoConstraints = false;
+        _blurView.translatesAutoresizingMaskIntoConstraints = false;
+        _blurView.layer.cornerRadius = _trackViewHeight/2;
+        _blurView.layer.masksToBounds = true;
+        [_blurView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
+        [_blurView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+        [self addSubview:_vibrancyEffectView];
         //[vibrancyEffectView autoPinEdgesToSuperviewEdges];
-        [vibrancyEffectView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
-        [vibrancyEffectView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
-        [vibrancyEffectView.heightAnchor constraintEqualToConstant:_trackViewHeight].active = true;
-        [vibrancyEffectView.contentView addSubview:_trackView];
+        _vibrancyEffectView.layer.cornerRadius = _trackViewHeight/2;
+        _vibrancyEffectView.layer.masksToBounds = true;
+        [_vibrancyEffectView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
+        [_vibrancyEffectView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
+        [_vibrancyEffectView.contentView addSubview:_trackView];
+        //_trackView.backgroundColor = [UIColor colorFromHex:@"98979e" alpha:0.3];//[UIColor colorWithWhite:0.3 alpha:0.3];
+        _trackView.backgroundColor = [[UIColor grayColor] copyWithAlpha:0.3];
     } else {
-     */
         [self addSubview:_trackView];
-    //}
-
+    }
+    
 }
 
 - (void)setUpMinimumTrackView {
@@ -1293,6 +1301,11 @@
     [_trackView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
     if (self.sliderMode == KBSliderModeTransport){
         [_trackView.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor constant:10].active = true;
+        [_blurView.heightAnchor constraintEqualToConstant:_trackViewHeight].active = true;
+        [_blurView.topAnchor constraintEqualToAnchor:_trackView.topAnchor].active = true;
+        [_vibrancyEffectView.heightAnchor constraintEqualToConstant:_trackViewHeight].active = true;
+        [_vibrancyEffectView.topAnchor constraintEqualToAnchor:_trackView.topAnchor].active = true;
+        
     } else {
         [_trackView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
     }
@@ -1389,16 +1402,16 @@
     _panGestureRecognizer.delegate = self;
     
     /*
-    _leftTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftTapWasTriggered)];
-    _leftTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
-    _leftTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
-    [self addGestureRecognizer:_leftTapGestureRecognizer];
-    
-    _rightTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightTapWasTriggered)];
-    _rightTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeRightArrow)];
-    _rightTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
-    [self addGestureRecognizer:_rightTapGestureRecognizer];
-    */
+     _leftTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftTapWasTriggered)];
+     _leftTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
+     _leftTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
+     [self addGestureRecognizer:_leftTapGestureRecognizer];
+     
+     _rightTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightTapWasTriggered)];
+     _rightTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeRightArrow)];
+     _rightTapGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
+     [self addGestureRecognizer:_rightTapGestureRecognizer];
+     */
     
     _leftLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longLeftPressTriggered:)];
     [self addGestureRecognizer:_leftLongPressGestureRecognizer];
@@ -1478,14 +1491,14 @@
 }
 
 /*
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
-   NSLog(@"%@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
-    if ([otherGestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class]) {
-        return TRUE;
-    }
-    return FALSE;
-}
-*/
+ - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
+ NSLog(@"%@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+ if ([otherGestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class]) {
+ return TRUE;
+ }
+ return FALSE;
+ }
+ */
 - (void)controllerConnected:(NSNotification *)n {
     GCController *controller = [n object];
     //NSLog(@"controller: %@ micro: %@", controller, [controller microGamepad]);

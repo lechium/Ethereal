@@ -44,6 +44,20 @@
     return nil;
 }
 
++ (UIColor *)colorFromHex:(NSString *)s alpha:(CGFloat)alpha
+{
+    NSScanner *scan = [NSScanner scannerWithString:[s substringToIndex:2]];
+    unsigned int r = 0, g = 0, b = 0;
+    [scan scanHexInt:&r];
+    scan = [NSScanner scannerWithString:[[s substringFromIndex:2] substringToIndex:2]];
+    [scan scanHexInt:&g];
+    scan = [NSScanner scannerWithString:[s substringFromIndex:4]];
+    [scan scanHexInt:&b];
+    
+    
+    return [UIColor colorWithRed:(float)r/255 green:(float)g/255 blue:(float)b/255 alpha:alpha];
+}
+
 + (UIColor *)colorFromHex:(NSString *)s
 {
     NSScanner *scan = [NSScanner scannerWithString:[s substringToIndex:2]];
@@ -56,6 +70,12 @@
     
     
     return [UIColor colorWithRed:(float)r/255 green:(float)g/255 blue:(float)b/255 alpha:1.0];
+}
+
+- (UIColor *)copyWithAlpha:(CGFloat)alpha {
+    CGFloat red, green, blue, oldAlpha;
+    [self getRed:&red green:&green blue:&blue alpha:&oldAlpha];
+    return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
 }
 
 - (NSString *)hexValue
