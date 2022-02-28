@@ -1265,7 +1265,8 @@
         [_vibrancyEffectView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
         [_vibrancyEffectView.contentView addSubview:_trackView];
         //_trackView.backgroundColor = [UIColor colorFromHex:@"98979e" alpha:0.3];//[UIColor colorWithWhite:0.3 alpha:0.3];
-        _trackView.backgroundColor = [[UIColor grayColor] copyWithAlpha:0.3];
+        _defaultTrackColor = [[UIColor grayColor] copyWithAlpha:0.3];
+        _trackView.backgroundColor = _defaultTrackColor;
     } else {
         [self addSubview:_trackView];
     }
