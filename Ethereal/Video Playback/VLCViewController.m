@@ -594,11 +594,7 @@
             [self destroyContextView];
         }];
     } else {
-        _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
-        _visibleContextView.delegate = self;
-        _visibleContextView.sourceView = self.audioButton;
-        _visibleContextView.menu = [self createAudioMenu];
-        _visibleContextView.representation = [KBContextMenuRepresentation representationForMenu:_visibleContextView.menu];
+        _visibleContextView = [[KBContextMenuView alloc] initWithMenu:[self createAudioMenu] sourceView:self.audioButton delegate:self];
         //NSLog(@"[Ethereal] sub rep: %@", _visibleContextView.representation.sections);
         //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [_visibleContextView showContextView:true fromView:self completion:^{
@@ -629,11 +625,7 @@
             [self destroyContextView];
         }];
     } else {
-        _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
-        _visibleContextView.delegate = self;
-        _visibleContextView.sourceView = self.subtitleButton;
-        _visibleContextView.menu = [self createSubtitleMenu];
-        _visibleContextView.representation = [KBContextMenuRepresentation representationForMenu:_visibleContextView.menu];
+        _visibleContextView = [[KBContextMenuView alloc] initWithMenu:[self createSubtitleMenu] sourceView:self.subtitleButton delegate:self];
         //NSLog(@"[Ethereal] sub rep: %@", _visibleContextView.representation.sections);
         //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
         [_visibleContextView showContextView:true fromView:self completion:^{
