@@ -45,7 +45,7 @@
         } else if ([obj isMemberOfClass:KBMenu.class]) {
             KBMenu *menuObj = (KBMenu *)obj;
             KBContextMenuSection *section = [KBContextMenuSection new];
-            section.items = menuObj.children;
+            section.items = menuObj.visibleChildren;
             section.title = menuObj.title;
             section.singleSelection = (menuObj.options & KBMenuOptionsSingleSelection) != 0;
             [sections addObject:section];

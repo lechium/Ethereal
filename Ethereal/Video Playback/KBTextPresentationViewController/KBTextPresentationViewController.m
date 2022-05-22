@@ -72,10 +72,10 @@
     //[self.view printRecursiveDescription];
 }
 
-
-- (UIView *)preferredFocusedView
-{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+- (UIView *)preferredFocusedView {
     return self.textView;
 }
-
+#pragma clang diagnostic pop
 @end

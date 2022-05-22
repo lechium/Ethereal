@@ -92,7 +92,7 @@
                     //NSLog(@"[Ethereal] this guy is selected: %@", obj);
                     VLCViewController *vlcViewController = (VLCViewController *)[self parentViewController];
                     VLCMediaPlayer *player = [vlcViewController player];
-                    [player setCurrentAudioTrackIndex:newIndex];
+                    [player setCurrentAudioTrackIndex:(int)newIndex];
                 }
             }];
             return;
@@ -130,7 +130,7 @@
                     //NSLog(@"[Ethereal] this guy is selected: %@", obj);
                     VLCViewController *vlcViewController = (VLCViewController *)[self parentViewController];
                     VLCMediaPlayer *player = [vlcViewController player];
-                    [player setCurrentVideoSubTitleIndex:newIndex];
+                    [player setCurrentVideoSubTitleIndex:(int)newIndex];
                 }
             }];
             return;

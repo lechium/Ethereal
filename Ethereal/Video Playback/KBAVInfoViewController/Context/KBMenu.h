@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// The element(s) in the menu and sub-menus that have an "on" menu item state.
 @property (nonatomic, readonly) NSArray <KBMenuElement *> *selectedElements;
 
+- (NSArray *)visibleChildren;
+
 /*!
  * @abstract Creates a KBMenu with an empty title, nil image, automatically generated identifier, and default options.
  *

@@ -21,6 +21,10 @@
     UIView *_selectedView;
 }
 
+- (UIView *)selectedView {
+    return _selectedView;
+}
+
 - (void)setAttributes:(KBMenuElementAttributes)attributes {
     if (attributes & KBMenuElementAttributesDestructive) {
         _selectedView.backgroundColor = [UIColor redColor];
@@ -99,21 +103,22 @@
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
-    
+    @weakify(self);
     [coordinator addCoordinatedAnimations:^{
         if (self.focused) {
             //self.backgroundColor = [UIColor whiteColor];
             self.label.textColor = [UIColor colorWithWhite:0 alpha:0.6];
             self.trailingImageView.tintColor = [UIColor colorWithWhite:0 alpha:0.6];
             self.transform = CGAffineTransformMakeScale(1.05, 1.05);
-            _selectedView.alpha = 1.0;
+            self_weak_.selectedView.alpha = 1.0;
+            //_selectedView.alpha = 1.0;
             
         } else {
             self.transform = CGAffineTransformIdentity;
             self.label.textColor = [UIColor colorWithWhite:1.0 alpha:0.6];
             self.trailingImageView.tintColor = [UIColor colorWithWhite:1.0 alpha:0.6];
             //self.backgroundColor = nil;
-            _selectedView.alpha = 0.0;
+            self_weak_.selectedView.alpha = 0.0;
         }
     } completion:nil];
    

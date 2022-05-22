@@ -11,7 +11,7 @@
 @implementation AVAsset (Extras)
 
 - (BOOL)hasClosedCaptions {
-    __block returnedValue = false;
+    __block BOOL returnedValue = false;
     AVMediaSelectionGroup *group = [self mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"mediaType == %@",AVMediaTypeClosedCaption];
     AVMediaSelectionOption *opt = [[group.options filteredArrayUsingPredicate:pred] firstObject];

@@ -47,6 +47,23 @@
     _children = _newKids; //create elements
 }
 
+- (NSArray *)visibleChildren {
+    __block NSMutableArray *_kids = [NSMutableArray new];
+    [_children enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:KBAction.class]){
+            KBAction *action = (KBAction*)obj;
+            if (action.attributes & KBMenuElementAttributesHidden){
+                NSLog(@"[Ethereal] SKIP: %@", obj);
+            } else {
+                [_kids addObject:obj];
+            }
+        } else {
+            [_kids addObject:obj];
+        }
+    }];
+    return _kids;
+}
+
 - (NSArray *)children {
     return _children;
 }

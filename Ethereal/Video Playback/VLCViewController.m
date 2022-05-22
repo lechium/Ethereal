@@ -54,10 +54,13 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    @weakify(self);
     if (_mediaURL) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            _mediaPlayer.drawable = _videoView;
-            [_mediaPlayer play];
+            [(VLCMediaPlayer*)[self_weak_ player] setDrawable:self_weak_.videoView];
+            [(VLCMediaPlayer*)[self_weak_ player] play];
+            //self_weak_.player.drawable = _videoView;
+            //[_mediaPlayer play];
         });
 
     }
@@ -230,7 +233,7 @@
     
     @weakify(self);
     _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
-        [self dismissContextViewIfNecessary];
+        [self_weak_ dismissContextViewIfNecessary];
         if (animated) {
             [UIView animateWithDuration:0.3 animations:^{
                 self_weak_.subtitleButton.alpha = direction;
@@ -465,7 +468,7 @@
     KBAction *testItemsThree = [KBAction actionWithTitle:@"Reduce Loud Sounds" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
-    testItemsThree.attributes = testItemsThree.attributes | KBMenuElementAttributesDestructive;
+    testItemsThree.attributes = testItemsThree.attributes | KBMenuElementAttributesDisabled;
     KBAction *testItemTwo = [KBAction actionWithTitle:@"Unknown" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
@@ -941,5 +944,7 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+@synthesize player;
 
 @end

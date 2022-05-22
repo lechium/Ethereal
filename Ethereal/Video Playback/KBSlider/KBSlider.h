@@ -75,7 +75,7 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 };
 
 
-@interface KBSlider : UIControl
+@interface KBSlider : UIControl <UIGestureRecognizerDelegate>
 
 @property CGFloat value;
 @property CGFloat scrubValue;

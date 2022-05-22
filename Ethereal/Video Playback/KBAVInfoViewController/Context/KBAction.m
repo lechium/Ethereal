@@ -15,6 +15,8 @@
 
 @implementation KBAction
 
+@dynamic title, image;
+
 - (void)setTitle:(NSString *)title {
     [self _setTitle:title];
 }
