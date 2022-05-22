@@ -113,12 +113,23 @@
     return _representation.sections.count;
 }
 
+- (BOOL)collectionView:(UICollectionView *)collectionView canFocusItemAtIndexPath:(NSIndexPath *)indexPath {
+    KBContextMenuSection *section = _representation.sections[indexPath.section];
+    KBAction *opt = section.items[indexPath.row];
+    if (opt.attributes & KBMenuElementAttributesDisabled) {
+        NSLog(@"[Ethereal] canFocusItemAtIndexPath disabled!");
+        return false;
+    }
+    return true;
+}
+
 -  (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     KBContextMenuViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     KBContextMenuSection *section = _representation.sections[indexPath.section];
     KBAction *opt = section.items[indexPath.row];
     cell.label.text = opt.title;
     [cell setSelected:(opt.state == KBMenuElementStateOn) animated:false];
+    [cell setAttributes:opt.attributes];
     return cell;
 }
 
@@ -131,6 +142,10 @@
     self.selectedMediaOptionIndex = indexPath.row;
     KBContextMenuSection *currentSection = _representation.sections[indexPath.section];
     KBAction *opt = currentSection.items[indexPath.row];
+    if (opt.attributes & KBMenuElementAttributesDisabled) {
+        NSLog(@"[Ethereal] disabled!");
+        return;
+    }
    // opt.state = KBMenuElementStateOn;
     if (currentSection.singleSelection){
         opt.state = KBMenuElementStateOn;

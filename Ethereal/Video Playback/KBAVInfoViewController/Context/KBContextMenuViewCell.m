@@ -10,13 +10,27 @@
 #import "KBSliderImages.h"
 #import "UIView+AL.h"
 #import "UIStackView+Helper.h"
+
 @implementation KBContextMenuViewCell {
     BOOL _destructive;
+    BOOL _disabled;
     unsigned long long _style;
     UIImageView *_leadingImageView;
     UIImageView *_trailingImageView;
     UIStackView *_stackView;
     UIView *_selectedView;
+}
+
+- (void)setAttributes:(KBMenuElementAttributes)attributes {
+    if (attributes & KBMenuElementAttributesDestructive) {
+        _selectedView.backgroundColor = [UIColor redColor];
+        _destructive = true;
+    }
+    if (attributes & KBMenuElementAttributesDisabled) {
+        _selectedView.backgroundColor = [UIColor darkGrayColor];
+        _label.textColor = [UIColor colorWithWhite:1 alpha:0.3];
+        _disabled = true;
+    }
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -37,6 +51,7 @@
         [self.contentView addSubview:_stackView];
         [_stackView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 25, 0, 25)];
         
+        
     }
     return self;
 }
@@ -48,7 +63,12 @@
     _selectedView.layer.masksToBounds = true;
     [_selectedView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
     _selectedView.alpha = 0;
-    _selectedView.backgroundColor = [UIColor whiteColor];
+    if (_destructive){
+        _selectedView.backgroundColor = [UIColor redColor];
+    } else {
+        _selectedView.backgroundColor = [UIColor whiteColor];
+    }
+    
 }
 
 - (UIImageView *)trailingImageView {
