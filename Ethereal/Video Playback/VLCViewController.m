@@ -156,7 +156,7 @@
             [self hideAVInfoView];
         } else if ([self contextViewVisible]) {
             [_visibleContextView showContextView:false completion:^{
-                [self killContextView];
+                [self destroyContextView];
             }];
         } else if ([self.transportSlider isScrubbing]) {
             [self.transportSlider setIsScrubbing:false];
@@ -573,11 +573,11 @@
         //button.opened = false;
         [self.subtitleButton setOpened:false];
         [self.audioButton setOpened:false];
-        [self killContextView];
+        [self destroyContextView];
     }];
 }
 
-- (void)killContextView {
+- (void)destroyContextView {
     _visibleContextView = nil;
     self.subtitleButton.opened = false;
     self.audioButton.opened = false;
@@ -591,7 +591,7 @@
     if ([self contextViewVisible]){
         [_visibleContextView showContextView:false fromView:nil completion:^{
             button.opened = false;
-            [self killContextView];
+            [self destroyContextView];
         }];
     } else {
         _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
@@ -626,7 +626,7 @@
     if ([self contextViewVisible]){
         [_visibleContextView showContextView:false fromView:nil completion:^{
             button.opened = false;
-            [self killContextView];
+            [self destroyContextView];
         }];
     } else {
         _visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];

@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol KBContextMenuViewDelegate <NSObject>
 
-- (void)killContextView;
+- (void)destroyContextView;
 
 @end
 
@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController;
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block;
 - (void)showContextView:(BOOL)show completion:(void (^)(void))block;
+- (instancetype)initWithMenu:(KBMenu *)menu sourceView:(UIView *)sourceView delegate:(id <KBContextMenuViewDelegate>)delegate;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -15,15 +15,24 @@
 
 #define ANIMATION_DURATION 0.3
 
-
-
 @implementation KBContextMenuView {
     UIView *_backgroundView;
 }
 
-- (void)killContextView {
+- (instancetype)initWithMenu:(KBMenu *)menu sourceView:(UIView *)sourceView delegate:(id<KBContextMenuViewDelegate>)delegate {
+    self = [super initForAutoLayout];
+    if (self) {
+        _sourceView = sourceView;
+        _delegate = delegate;
+        _menu = menu;
+        _representation = [KBContextMenuRepresentation representationForMenu:_menu];
+    }
+    return self;
+}
+
+- (void)destroyContextView {
     if (self.delegate){
-        [self.delegate killContextView];
+        [self.delegate destroyContextView];
     }
 }
 
@@ -142,7 +151,7 @@
     if (currentSection.singleSelection) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self showContextView:false completion:^{
-                [self killContextView];
+                [self destroyContextView];
             }];
         });
     }
@@ -190,7 +199,7 @@
             if (block) {
                 block();
             }
-            //[self_weak_ killContextView];
+            //[self_weak_ destroyContextView];
         }];
     } else {
         //_visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
