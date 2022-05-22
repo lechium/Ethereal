@@ -440,7 +440,7 @@
     }
 }
 
-- (KBMenu *)createAudioMenuNew {
+- (KBMenu *)createAudioMenu {
     NSArray<KBAVInfoPanelMediaOption *> *vlcAudioData = [_avInfoViewController vlcAudioData];
     __block NSMutableArray *menuArray = [NSMutableArray new];
     [vlcAudioData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -460,7 +460,7 @@
     return menu;
 }
 
-- (KBMenu *)createAudioMenu {
+- (KBMenu *)createAudioMenuOld {
     KBAction *testItemOne = [KBAction actionWithTitle:@"Full Dynamic Range" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
@@ -468,7 +468,7 @@
     KBAction *testItemsThree = [KBAction actionWithTitle:@"Reduce Loud Sounds" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
-    testItemsThree.attributes = testItemsThree.attributes | KBMenuElementAttributesDisabled;
+    //testItemsThree.attributes = testItemsThree.attributes | KBMenuElementAttributesDisabled;
     KBAction *testItemTwo = [KBAction actionWithTitle:@"Unknown" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
@@ -488,9 +488,6 @@
                 obj.selectedBlock(obj);
             }
         }];
-        if (idx == 1) {
-            action.attributes = action.attributes | KBMenuElementAttributesHidden;
-        }
         action.state = KBMenuElementStateOff;
         if (obj.selected){
             action.state = KBMenuElementStateOn;

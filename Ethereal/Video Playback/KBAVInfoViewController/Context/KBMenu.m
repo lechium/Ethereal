@@ -31,20 +31,7 @@
 }
 
 - (void)_setChildren:(NSArray<KBMenuElement *> * _Nonnull)children {
-    __block NSMutableArray *_newKids = [NSMutableArray new];
-    [children enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:KBAction.class]){
-            KBAction *act = (KBAction*)obj;
-            if (act.attributes & KBMenuElementAttributesHidden){
-                NSLog(@"[Ethereal] SKIP: %@", obj);
-            } else {
-                [_newKids addObject:obj];
-            }
-        } else {
-            [_newKids addObject:obj];
-        }
-    }];
-    _children = _newKids; //create elements
+    _children = children;
 }
 
 - (NSArray *)visibleChildren {

@@ -37,7 +37,7 @@
     [menu.children enumerateObjectsUsingBlock:^(KBMenuElement * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj isMemberOfClass:KBAction.class]){
             KBContextMenuSection *section = [KBContextMenuSection new];
-            section.items = menu.children;
+            section.items = menu.visibleChildren;
             section.title = menu.title;
             section.singleSelection = (menu.options & KBMenuOptionsSingleSelection) != 0;
             [sections addObject:section];
