@@ -465,12 +465,18 @@
         NSLog(@"[Ethereal] %@ selected", action);
     }];
     testItemOne.state = KBMenuElementStateOn;
+    testItemOne.attributes = KBMenuElementAttributesToggle;
     KBAction *testItemsThree = [KBAction actionWithTitle:@"Reduce Loud Sounds" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
     }];
-    //testItemsThree.attributes = testItemsThree.attributes | KBMenuElementAttributesDisabled;
+    testItemsThree.attributes = KBMenuElementAttributesToggle;
     KBAction *testItemTwo = [KBAction actionWithTitle:@"Unknown" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         NSLog(@"[Ethereal] %@ selected", action);
+        if (action.state == KBMenuElementStateOn) {
+            action.state = KBMenuElementStateOff;
+        } else {
+            action.state = KBMenuElementStateOn;
+        }
     }];
     testItemTwo.state = KBMenuElementStateOn;
     KBMenu *firstMenu = [KBMenu menuWithTitle:@"Audio Range" image:nil identifier:nil options:KBMenuOptionsDisplayInline children:@[testItemOne, testItemsThree]];
@@ -588,6 +594,10 @@
     self.transportSlider.userInteractionEnabled = true;
     self.subtitleButton.userInteractionEnabled = true;
     self.audioButton.userInteractionEnabled = true;
+}
+
+- (void)selectedItem:(KBMenuElement *)item {
+    LOG_SELF;
 }
 
 - (void)audioButtonClicked:(KBButton *)button {

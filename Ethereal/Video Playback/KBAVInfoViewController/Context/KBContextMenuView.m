@@ -127,9 +127,13 @@
     KBContextMenuViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     KBContextMenuSection *section = _representation.sections[indexPath.section];
     KBAction *opt = section.items[indexPath.row];
+    /*
+    cell.leadingImageView.image = opt.image;
     cell.label.text = opt.title;
     [cell setSelected:(opt.state == KBMenuElementStateOn) animated:false];
     [cell setAttributes:opt.attributes];
+     */
+    [cell configureWithAction:opt section:section];
     return cell;
 }
 
@@ -146,6 +150,9 @@
         NSLog(@"[Ethereal] disabled!");
         return;
     }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(selectedItem:)]){
+        [self.delegate selectedItem:opt];
+    }
    // opt.state = KBMenuElementStateOn;
     if (currentSection.singleSelection){
         opt.state = KBMenuElementStateOn;
@@ -155,10 +162,12 @@
             }
         }];
     } else {
-        if (opt.state == KBMenuElementStateOn) {
-            opt.state = KBMenuElementStateOff;
-        } else if (opt.state == KBMenuElementStateOff) {
-            opt.state = KBMenuElementStateOn;
+        if (opt.attributes & KBMenuElementAttributesToggle){
+            if (opt.state == KBMenuElementStateOn) {
+                opt.state = KBMenuElementStateOff;
+            } else if (opt.state == KBMenuElementStateOff) {
+                opt.state = KBMenuElementStateOn;
+            }
         }
     }
     opt.handler(opt);
@@ -167,6 +176,9 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self showContextView:false completion:^{
                 [self destroyContextView];
+                if ([self.sourceView respondsToSelector:@selector(opened)]){
+                    [(id<KBContextMenuSourceDelegate>)self.sourceView setOpened:false];
+                }
             }];
         });
     }

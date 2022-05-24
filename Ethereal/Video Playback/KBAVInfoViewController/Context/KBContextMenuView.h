@@ -22,13 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol KBContextMenuViewDelegate <NSObject>
 
 - (void)destroyContextView;
+- (void)selectedItem:(KBMenuElement *)item;
 
 @end
 
 @interface KBContextMenuView : UIView <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic,strong) UIView *sourceView;
-@property (nonatomic,retain) NSArray <KBAVInfoPanelMediaOption *>* mediaOptions;
+//@property (nonatomic,retain) NSArray <KBAVInfoPanelMediaOption *>* mediaOptions;
 @property (nonatomic,strong) KBMenu *menu;
 @property (nonatomic,strong) KBContextMenuRepresentation *representation;
 @property (assign,nonatomic) long long selectedMediaOptionIndex;

@@ -40,7 +40,7 @@
         if ([obj isKindOfClass:KBAction.class]){
             KBAction *action = (KBAction*)obj;
             if (action.attributes & KBMenuElementAttributesHidden){
-                NSLog(@"[Ethereal] SKIP: %@", obj);
+                NSLog(@"SKIP: %@", obj);
             } else {
                 [_kids addObject:obj];
             }

@@ -19,7 +19,9 @@ typedef NS_ENUM(NSInteger, KBMenuElementState) {
 typedef NS_OPTIONS(NSUInteger, KBMenuElementAttributes) {
     KBMenuElementAttributesDisabled     = 1 << 0,
     KBMenuElementAttributesDestructive  = 1 << 1,
-    KBMenuElementAttributesHidden       = 1 << 2
+    KBMenuElementAttributesHidden       = 1 << 2,
+    KBMenuElementAttributesToggle       = 1 << 3,
+    
 } NS_SWIFT_NAME(KBMenuElement.Attributes);
 
 NS_ASSUME_NONNULL_BEGIN

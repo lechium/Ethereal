@@ -44,23 +44,23 @@ typedef void (^KBActionHandler)(__kindof KBAction *action);
 @property (nonatomic, nullable) KBActionHandler handler;
 
 /*!
- * @abstract Creates a UIAction with an empty title, nil image, and automatically generated identifier
+ * @abstract Creates a KBAction with an empty title, nil image, and automatically generated identifier
  *
  * @param handler  Handler block. Called when the user selects the action.
  *
- * @return A new UIAction.
+ * @return A new KBAction.
  */
 + (instancetype)actionWithHandler:(KBActionHandler)handler;
 
 /*!
- * @abstract Creates a UIAction with the given arguments.
+ * @abstract Creates a KBAction with the given arguments.
  *
  * @param title    The action's title.
  * @param image    Image that can appear next to this action, if needed.
  * @param identifier  The action's identifier. Pass nil to use an auto-generated identifier.
  * @param handler  Handler block. Called when the user selects the action.
  *
- * @return A new UIAction.
+ * @return A new KBAction.
  */
 + (instancetype)actionWithTitle:(NSString *)title
                           image:(nullable UIImage *)image
