@@ -43,7 +43,7 @@
 
 //never fires.. how the hell do u check for errors or file compat?? yeesh.
 - (void)itemReceivedError:(NSNotification *)n {
-  NSLog(@"[Ethereal] itemReceivedError: %@", [n userInfo]);
+  ELog(@"itemReceivedError: %@", [n userInfo]);
 }
 
 //test video
@@ -69,14 +69,14 @@
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
-    NSLog(@"[Ethereal] URL: %@", url);
+    ELog(@"URL: %@", url);
     if ([url isFileURL]){
         NSFileManager *man = [NSFileManager defaultManager];
         NSString *newPath = [NSString stringWithFormat:@"/var/mobile/Documents/Ethereal/%@", url.path.lastPathComponent];
         NSString *originalPath = url.path;
         NSError *error = nil;
         [man moveItemAtPath:originalPath toPath:newPath error:&error];
-        NSLog(@"[Ethereal] error: %@", error);
+        ELog(@"error: %@", error);
         [self showPlayerViewWithFile:newPath isLocal:TRUE];
     } else {
         [self showPlayerViewWithFile:url.absoluteString isLocal:false];
@@ -86,7 +86,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    NSLog(@"[Ethereal] AVMediaTypeClosedCaption: %@", AVMediaTypeClosedCaption);//clcp
+    ELog(@"AVMediaTypeClosedCaption: %@", AVMediaTypeClosedCaption);//clcp
     InternalLicense *shared = [InternalLicense sharedInstance];
     [shared setIsDemoVersion:false];
     [shared setExpiredDate:[NSDate distantFuture]];
@@ -99,7 +99,7 @@
     [sesh setCategory:AVAudioSessionCategoryPlayback error:nil];
     AVAudioSessionRouteDescription *d = [sesh currentRoute];
     
-    NSLog(@"[Ethereal] routes: %@", d.outputs);
+    ELog(@"routes: %@", d.outputs);
     return YES;
 }
 

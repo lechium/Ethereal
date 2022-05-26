@@ -122,9 +122,9 @@
     //  _avplayController.enableBuiltinSubtitleRender = NO;
     BOOL open = [_avplayController openMedia:self.mediaURL withOptions:options];
     if (open) {
-        NSLog(@"[Ethereal] opened successfully");
+        ELog(@"opened successfully");
     } else {
-        NSLog(@"[Ethereal] failed to load file");
+        ELog(@"failed to load file");
     }
 }
 
@@ -142,12 +142,12 @@
 }
 /*
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    //NSLog(@"[Ethereal] gestureRecognizerShouldBegin: %@", gestureRecognizer);
+    //ELog(@"gestureRecognizerShouldBegin: %@", gestureRecognizer);
     return true;
 }
 */
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    //NSLog(@"[Ethereal] %@ shouldRecognizeSimultaneouslyWithGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+    //ELog(@"%@ shouldRecognizeSimultaneouslyWithGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     if ([gestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class] && [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
         //return FALSE;
     }
@@ -155,7 +155,7 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    //NSLog(@"[Ethereal] shouldRequireFailureOfGestureRecognizer: %@", gestureRecognizer);
+    //ELog(@"shouldRequireFailureOfGestureRecognizer: %@", gestureRecognizer);
     if ([gestureRecognizer isKindOfClass:UISwipeGestureRecognizer.class] && [otherGestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
         //NSLog(@"[Ethereal], fail");
         //return TRUE;
@@ -163,32 +163,32 @@
     return FALSE;
 }
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
-    //NSLog(@"[Ethereal] %@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
+    //ELog(@"%@ shouldBeRequiredToFailByGestureRecognizer: %@", gestureRecognizer, otherGestureRecognizer);
     return FALSE;
 }
 /*
 // called before touchesBegan:withEvent: is called on the gesture recognizer for a new touch. return NO to prevent the gesture recognizer from seeing this touch
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-    //NSLog(@"[Ethereal] shouldReceiveTouch: %@", gestureRecognizer);
+    //ELog(@"shouldReceiveTouch: %@", gestureRecognizer);
     return TRUE;
 }
 */
 // called before pressesBegan:withEvent: is called on the gesture recognizer for a new press. return NO to prevent the gesture recognizer from seeing this press
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
-    //NSLog(@"[Ethereal] shouldReceivePress: %@", gestureRecognizer);
+    //ELog(@"shouldReceivePress: %@", gestureRecognizer);
     return TRUE;
 }
 /*
 // called once before either -gestureRecognizer:shouldReceiveTouch: or -gestureRecognizer:shouldReceivePress:
 // return NO to prevent the gesture recognizer from seeing this event
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event {
-    //NSLog(@"[Ethereal] shouldReceiveEvent: %@", gestureRecognizer);
+    //ELog(@"shouldReceiveEvent: %@", gestureRecognizer);
     return TRUE;
 }
 */
 
 - (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
-    NSLog(@"[Ethereal] menu tapped");
+    ELog(@"menu tapped");
     if (gestRecognizer.state == UIGestureRecognizerStateEnded){
         if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
@@ -264,7 +264,7 @@
 }
 
 - (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"[Ethereal] double tap");
+    ELog(@"double tap");
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
         AVRoutePickerView *routerPickerView = [[AVRoutePickerView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
         routerPickerView.activeTintColor = [UIColor clearColor];
@@ -275,11 +275,11 @@
 
 
 - (void)routePickerViewWillBeginPresentingRoutes:(AVRoutePickerView *)routePickerView {
-    NSLog(@"[Ethereal] routePickerViewWillBeginPresentingRoutes");
+    ELog(@"routePickerViewWillBeginPresentingRoutes");
 }
 //AirPlay界面结束时回调
 - (void)routePickerViewDidEndPresentingRoutes:(AVRoutePickerView *)routePickerView {
-    NSLog(@"[Ethereal] routePickerViewDidEndPresentingRoutes");
+    ELog(@"routePickerViewDidEndPresentingRoutes");
 }
 
 /*
@@ -289,21 +289,21 @@
  */
 
 - (MPRemoteCommandHandlerStatus)testSkipForward {
-    NSLog(@"[Ethereal] testSkipForward");
+    ELog(@"testSkipForward");
     return MPRemoteCommandHandlerStatusSuccess;
 }
 
 - (MPRemoteCommandHandlerStatus)testSkipBackwards {
-    NSLog(@"[Ethereal] testSkipBackwards");
+    ELog(@"testSkipBackwards");
     return MPRemoteCommandHandlerStatusSuccess;
 }
 
 - (void)seekForwardTest {
-    NSLog(@"[Ethereal] seekForwardTest");
+    ELog(@"seekForwardTest");
 }
 
 - (void)seekBackwardsTest {
-    NSLog(@"[Ethereal] seekBackwardsTest");
+    ELog(@"seekBackwardsTest");
 }
 
 
@@ -313,11 +313,11 @@
     [center.skipForwardCommand addTarget:self action:@selector(testSkipForward)];
     [center.skipBackwardCommand addTarget:self action:@selector(testSkipBackwards)];
     [center.seekForwardCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        NSLog(@"[Ethereal] seekForwardTest");
+        ELog(@"seekForwardTest");
         return MPRemoteCommandHandlerStatusSuccess;
     }];
     [center.seekBackwardCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        NSLog(@"[Ethereal] seekBackwardCommand");
+        ELog(@"seekBackwardCommand");
         return MPRemoteCommandHandlerStatusSuccess;
     }];
     //[center.seekForwardCommand addTarget:self action:@selector(seekForwardTest)];
@@ -450,7 +450,7 @@
     if (isPlaying) {
         [_avplayController pause];
     }
-    //NSLog(@"[Ethereal] slider value: %.02f duration: %f", slider.value, _avplayController.duration);
+    //ELog(@"slider value: %.02f duration: %f", slider.value, _avplayController.duration);
     if (slider.value < _avplayController.duration) {
         [_avplayController seekto:slider.value];
     }
@@ -547,11 +547,11 @@
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     @weakify(self);
-    //NSLog(@"[Ethereal] type: %lu subtype: %lu press count:%lu", event.type, event.subtype, presses.count);
+    //ELog(@"type: %lu subtype: %lu press count:%lu", event.type, event.subtype, presses.count);
     for (UIPress *press in presses) {
         //NSInteger source = [[press valueForKey:@"source"] integerValue];
         //NSInteger gameControllerComp = [[press valueForKey:@"gameControllerComponent"] integerValue];
-        //NSLog(@"[Ethereal] press source: %lu gcc: %lu", source, gameControllerComp);
+        //ELog(@"press source: %lu gcc: %lu", source, gameControllerComp);
         switch (press.type){
             case UIPressTypeMenu:
                 //[_avplayController pause]; //safer than disposing of it, its a stop gap for now. but its still an improvement.
@@ -602,15 +602,15 @@
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    //NSLog(@"[Ethereal] pressesEnded: %@", presses);
+    //ELog(@"pressesEnded: %@", presses);
     //AVPlayerState currentState = _avplayController.playerState;
     for (UIPress *press in presses) {
         if (press == _ignorePress){
-            //NSLog(@"[Ethereal] IGNORE ME!");
+            //ELog(@"IGNORE ME!");
             _ignorePress = nil;
             return;
         }
-        //NSLog(@"[Ethereal] presstype: %lu", press.type);
+        //ELog(@"presstype: %lu", press.type);
         switch (press.type){
                 
             case UIPressTypeMenu:
@@ -618,7 +618,7 @@
            
             case UIPressTypeSelect:
                 if ([_transportSlider isFocused]){
-                    NSLog(@"[Ethereal] togglePlayPause");
+                    ELog(@"togglePlayPause");
                     [self togglePlayPause];
                 }
                 break;
@@ -626,7 +626,7 @@
             case UIPressTypePlayPause:
            
                 
-                //NSLog(@"[Ethereal] play pause");
+                //ELog(@"play pause");
                 [self togglePlayPause];
                 break;
             case UIPressTypeUpArrow:
@@ -640,7 +640,7 @@
             case UIPressTypeLeftArrow:
                 
                 if (_transportSlider.isFocused) {
-                    NSLog(@"[Ethereal] slider is focused");
+                    ELog(@"slider is focused");
                     [_leftHoldTimer invalidate];
                     if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
                         KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeLeftArrow];
@@ -662,7 +662,7 @@
                 
             case UIPressTypeRightArrow:
                 if (_transportSlider.isFocused) {
-                    NSLog(@"[Ethereal] slider is focused");
+                    ELog(@"slider is focused");
                     [_rightHoldTimer invalidate];
                     if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
                         KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeRightArrow];
@@ -681,7 +681,7 @@
                 
                 
             default:
-                NSLog(@"[Ethereal] unhandled type: %lu", press.type);
+                ELog(@"unhandled type: %lu", press.type);
                 [super pressesEnded:presses withEvent:event];
                 break;
                 
@@ -701,20 +701,20 @@
      if (_avplayController.playbackSpeed > 0.5) {
      [_avplayController setPlaybackSpeed:_avplayController.playbackSpeed-0.25];
      }*/
-    //NSLog(@"[Ethereal] go to end");
+    //ELog(@"go to end");
     [_avplayController seekto:_avplayController.duration];
     //_avplayController.streamDiscardOption = kAVStreamDiscardOptionSubtitle;
 }
 
 - (void)forwardDidTouch:(id)sender {
-    NSLog(@"[Ethereal] forwardDidTouch");
+    ELog(@"forwardDidTouch");
     if (_avplayController.currentPlaybackTime+10 < _avplayController.duration) {
         [_avplayController seekto:_avplayController.currentPlaybackTime+10];
     }
 }
 
 - (void)rewindDidTouch:(id)sender {
-    NSLog(@"[Ethereal] rewindDidTouch");
+    ELog(@"rewindDidTouch");
     if (_avplayController.currentPlaybackTime-10 >= 0) {
         [_avplayController seekto:_avplayController.currentPlaybackTime-10];
     }
@@ -760,14 +760,14 @@
 #pragma mark - FFAVPlayerControllerDelegate
 
 - (void)FFAVPlayerControllerWillLoad:(FFAVPlayerController *)controller {
-    NSLog(@"[Ethereal] Loading av resource...");
+    ELog(@"Loading av resource...");
 }
 
 - (void)FFAVPlayerControllerDidLoad:(FFAVPlayerController *)controller error:(NSError *)error {
     if (error) {
-        NSLog(@"[Ethereal] Unable to load av resource!");
+        ELog(@"Unable to load av resource!");
     } else {
-        NSLog(@"[Ethereal] Loaded av resource!");
+        ELog(@"Loaded av resource!");
     }
     
     if (!error) {
@@ -787,7 +787,7 @@
             [_transportSlider setCurrentTime:0];
             _transportSlider.fadeOutTransport = true;
             [_transportSlider setIsContinuous:false];
-            NSLog(@"[Ethereal] total duration: %f", _avplayController.duration);
+            ELog(@"total duration: %f", _avplayController.duration);
             [_transportSlider setTotalDuration:_avplayController.duration];
             [_transportSlider setAvPlayer:self.player];
             
@@ -870,7 +870,7 @@
             
         }
     } else {
-        NSLog(@"[Ethereal] Failed to load video!");
+        ELog(@"Failed to load video!");
         UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"The video failed to load!" message:[NSString stringWithFormat:@"The video failed to load with error: %@", error.localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
         [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:ac animated:true completion:nil];
@@ -967,7 +967,7 @@
 // AVPlayer current subtitle item was changed
 - (void)FFAVPlayerControllerDidSubtitleChange:(FFAVPlayerController *)controller
                                  subtitleItem:(FFAVSubtitleItem *)subtitleItem {
-    NSLog(@"[Ethereal] %@", subtitleItem);
+    ELog(@"%@", subtitleItem);
 }
 
 // Enter or exit full screen mode
@@ -983,12 +983,12 @@
 
 - (void)FFAVPlayerControllerDidBufferingProgressChange:(FFAVPlayerController *)controller progress:(double)progress {
     // Log the buffering progress info
-    //NSLog(@"[Ethereal] >>> BUFFERING : %.3f%%", progress);
+    //ELog(@">>> BUFFERING : %.3f%%", progress);
 }
 
 - (void)FFAVPlayerControllerDidBitrateChange:(FFAVPlayerController *)controller bitrate:(NSInteger)bitrate {
     // Log the bitrate info
-    //NSLog(@"[Ethereal] bitrate : %ld Kbits/s", bitrate);
+    //ELog(@"bitrate : %ld Kbits/s", bitrate);
 }
 
 @end

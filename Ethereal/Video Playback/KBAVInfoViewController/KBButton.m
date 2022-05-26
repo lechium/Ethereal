@@ -1,16 +1,75 @@
 #import "KBButton.h"
 #import "UIView+AL.h"
+#import "KBContextMenuView.h"
 
-@interface KBButton() {
+@interface KBButton() <KBContextMenuViewDelegate> {
+
     KBButtonType _buttonType;
     BOOL _selected;
     UIView *_selectedView;
     BOOL _opened;
+    KBMenu *_menu;
+    KBContextMenuView *_contextMenuView;
+
 }
 
 @end
 
 @implementation KBButton
+
+@dynamic showsMenuAsPrimaryAction;
+
+- (void)selectedItem:(KBMenuElement *)item {
+    LOG_FUNCTION;
+    if ([_menuDelegate respondsToSelector:@selector(itemSelected:menu:from:)]) {
+        [[self menuDelegate] itemSelected:item menu:_contextMenuView from:self];
+    }
+}
+
+- (void)destroyContextView {
+    
+}
+
+- (KBContextMenuView *)contextMenuView {
+    return _contextMenuView;
+}
+
+- (void)setMenu:(KBMenu *)menu {
+    _menu = menu;
+    if (_menu.image){
+        self.buttonImageView.image = _menu.image;
+    }
+    _contextMenuView = [[KBContextMenuView alloc] initWithMenu:menu sourceView:self delegate:self];
+}
+
+- (KBMenu *)menu {
+    return _menu;
+}
+
+- (void)showMenuWithCompletion:(void(^)(void))block {
+    LOG_FUNCTION;
+    [_contextMenuView showContextViewFromButton:self completion:^{
+        if (self.menuDelegate && [self.menuDelegate respondsToSelector:@selector(menuShown:from:)]){
+            [self.menuDelegate menuShown:self.contextMenuView from:self];
+        }
+        if (block){
+            block();
+        }
+    }];
+}
+
+- (void)dismissMenuWithCompletion:(void(^)(void))block {
+    LOG_FUNCTION;
+    [_contextMenuView showContextView:false completion:^{
+        if (self.menuDelegate && [self.menuDelegate respondsToSelector:@selector(menuHidden:from:)]){
+            [self.menuDelegate menuHidden:self.contextMenuView from:self];
+        }
+        if (block){
+            block();
+        }
+    }];
+}
+
 
 - (void)setOpened:(BOOL)opened {
     _opened = opened;
@@ -51,7 +110,19 @@
     //DLog(@"subtype: %lu type: %lu", event.subtype, event.type);
     UIPress *first = [presses.allObjects firstObject];
     if (first.type == UIPressTypeSelect){
-        [self sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
+        if (self.menu && self.showsMenuAsPrimaryAction) {
+            if (!self.opened){
+                [self showMenuWithCompletion:^{
+                    self.opened = true;
+                }];
+            } else {
+                [self dismissMenuWithCompletion:^{
+                    self.opened = false;
+                }];
+            }
+        } else {
+            [self sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
+        }
     }
 }
 

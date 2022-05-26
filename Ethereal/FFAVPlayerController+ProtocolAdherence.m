@@ -23,14 +23,14 @@
 
 
 - (void)observeStatus {
-    NSLog(@"[Ethereal] observeStatus");
+    ELog(@"observeStatus");
     [self addObserver:self forKeyPath:@"playerState" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"playerState"]) {
         AVPlayerState changed = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
-        NSLog(@"[Ethereal] playerState changed: %lu", changed);
+        ELog(@"playerState changed: %lu", changed);
         switch (changed) {
             case kAVPlayerStatePaused:
             case kAVPlayerStateStoped:

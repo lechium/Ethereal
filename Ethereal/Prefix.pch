@@ -5,4 +5,6 @@
 #ifdef __OBJC__
 #import "EXTScope.h"
 #define LOG_SELF        NSLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd))
+#define LOG_FUNCTION    NSLog(@"[Ethereal] [%@ %@]", [self class], NSStringFromSelector(_cmd))
+#define ELog(format, ...) NSLog(@"[Ethereal] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
 #endif

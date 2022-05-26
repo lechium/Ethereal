@@ -13,8 +13,11 @@
 #import "KBContextMenuRepresentation.h"
 NS_ASSUME_NONNULL_BEGIN
 
+@class KBButton;
+
 @protocol KBContextMenuSourceDelegate <NSObject>
 
+- (void)dismissMenuWithCompletion:(void(^)(void))block;
 @property BOOL opened;
 
 @end
@@ -38,7 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController;
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block;
 - (void)showContextView:(BOOL)show completion:(void (^)(void))block;
+- (void)showContextViewFromButton:(KBButton *)button completion:(void (^)(void))block;
 - (instancetype)initWithMenu:(KBMenu *)menu sourceView:(UIView *)sourceView delegate:(id <KBContextMenuViewDelegate>)delegate;
+- (void)refresh;
 @end
 
 NS_ASSUME_NONNULL_END

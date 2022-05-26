@@ -41,7 +41,7 @@
 }
 
 - (void)observeStatus {
-    //NSLog(@"[Ethereal] observeStatus");
+    //ELog(@"observeStatus");
     [self addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
     //[self.media addObserver:self forKeyPath:@"length" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
 }
@@ -53,7 +53,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"state"]) {
         VLCMediaPlayerState changed = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
-        //NSLog(@"[Ethereal] playerState changed: %@", VLCMediaPlayerStateToString(changed));
+        //ELog(@"playerState changed: %@", VLCMediaPlayerStateToString(changed));
         switch (changed) {
             case VLCMediaPlayerStatePaused:
             case VLCMediaPlayerStateStopped:
@@ -61,29 +61,29 @@
                 break;
             case VLCMediaPlayerStatePlaying:
                 [self setTimeControlStatus: AVPlayerTimeControlStatusPlaying];
-                //NSLog(@"[Ethereal] duration now: %@", self.media.length);
+                //ELog(@"duration now: %@", self.media.length);
                 if (self.durationAvailable) {
                     self.durationAvailable(self.media.length);
                 }
                 break;
             case VLCMediaPlayerStateBuffering:
                 [self setTimeControlStatus: AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate];
-                //NSLog(@"[Ethereal] duration now: %@", self.media.length);
+                //ELog(@"duration now: %@", self.media.length);
                 break;
             case VLCMediaPlayerStateESAdded:
                 if (self.streamsUpdated) {
                     self.streamsUpdated();
                 }
-                //NSLog(@"[Ethereal] duration now: %@", self.media.length);
+                //ELog(@"duration now: %@", self.media.length);
                 break;
             default:
                 break;
         }
     } else if ([keyPath isEqualToString:@"length"]){
         id changed = [change objectForKey:NSKeyValueChangeNewKey];
-        NSLog(@"[Ethereal] media length changed: %@", changed);
+        ELog(@"media length changed: %@", changed);
     } else {
-        NSLog(@"[Ethereal] unhandled key path: %@", keyPath);
+        ELog(@"unhandled key path: %@", keyPath);
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }

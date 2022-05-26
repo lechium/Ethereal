@@ -21,7 +21,7 @@
 #import "KBMenu.h"
 #import "KBContextMenuRepresentation.h"
 
-@interface VLCViewController () {
+@interface VLCViewController () <KBButtonMenuDelegate> {
     NSURL *_mediaURL;
     BOOL _ffActive;
     BOOL _rwActive;
@@ -48,6 +48,30 @@
 
 @implementation VLCViewController
 
+- (void)menuShown:(KBContextMenuView *)menu from:(KBButton *)button {
+    ELog(@"menu: %@ show from: %@", menu, button);
+    _visibleContextView = menu;
+    self.audioButton.userInteractionEnabled = false;
+    self.transportSlider.userInteractionEnabled = false;
+    self.subtitleButton.userInteractionEnabled = false;
+    [self setNeedsFocusUpdate];
+    [self updateFocusIfNeeded];
+}
+
+- (void)itemSelected:(KBMenuElement *)item menu:(KBContextMenuView *)menu from:(KBButton *)button {
+    LOG_FUNCTION;
+    ELog(@"menu item: %@", item);
+}
+
+- (void)menuHidden:(KBContextMenuView *)menu from:(KBButton *)button {
+    [self destroyContextView];
+    if (button == self.subtitleButton) {
+        self.subtitleButton.menu = [self createSubtitleMenu];
+    } else if (button == self.audioButton) {
+        self.audioButton.menu = [self createAudioMenu];
+    }
+}
+
 - (id)player {
     return _mediaPlayer;
 }
@@ -67,22 +91,24 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(timeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
     [self handleSubtitleOptions];
     [self updateSubtitleButtonState];
+    _subtitleButton.menu = [self createAudioMenu];
+    _subtitleButton.menuDelegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateChanged:) name:VLCMediaPlayerStateChanged object:nil];
     //[_mediaPlayer play];
 }
 
 - (void)stateChanged:(NSNotification *)n {
-    //NSLog(@"[Ethereal] state changed: %@", n);
+    //ELog(@"state changed: %@", n);
     VLCMediaPlayerState state = [(VLCMediaPlayer *)[n object] state];
-    NSLog(@"[Ethereal] playerState changed: %@", VLCMediaPlayerStateToString(state));
+    ELog(@"playerState changed: %@", VLCMediaPlayerStateToString(state));
     if (state == VLCMediaPlayerStateEnded) {
         [[NSNotificationCenter defaultCenter] postNotificationName:AVPlayerItemDidPlayToEndTimeNotification object:self];
         _setMeta = false;
     } else if (state == VLCMediaPlayerStateESAdded) {
         NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
-        NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
+        //NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
         if (subNames.count > 0) {
-            //NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
+            //ELog(@"subNames: %@ indices: %@", subNames, subIndices);
             [self refreshSubtitleDetails];
         }
     }
@@ -153,7 +179,7 @@
 }
 
 - (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
-    NSLog(@"[Ethereal] menu tapped");
+    ELog(@"menu tapped");
     if (gestRecognizer.state == UIGestureRecognizerStateEnded){
         if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
@@ -177,7 +203,7 @@
 }
 
 - (void)viewDidLoad {
-    LOG_SELF;
+    LOG_FUNCTION;
     [super viewDidLoad];
    
     _setMeta = false;
@@ -201,34 +227,34 @@
     [_transportSlider setAvPlayer:self.player];
     
     _subtitleButton = [KBButton buttonWithType:KBButtonTypeImage];
-    _subtitleButton.buttonImageView.image = [KBSliderImages captionsImage];
     _subtitleButton.alpha = 0;
+    _subtitleButton.showsMenuAsPrimaryAction = true;
     [_subtitleButton autoConstrainToSize:CGSizeMake(68, 68)];
     [self.view addSubview:_subtitleButton];
     
     _audioButton = [KBButton buttonWithType:KBButtonTypeImage];
-    _audioButton.buttonImageView.image = [KBSliderImages audioImage];
     _audioButton.alpha = 0;
+    _audioButton.showsMenuAsPrimaryAction = true;
     [_audioButton autoConstrainToSize:CGSizeMake(68, 68)];
     [self.view addSubview:_audioButton];
     
     if ([self subtitlesAvailable]) {
-        NSLog(@"[Ethereal] subtitles available!");
+        ELog(@"subtitles available!");
     } else {
-        NSLog(@"[Ethereal] subtitles not available!");
+        ELog(@"subtitles not available!");
     }
     [self updateSubtitleButtonState];
     [_subtitleButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
     //[_subtitleButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
     _subtitleButton.layer.masksToBounds = true;
     _subtitleButton.layer.cornerRadius = 68/2;
-    [_subtitleButton addTarget:self action:@selector(subtitleButtonClicked:) forControlEvents:UIControlEventPrimaryActionTriggered];
     
     [_audioButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
     [_audioButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
     _audioButton.layer.masksToBounds = true;
     _audioButton.layer.cornerRadius = 68/2;
-    [_audioButton addTarget:self action:@selector(audioButtonClicked:) forControlEvents:UIControlEventPrimaryActionTriggered];
+    _audioButton.menu = [self createAudioMenu];
+    _audioButton.menuDelegate = self;
     [_audioButton.leftAnchor constraintEqualToAnchor:_subtitleButton.rightAnchor constant:0].active = true;
     
     @weakify(self);
@@ -258,24 +284,26 @@
     [self.player observeStatus];
     _mediaPlayer.durationAvailable = ^(VLCTime * _Nonnull duration) {
         if (duration.intValue == 0) return;
-        NSLog(@"[Ethereal] duration available: %@", duration);
+        ELog(@"duration available: %@", duration);
         [self_weak_.transportSlider setTotalDuration:duration.intValue/1000];
         [self_weak_ createAndSetMeta];
     };
     
     _mediaPlayer.streamsUpdated = ^{
         if (self_weak_.avInfoViewController.vlcSubtitleData.count != self_weak_.mediaPlayer.numberOfSubtitlesTracks){
-            NSLog(@"[Ethereal] streams updated");
+            ELog(@"streams updated");
             
             if (self_weak_.transportSlider.totalDuration == 0) {
                 int duration = self_weak_.mediaPlayer.media.length.intValue;
                 if (duration > 0) {
-                    NSLog(@"[Ethereal] duration available: %i", duration);
+                    ELog(@"duration available: %i", duration);
                     [self_weak_.transportSlider setTotalDuration:duration/1000];
                 }
             }
             [self_weak_ resetSetMeta];
             [self_weak_ createAndSetMeta];
+            [self_weak_.subtitleButton setMenu:[self_weak_ createSubtitleMenu]];
+            [self_weak_.audioButton setMenu:[self_weak_ createAudioMenu]];
         }
     };
     
@@ -357,7 +385,7 @@
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
-    NSLog(@"[Ethereal] updated focused view: %@", context.nextFocusedView);
+    ELog(@"updated focused view: %@", context.nextFocusedView);
     if ([context.nextFocusedView isKindOfClass:UICollectionViewCell.class]){
         [self.transportSlider resetHideTimer];
     }
@@ -393,7 +421,7 @@
 }
 
 - (void)timeChanged:(NSNotification *)n {
-    //NSLog(@"[Ethereal] time changed: %@", n);
+    //ELog(@"time changed: %@", n);
     self.transportSlider.currentTime = self.mediaPlayer.time.intValue / 1000;
 }
 
@@ -410,7 +438,7 @@
     NSArray *audioNames = [_mediaPlayer audioTrackNames];
     NSArray *audioIndices = [_mediaPlayer audioTrackIndexes];
     NSInteger selectedIndex = [_mediaPlayer currentAudioTrackIndex];
-    //NSLog(@"[Ethereal] audioNames: %@ audioIndices: %@ selectedIndex: %lu", audioNames, audioIndices, selectedIndex);
+    //ELog(@"audioNames: %@ audioIndices: %@ selectedIndex: %lu", audioNames, audioIndices, selectedIndex);
     __block NSMutableArray *dicts = [NSMutableArray new];
     [audioNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSNumber *index = audioIndices[idx];
@@ -419,7 +447,7 @@
         [dicts addObject:dict];
     }];
     if(dicts.count > 0){
-        //NSLog(@"[Ethereal] setting audio data: %@", dicts);
+        //ELog(@"setting audio data: %@", dicts);
         [_avInfoViewController setVlcAudioData:dicts];
     }
 }
@@ -427,14 +455,14 @@
 - (void)refreshSubtitleDetails {
     NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
     NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
-    //NSLog(@"[Ethereal] subNames: %@ indices: %@", subNames, subIndices);
+    //ELog(@"subNames: %@ indices: %@", subNames, subIndices);
     __block NSMutableArray *dicts = [NSMutableArray new];
     [subNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary *dict = @{@"language": obj, @"index": subIndices[idx]};
         [dicts addObject:dict];
     }];
     if(dicts.count > 0){
-        //NSLog(@"[Ethereal] setting subtitle data: %@", dicts);
+        //ELog(@"setting subtitle data: %@", dicts);
         [_avInfoViewController setVlcSubtitleData:dicts];
         [self updateSubtitleButtonState];
     }
@@ -456,22 +484,22 @@
         }
         [menuArray addObject:action];
     }];
-    KBMenu *menu = [KBMenu menuWithTitle:@"Audio" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
+    KBMenu *menu = [KBMenu menuWithTitle:@"Audio" image:[KBSliderImages audioImage] identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
     return menu;
 }
 
 - (KBMenu *)createAudioMenuOld {
     KBAction *testItemOne = [KBAction actionWithTitle:@"Full Dynamic Range" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
-        NSLog(@"[Ethereal] %@ selected", action);
+        ELog(@"%@ selected", action);
     }];
     testItemOne.state = KBMenuElementStateOn;
-    testItemOne.attributes = KBMenuElementAttributesToggle;
+    testItemOne.attributes = KBMenuElementAttributesDestructive;
     KBAction *testItemsThree = [KBAction actionWithTitle:@"Reduce Loud Sounds" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
-        NSLog(@"[Ethereal] %@ selected", action);
+        ELog(@"%@ selected", action);
     }];
-    testItemsThree.attributes = KBMenuElementAttributesToggle;
+    testItemsThree.attributes = KBMenuElementAttributesHidden;
     KBAction *testItemTwo = [KBAction actionWithTitle:@"Unknown" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
-        NSLog(@"[Ethereal] %@ selected", action);
+        ELog(@"%@ selected", action);
         if (action.state == KBMenuElementStateOn) {
             action.state = KBMenuElementStateOff;
         } else {
@@ -481,7 +509,7 @@
     testItemTwo.state = KBMenuElementStateOn;
     KBMenu *firstMenu = [KBMenu menuWithTitle:@"Audio Range" image:nil identifier:nil options:KBMenuOptionsDisplayInline children:@[testItemOne, testItemsThree]];
     KBMenu *secondMenu = [KBMenu menuWithTitle:@"Audio Track" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:@[testItemTwo]];
-    return [KBMenu menuWithTitle:@"Audio" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:@[firstMenu, secondMenu]];
+    return [KBMenu menuWithTitle:@"Audio" image:[KBSliderImages audioImage] identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:@[firstMenu, secondMenu]];
 }
 
 - (KBMenu *)createSubtitleMenu {
@@ -500,7 +528,7 @@
         }
         [menuArray addObject:action];
     }];
-    KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" image:nil identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
+    KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" image:[KBSliderImages captionsImage] identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
     return menu;
 }
 
@@ -517,7 +545,7 @@
             meta.isHD = true;
         }
         NSDictionary *metaDict = [_mediaPlayer.media metaDictionary];
-        //NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
+        //ELog(@"meta dictionary: %@", metaDict);
         if (asset.name == nil){
             asset.name = metaDict[@"title"];
         }
@@ -530,7 +558,7 @@
         
     } else {
         NSDictionary *metaDict = [_mediaPlayer.media metaDictionary];
-        //NSLog(@"[Ethereal] meta dictionary: %@", metaDict);
+        //ELog(@"meta dictionary: %@", metaDict);
         _transportSlider.title = metaDict[@"title"];
     }
     [self refreshSubtitleDetails];
@@ -557,7 +585,7 @@
     KBAVInfoPanelMediaOption *selected = [self selectedSubtitleStream];
     NSInteger index = [subData indexOfObject:selected];
     NSInteger nextIndex = index+1;
-    NSLog(@"[Ethereal] current index: %lu nextIndex: %lu count: %lu", index, nextIndex, subData.count);
+    ELog(@"current index: %lu nextIndex: %lu count: %lu", index, nextIndex, subData.count);
     if (nextIndex < subData.count) {
         return subData[nextIndex];
     }
@@ -597,66 +625,7 @@
 }
 
 - (void)selectedItem:(KBMenuElement *)item {
-    LOG_SELF;
-}
-
-- (void)audioButtonClicked:(KBButton *)button {
-    
-    if ([self contextViewVisible]){
-        [_visibleContextView showContextView:false fromView:nil completion:^{
-            button.opened = false;
-            [self destroyContextView];
-        }];
-    } else {
-        _visibleContextView = [[KBContextMenuView alloc] initWithMenu:[self createAudioMenu] sourceView:self.audioButton delegate:self];
-        //NSLog(@"[Ethereal] sub rep: %@", _visibleContextView.representation.sections);
-        //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
-        [_visibleContextView showContextView:true fromView:self completion:^{
-            button.opened = true;
-            self.transportSlider.userInteractionEnabled = false;
-            self.subtitleButton.userInteractionEnabled = false;
-            self.audioButton.userInteractionEnabled = false;
-            [self setNeedsFocusUpdate];
-            [self updateFocusIfNeeded];
-        }];
-    }
- /*
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        //[self updateSubtitleButtonState];
-        [self showSubtitleBulletin];
-    });
-*/
-}
-
-- (void)subtitleButtonClicked:(KBButton *)button {
-    if (![self subtitlesAvailable]) {
-        self.subtitleButton.alpha = 0;
-        return;
-    }
-    if ([self contextViewVisible]){
-        [_visibleContextView showContextView:false fromView:nil completion:^{
-            button.opened = false;
-            [self destroyContextView];
-        }];
-    } else {
-        _visibleContextView = [[KBContextMenuView alloc] initWithMenu:[self createSubtitleMenu] sourceView:self.subtitleButton delegate:self];
-        //NSLog(@"[Ethereal] sub rep: %@", _visibleContextView.representation.sections);
-        //_visibleContextView.mediaOptions = [_avInfoViewController vlcSubtitleData];
-        [_visibleContextView showContextView:true fromView:self completion:^{
-            button.opened = true;
-            self.transportSlider.userInteractionEnabled = false;
-            self.subtitleButton.userInteractionEnabled = false;
-            self.audioButton.userInteractionEnabled = false;
-            [self setNeedsFocusUpdate];
-            [self updateFocusIfNeeded];
-        }];
-    }
- /*
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        //[self updateSubtitleButtonState];
-        [self showSubtitleBulletin];
-    });
-*/
+    LOG_FUNCTION;
 }
 
 - (void)showSubtitleBulletin {
@@ -731,7 +700,7 @@
     if (isPlaying) {
         [_mediaPlayer pause];
     }
-    //NSLog(@"[Ethereal] slider value: %.02f duration: %f", slider.value, _avplayController.duration);
+    //ELog(@"slider value: %.02f duration: %f", slider.value, _avplayController.duration);
     if (slider.value < _mediaPlayer.media.length.value.floatValue) {
         //[_avplayController seekto:slider.value];
     }
@@ -843,10 +812,10 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
-    //NSLog(@"[Ethereal] shouldReceivePress: %@", gestureRecognizer);
+    //ELog(@"shouldReceivePress: %@", gestureRecognizer);
     if (gestureRecognizer == _leftTap || gestureRecognizer == _rightTap){
         if ([press kb_isSynthetic]){
-            //NSLog(@"[Ethereal] no synth for you!");
+            //ELog(@"no synth for you!");
             return FALSE;
         }
     }
@@ -855,7 +824,7 @@
 
 
 - (void)leftTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
-    LOG_SELF;
+    LOG_FUNCTION;
     if (!_transportSlider.isFocused) {
         return;
     }
@@ -873,7 +842,7 @@
 }
 
 - (void)rightTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
-    LOG_SELF;
+    LOG_FUNCTION;
     if (!_transportSlider.isFocused) {
         return;
     }
@@ -907,13 +876,13 @@
 }
 
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    //NSLog(@"[Ethereal] pressesEnded: %@", presses);
+    //ELog(@"pressesEnded: %@", presses);
     //AVPlayerState currentState = _avplayController.playerState;
     for (UIPress *press in presses) {
         if ([press kb_isSynthetic]) {
             return;
         }
-        //NSLog(@"[Ethereal] presstype: %lu", press.type);
+        //ELog(@"presstype: %lu", press.type);
         switch (press.type){
                 
             case UIPressTypeMenu:
@@ -921,19 +890,19 @@
            
             case UIPressTypeSelect:
                 if ([_transportSlider isFocused]){
-                    NSLog(@"[Ethereal] togglePlayPause");
+                    ELog(@"togglePlayPause");
                     [self togglePlayPause];
                 }
                 break;
                 
             case UIPressTypePlayPause:
            
-                //NSLog(@"[Ethereal] play pause");
+                //ELog(@"play pause");
                 [self togglePlayPause];
                 break;
             
             default:
-                NSLog(@"[Ethereal] unhandled type: %lu", press.type);
+                ELog(@"unhandled type: %lu", press.type);
                 [super pressesEnded:presses withEvent:event];
                 break;
                 

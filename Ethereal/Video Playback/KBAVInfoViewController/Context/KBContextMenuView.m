@@ -12,6 +12,7 @@
 #import "KBContextMenuRepresentation.h"
 #import "KBContextMenuSection.h"
 #import "KBContextCollectionHeaderView.h"
+#import "KBButton.h"
 
 #define ANIMATION_DURATION 0.3
 
@@ -28,6 +29,13 @@
         _representation = [KBContextMenuRepresentation representationForMenu:_menu];
     }
     return self;
+}
+
+- (void)refresh {
+    _representation = [KBContextMenuRepresentation representationForMenu:_menu];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.collectionView reloadData];
+    });
 }
 
 - (void)destroyContextView {
@@ -117,7 +125,7 @@
     KBContextMenuSection *section = _representation.sections[indexPath.section];
     KBAction *opt = section.items[indexPath.row];
     if (opt.attributes & KBMenuElementAttributesDisabled) {
-        NSLog(@"[Ethereal] canFocusItemAtIndexPath disabled!");
+        ELog(@"canFocusItemAtIndexPath disabled!");
         return false;
     }
     return true;
@@ -147,7 +155,7 @@
     KBContextMenuSection *currentSection = _representation.sections[indexPath.section];
     KBAction *opt = currentSection.items[indexPath.row];
     if (opt.attributes & KBMenuElementAttributesDisabled) {
-        NSLog(@"[Ethereal] disabled!");
+        ELog(@"disabled!");
         return;
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(selectedItem:)]){
@@ -174,12 +182,18 @@
     [self.collectionView reloadData];
     if (currentSection.singleSelection) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if ([[self sourceView] respondsToSelector:@selector(dismissMenuWithCompletion:)]) {
+                [(id<KBContextMenuSourceDelegate>)self.sourceView dismissMenuWithCompletion:^{
+                    [self destroyContextView];
+                }];
+            }
+            /*
             [self showContextView:false completion:^{
                 [self destroyContextView];
                 if ([self.sourceView respondsToSelector:@selector(opened)]){
                     [(id<KBContextMenuSourceDelegate>)self.sourceView setOpened:false];
                 }
-            }];
+            }];*/
         });
     }
 }
@@ -214,6 +228,50 @@
     return count + sections.count;
 }
 
+- (void)showContextViewFromButton:(KBButton *)button completion:(void (^)(void))block {
+    //_visibleContextView = [[KBContextMenuView alloc] initForAutoLayout];
+    self.alpha = 0;
+    //self.layer.anchorPoint = CGPointMake(0, 1);
+    self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);
+    NSInteger itemCount = [self itemCount];
+    CGFloat height = (itemCount * 70);
+    ELog(@"item count: %lu height: %f", itemCount, height);
+    [self autoConstrainToSize:CGSizeMake(400, height)];
+    [button.superview addSubview:self];
+    [self.collectionView reloadData];
+    [self.trailingAnchor constraintEqualToAnchor:self.sourceView.trailingAnchor constant:0].active = true;
+    [self.bottomAnchor constraintEqualToAnchor:self.sourceView.topAnchor constant:-36].active = true;
+    [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.transform = CGAffineTransformIdentity;
+        self.alpha = 1.0;
+        //self.layer.anchorPoint = CGPointMake(0.5, 0.5);
+        [self layoutIfNeeded];
+        [self setNeedsFocusUpdate];
+        [self updateFocusIfNeeded];
+        self.collectionView.clipsToBounds = false;
+        
+    } completion:^(BOOL finished) {
+        [self sendShowMessageIfNecessary];
+        if (block) {
+            block();
+        }
+    }];
+   
+}
+
+- (void)sendShowMessageIfNecessary {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(menuShown:from:)]){
+        [(id<KBButtonMenuDelegate>)self.delegate menuShown:self from:_sourceView];
+    }
+}
+
+- (void)sendHiddenMessageIfNecessary {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(menuHidden:from:)]){
+        [(id<KBButtonMenuDelegate>)self.delegate menuHidden:self from:_sourceView];
+    }
+    
+}
+
 - (void)showContextView:(BOOL)show fromView:(UIViewController *_Nullable)viewController completion:(void(^_Nullable)(void))block {
     if (!show) {
         //self.layer.anchorPoint = CGPointMake(1, 0);
@@ -222,6 +280,7 @@
             self.alpha = 0.0;
             [self layoutIfNeeded];
         } completion:^(BOOL finished) {
+            [self sendHiddenMessageIfNecessary];
             [self removeFromSuperview];
             if (block) {
                 block();
@@ -248,10 +307,13 @@
             [self setNeedsFocusUpdate];
             [self updateFocusIfNeeded];
             self.collectionView.clipsToBounds = false;
+            
+        } completion:^(BOOL finished) {
+            [self sendShowMessageIfNecessary];
             if (block) {
                 block();
             }
-        } completion:nil];
+        }];
        
     }
 }

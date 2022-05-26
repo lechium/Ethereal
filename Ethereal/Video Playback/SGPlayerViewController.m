@@ -57,7 +57,7 @@
     //CMTime seekTime = CMTimeMultiplyByFloat64(time.duration, slider.value);
     NSTimeInterval seek = CMTimeGetSeconds(seekTime);
     
-    NSLog(@"[Ethereal] slider value: %.02f seek: %f duration: %f", slider.value, seek, duration);
+    ELog(@"slider value: %.02f seek: %f duration: %f", slider.value, seek, duration);
     if (slider.value < duration) {
         //[_avplayController seekto:slider.value];
         
@@ -79,7 +79,7 @@
 }
 
 - (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
-    NSLog(@"[Ethereal] menu tapped");
+    ELog(@"menu tapped");
     if (gestRecognizer.state == UIGestureRecognizerStateEnded){
         if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
@@ -95,7 +95,7 @@
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event
 {
     
-    //NSLog(@"[Ethereal] pressesEnded: %@", presses);
+    //ELog(@"pressesEnded: %@", presses);
     SGStateInfo currentState = [(SGPlayer *)[self player] sstateInfo];
     
     for (UIPress *press in presses)
@@ -106,7 +106,7 @@
             case UIPressTypePlayPause:
             case UIPressTypeSelect:
                 
-                NSLog(@"[Ethereal] play pause");
+                ELog(@"play pause");
                 if (currentState.playback & SGPlaybackStatePlaying) {
                     [self.player pause];
                 } else {
@@ -134,7 +134,7 @@
             case UIPressTypeMenu:
                 
                 
-                NSLog(@"[Ethereal] terminate with success!!");
+                ELog(@"terminate with success!!");
                 [self dismissViewControllerAnimated:true completion:nil];
                 //[[UIApplication sharedApplication] terminateWithSuccess];
                 /*
@@ -167,9 +167,9 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoChanged:) name:SGPlayerDidChangeInfosNotification object:self.player];
-    NSLog(@"[Ethereal] URL: %@", self.mediaURL);
+    ELog(@"URL: %@", self.mediaURL);
     SGAsset *asset = [[SGURLAsset alloc] initWithURL:_mediaURL];
-    NSLog(@"[Ethereal] asset: %@", asset);
+    ELog(@"asset: %@", asset);
     [[(SGPlayer *)[self player] videoRenderer] setView:self.view];
     //self.player.videoRenderer.view = self.view;
     [(SGPlayer *)[self player] replaceWithAsset:asset];
@@ -191,7 +191,7 @@
     SGStateInfo state = [SGPlayer stateInfoFromUserInfo:notification.userInfo];
     SGInfoAction action = [SGPlayer infoActionFromUserInfo:notification.userInfo];
     if (action & SGInfoActionTime) {
-        NSLog(@"[Ethereal] playback: %f, duration: %f, cached: %f",
+        ELog(@"playback: %f, duration: %f, cached: %f",
               CMTimeGetSeconds(time.playback),
               CMTimeGetSeconds(time.duration),
               CMTimeGetSeconds(time.cached));
@@ -201,7 +201,7 @@
         
     }
     if (action & SGInfoActionState) {
-        NSLog(@"[Ethereal] player: %d, loading: %d, playback: %d, playing: %d, seeking: %d, finished: %d",
+        ELog(@"player: %d, loading: %d, playback: %d, playing: %d, seeking: %d, finished: %d",
               (int)state.player, (int)state.loading, (int)state.playback,
               (int)(state.playback & SGPlaybackStatePlaying),
               (int)(state.playback & SGPlaybackStateSeeking),

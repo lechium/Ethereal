@@ -482,7 +482,7 @@
 - (void)toggleVisibleTimerLabels {
     if (self.currentSeekSpeed != KBSeekSpeedNone) return;
     if (self.trackView.alpha == 0){
-        //NSLog(@"[Ethereal] fade in");
+        //ELog(@"fade in");
         [self fadeIn];
         self.displaysRemainingTime = true;
         return;
@@ -490,7 +490,7 @@
     if (self.displaysRemainingTime) {
         [self setDisplaysCurrentTime:true];
     } else if (self.displaysCurrentTime) {
-        //NSLog(@"[Ethereal] display current time");
+        //ELog(@"display current time");
         [self setDisplaysCurrentTime:false];
         currentTimeLabel.alpha = 0;
         durationLabel.alpha = 0;
@@ -552,7 +552,7 @@
 }
 
 - (void)resetHideTimer {
-    LOG_SELF;
+    LOG_FUNCTION;
     [self _startFadeOutTimer];
 }
 
@@ -1371,7 +1371,7 @@
  */
 
 - (KBSeekSpeed)handleSeekingPressType:(UIPressType)pressType {
-    NSLog(@"[Ethereal] handle Seeking Press type: %lu", pressType);
+    ELog(@"handle Seeking Press type: %lu", pressType);
     switch (pressType) {
         case UIPressTypeLeftArrow:
             if (_currentSeekSpeed != KBSeekSpeedNone){

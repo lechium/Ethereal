@@ -81,15 +81,15 @@
     if (_vlcAudioData.count > 0){
         //see if we can just update current subtitle data indexes instead of creating entirely new ones.
         if (_vlcAudioData.count == vlcAudioData.count) {
-            //NSLog(@"[Ethereal] size matches");
+            //ELog(@"size matches");
             [_vlcAudioData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSInteger newIndex = [vlcAudioData[idx][@"index"] integerValue];
                 BOOL selected = [vlcAudioData[idx][@"selected"] boolValue];
-                //NSLog(@"[Ethereal] old mediaIndex: %lu updatedMediaIndex: %lu", obj.mediaIndex, newIndex);
+                //ELog(@"old mediaIndex: %lu updatedMediaIndex: %lu", obj.mediaIndex, newIndex);
                 obj.mediaIndex = newIndex;
                 [obj setIsSelected:selected];
                 if ([obj selected]){
-                    //NSLog(@"[Ethereal] this guy is selected: %@", obj);
+                    //ELog(@"this guy is selected: %@", obj);
                     VLCViewController *vlcViewController = (VLCViewController *)[self parentViewController];
                     VLCMediaPlayer *player = [vlcViewController player];
                     [player setCurrentAudioTrackIndex:(int)newIndex];
@@ -104,7 +104,7 @@
         [opt setIsSelected:[obj[@"selected"] boolValue]];
         @weakify(self);
         opt.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
-            //NSLog(@"[Ethereal] audio index selected: %lu", selected.mediaIndex);
+            //ELog(@"audio index selected: %lu", selected.mediaIndex);
             [selected setIsSelected:true];
             VLCViewController *vlcViewController = (VLCViewController *)[self_weak_ parentViewController];
             VLCMediaPlayer *player = [vlcViewController player];
@@ -121,13 +121,13 @@
     if (_vlcSubtitleData.count > 0){
         //see if we can just update current subtitle data indexes instead of creating entirely new ones.
         if (_vlcSubtitleData.count == vlcSubtitleData.count) {
-            //NSLog(@"[Ethereal] size matches");
+            //ELog(@"size matches");
             [_vlcSubtitleData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSInteger newIndex = [vlcSubtitleData[idx][@"index"] integerValue];
-                //NSLog(@"[Ethereal] old mediaIndex: %lu updatedMediaIndex: %lu", obj.mediaIndex, newIndex);
+                //ELog(@"old mediaIndex: %lu updatedMediaIndex: %lu", obj.mediaIndex, newIndex);
                 obj.mediaIndex = newIndex;
                 if ([obj selected]){
-                    //NSLog(@"[Ethereal] this guy is selected: %@", obj);
+                    //ELog(@"this guy is selected: %@", obj);
                     VLCViewController *vlcViewController = (VLCViewController *)[self parentViewController];
                     VLCMediaPlayer *player = [vlcViewController player];
                     [player setCurrentVideoSubTitleIndex:(int)newIndex];
@@ -135,7 +135,7 @@
             }];
             return;
         } else if (vlcSubtitleData.count < _vlcSubtitleData.count){
-            NSLog(@"[Ethereal] smaller data set, discard!");
+            ELog(@"smaller data set, discard!");
             return;
         }
     }
@@ -144,7 +144,7 @@
         KBAVInfoPanelMediaOption *opt = [[KBAVInfoPanelMediaOption alloc] initWithLanguageCode:obj[@"language"] displayName:obj[@"language"] mediaSelectionOption:nil tag:KBSubtitleTagTypeOn index:[obj[@"index"] integerValue]];
         @weakify(self);
         opt.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
-            //NSLog(@"[Ethereal] subtitle index selected: %lu", selected.mediaIndex);
+            //ELog(@"subtitle index selected: %lu", selected.mediaIndex);
             [selected setIsSelected:true];
             VLCViewController *vlcViewController = (VLCViewController *)[self_weak_ parentViewController];
             VLCMediaPlayer *player = [vlcViewController player];
@@ -536,7 +536,7 @@
             KBAVInfoPanelMediaOption *off = [KBAVInfoPanelMediaOption optionOff];
             @weakify(self);
             off.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
-                NSLog(@"[Ethereal] off selected block??");
+                ELog(@"off selected block??");
                 PlayerViewController *ffAVP = (PlayerViewController *)[self_weak_ parentViewController];
                 FFAVPlayerController *player = (FFAVPlayerController*)[ffAVP player];
                 if ([player respondsToSelector:@selector(switchSubtitleStream:)]){

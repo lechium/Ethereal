@@ -22,6 +22,11 @@
 
 @implementation KBMenu
 
+- (NSArray <KBMenuElement *> *)selectedElements {
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"state == %lu", KBMenuElementStateOn];
+    return [_children filteredArrayUsingPredicate:pred];
+}
+
 - (void)_setOptions:(KBMenuOptions)opt {
     _options = opt;
 }

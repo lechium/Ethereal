@@ -28,14 +28,14 @@
 @implementation ViewController
 
 - (void)mediaThumbnailerDidTimeOut:(VLCMediaThumbnailer *)mediaThumbnailer {
-    NSLog(@"[Ethereal] thumbnailer: %@ timed out!", mediaThumbnailer);
+    ELog(@"thumbnailer: %@ timed out!", mediaThumbnailer);
 }
 
 - (void)mediaThumbnailer:(VLCMediaThumbnailer *)mediaThumbnailer didFinishThumbnail:(CGImageRef)thumbnail {
-    NSLog(@"[Ethereal] thumbnailer: %@ didFinishThumbnail: %@", mediaThumbnailer, thumbnail);
+    ELog(@"thumbnailer: %@ didFinishThumbnail: %@", mediaThumbnailer, thumbnail);
     VLCMedia *media = [mediaThumbnailer media];
     UIImage *currentImage = [UIImage imageWithCGImage:thumbnail];
-    NSLog(@"[Ethereal] saving thumbnail: %@ for key: %@", currentImage, media.url.path.lastPathComponent);
+    ELog(@"saving thumbnail: %@ for key: %@", currentImage, media.url.path.lastPathComponent);
     [[SDImageCache sharedImageCache] storeImage:currentImage forKey:media.url.path.lastPathComponent];
 }
 

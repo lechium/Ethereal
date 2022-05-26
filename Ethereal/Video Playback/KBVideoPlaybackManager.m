@@ -70,7 +70,7 @@
 
 - (void)getNowPlayingInfo {
     MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef info) {
-        NSLog(@"[Ethereal] We got the information: %@", info);
+        ELog(@"We got the information: %@", info);
         NSDictionary *bridged = (__bridge NSDictionary*)info;
         NSString *outputMediaDetails = @"/var/mobile/Documents/media.plist";
         [bridged writeToFile:outputMediaDetails atomically:true];
@@ -93,7 +93,7 @@
 
 - (void)allowSleepAgain {
     [[UIApplication sharedApplication] setIdleTimerDisabled:false];
-    NSLog(@"[Ethereal] player done, can sleep again");
+    ELog(@"player done, can sleep again");
 }
 
 - (void)killIdleSleep {
@@ -113,7 +113,7 @@
     }
     //just for now to force VLC To do the network playback
     if ([[singleItem asset] isPlayable] && isLocal)  {
-        NSLog(@"[Ethereal] playable!");
+        ELog(@"playable!");
         KBQueuePlayer *player = [KBQueuePlayer playerWithPlayerItem:singleItem];
         dispatch_async(dispatch_get_main_queue(), ^{
             KBPlayerViewController  *playerView = [[KBPlayerViewController alloc] init];
@@ -128,7 +128,7 @@
             
         });
     } else {
-        NSLog(@"[Ethereal] we are not playable!");
+        ELog(@"we are not playable!");
         VLCViewController *playerController = [VLCViewController new];
         if (isLocal){
             playerController.mediaURL = [NSURL fileURLWithPath:theFile];
@@ -151,7 +151,7 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (singleItem.error != nil){
-            NSLog(@"[Ethereal] %@", [singleItem error]);
+            ELog(@"%@", [singleItem error]);
             player = nil;
             VLCViewController *playerController = [VLCViewController new];
             if (isLocal){
@@ -168,7 +168,7 @@
                 [[self topViewController] safePresentViewController:playerController animated:true completion:nil];
             }
         } else {
-            NSLog(@"[Ethereal] no error occured!");
+            ELog(@"no error occured!");
             [player pause];
             dispatch_async(dispatch_get_main_queue(), ^{
                 KBPlayerViewController  *playerView = [[KBPlayerViewController alloc] init];
@@ -232,7 +232,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     NSInteger nextIndex = self.playbackIndex+1;
-    NSLog(@"[Ethereal] currentIndex: %lu media count: %lu nextIndex: %lu", self.playbackIndex, self.media.count, nextIndex);
+    ELog(@"currentIndex: %lu media count: %lu nextIndex: %lu", self.playbackIndex, self.media.count, nextIndex);
     BOOL hasMore = false;
     if (nextIndex < self.media.count) {
         hasMore = true;

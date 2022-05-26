@@ -27,7 +27,7 @@
     _mediaURL = mediaURL;
     AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:mediaURL];
     if (![[singleItem asset] isPlayable]){
-        NSLog(@"[Ethereal] this is not playable!!");
+        ELog(@"this is not playable!!");
         singleItem = nil;
         return false;
     }
