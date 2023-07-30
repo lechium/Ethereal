@@ -149,7 +149,6 @@
 		323DEC1A27A39033009F7DB7 /* KBButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBButton.h; sourceTree = "<group>"; };
 		323DEC1B27A39033009F7DB7 /* KBAVInfoPanelSubtitlesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelSubtitlesViewController.h; sourceTree = "<group>"; };
 		323DEC1C27A39033009F7DB7 /* KBAVInfoPanelCollectionViewTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelCollectionViewTextCell.h; sourceTree = "<group>"; };
-		3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOSAVPlayerTouch.framework; path = "com.imore.tvosavplayer_1.0-2_appletvos-arm64/Library/Frameworks/tvOSAVPlayerTouch.framework"; sourceTree = "<group>"; };
 		324DB6CD27C75391000BAF8E /* KBContextMenuViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBContextMenuViewCell.h; sourceTree = "<group>"; };
 		324DB6CE27C75391000BAF8E /* KBContextMenuViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuViewCell.m; sourceTree = "<group>"; };
 		324DB6D027C75A65000BAF8E /* KBContextMenuView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBContextMenuView.h; sourceTree = "<group>"; };
@@ -264,7 +263,6 @@
 		328B5FF426F700A500303CE2 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
 		32AD39C02328A0100085F579 /* gear-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "gear-small.png"; sourceTree = SOURCE_ROOT; };
 		32AD39C4232982270085F579 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = SOURCE_ROOT; };
-		32B37FC527C4E5F200F72BEF /* tvOSAVPlayerTouch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = tvOSAVPlayerTouch.framework; path = Library/Frameworks/tvOSAVPlayerTouch.framework; sourceTree = "<group>"; };
 		32B43B5227CB2E51004D8788 /* KBContextCollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextCollectionHeaderView.m; sourceTree = "<group>"; };
 		32B43B5327CB2E51004D8788 /* KBContextCollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextCollectionHeaderView.h; sourceTree = "<group>"; };
 		32C584DC25BE5F760021C9FC /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = "<group>"; };
@@ -380,7 +378,6 @@
 			isa = PBXGroup;
 			children = (
 				327B3EA72327694B00377FAE /* makeLatest.sh */,
-				3247C3AA25BBD1D6007FE21A /* tvOSAVPlayerTouch.framework */,
 				328B5FE826F6F82800303CE2 /* Prefix.pch */,
 				327D3FDC2324E512000EC3C1 /* Ethereal */,
 				327D3FDB2324E512000EC3C1 /* Products */,
@@ -600,7 +597,6 @@
 		32AD39C22328B66E0085F579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				32B37FC527C4E5F200F72BEF /* tvOSAVPlayerTouch.framework */,
 				32FCD85427C21B2B00F614DF /* TVVLCKit.framework */,
 				32FCD85127C2162800F614DF /* TVVLCKit.tbd */,
 				323B3E2627C0BB68001F8204 /* Security.framework */,
@@ -809,7 +805,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#exit 0\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atv.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$DPKG_BUILD_PATH\"/Applications\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\necho \"cp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\"\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n\n\nexit 0\n";
+			shellScript = "PREFIX_PATH=$(cat $SRCROOT/prefix)\necho \"PREFIX_PATH: \" $PREFIX_PATH\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n#say \"$SDKROOT\"\necho $SDKROOT\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\n    exit 0\nfi\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/layout\n\nif [[ $PREFIX_PATH == \"/fs/jb\" ]]; then\n    DPKG_BUILD_PATH=\"$SRCROOT\"/sealed\n    echo \"new build path: \" $DPKG_BUILD_PATH\nfi\n\nAPPLETV_APP_FOLDER=\"$DPKG_BUILD_PATH\"$PREFIX_PATH/Applications\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\nrm -rf \"$FINAL_APP_PATH\"\nmkdir -p \"$APPLETV_APP_FOLDER\"\nmkdir -p \"$FINAL_APP_PATH\"\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\npushd \"$SRCROOT\"\nfind . -name \".DS_Store\" | xargs rm -f\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1039,16 +1035,14 @@
 					"$(inherited)",
 					/Library/Frameworks,
 					"@executable_path/Frameworks",
+					/fs/jb/Library/Frameworks,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
 					"$(PROJECT_DIR)",
 				);
-				OTHER_LDFLAGS = (
-					"-framework",
-					tvOSAVPlayerTouch,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.Ethereal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 3;
@@ -1078,16 +1072,14 @@
 					"$(inherited)",
 					/Library/Frameworks,
 					"@executable_path/Frameworks",
+					/fs/jb/Library/Frameworks,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libs",
 					"$(PROJECT_DIR)",
 				);
-				OTHER_LDFLAGS = (
-					"-framework",
-					tvOSAVPlayerTouch,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.Ethereal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 3;

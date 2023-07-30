@@ -7,7 +7,7 @@
 //
 
 #import "KBVideoPlaybackManager.h"
-#import "PlayerViewController.h"
+//#import "PlayerViewController.h"
 #import "NSObject+Additions.h"
 //#include <IOKit/pwr_mgt/IOPMLib.h>
 #import <MediaRemote/MediaRemote.h>

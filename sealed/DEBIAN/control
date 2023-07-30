@@ -3,7 +3,7 @@ Priority: extra
 Section: Utilities
 Maintainer: Kevin Bradley
 Architecture: appletvos-arm64
-Version: 1.4-188
+Version: 1.4-187
 Depends: firmware (>= 9.0), com.nito.breezy (>= 2.5.2-9), org.videolan.vlckit (>= 3.3.1-1)
 Pre-Depends: cy+model.appletv
 Description: AirDrop video files straight to your device for immediate playback

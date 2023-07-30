@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 //#import "PlayerViewController.h"
-#import <tvOSAVPlayerTouch/tvOSAVPlayerTouch.h>
+//#import <tvOSAVPlayerTouch/tvOSAVPlayerTouch.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import "SDWebImageManager.h"

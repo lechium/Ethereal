@@ -15,7 +15,7 @@
 #import "NSObject+Additions.h"
 #import "SDWebImageManager.h"
 #import "KBVideoPlaybackManager.h"
-
+/*
 @interface InternalLicense: NSObject
 
 - (BOOL)isExpired;
@@ -32,6 +32,7 @@
 - (id)expiredDate;
 + (id)sharedInstance;
 @end
+*/
 @interface AppDelegate ()
 @end
 @implementation AppDelegate
@@ -87,10 +88,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     ELog(@"AVMediaTypeClosedCaption: %@", AVMediaTypeClosedCaption);//clcp
+    /*
     InternalLicense *shared = [InternalLicense sharedInstance];
     [shared setIsDemoVersion:false];
     [shared setExpiredDate:[NSDate distantFuture]];
     [shared expiredDate];
+     */
     /*
     [[SDImageCache sharedImageCache] cleanDisk];
     [[SDImageCache sharedImageCache] clearMemory];

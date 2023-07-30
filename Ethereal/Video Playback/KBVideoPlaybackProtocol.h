@@ -7,12 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@import tvOSAVPlayerTouch;
+#import <AVFoundation/AVFoundation.h>
+//@import tvOSAVPlayerTouch;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol KBVideoPlayerProtocol <FFAVPlayerControllerDelegate, NSObject>
+@protocol KBVideoPlayerProtocol <NSObject>
 
 - (void)play;
 - (void)pause;

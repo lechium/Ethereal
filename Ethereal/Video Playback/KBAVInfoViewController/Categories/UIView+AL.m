@@ -124,12 +124,6 @@
     return @[leadingConstraint, trailingConstraint, topConstraint, bottomConstraint];
 }
 
-- (void)removeAllSubviews {
-    [[self subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-       [obj removeFromSuperview];
-    }];
-}
-
 - (NSArray <NSLayoutConstraint *> *)autoCenterInSuperview {
     self.translatesAutoresizingMaskIntoConstraints = false;
     NSLayoutConstraint *yC = [self.centerYAnchor constraintEqualToAnchor:self.superview.centerYAnchor];
@@ -143,6 +137,12 @@
     self = [self initWithFrame:CGRectZero];
     self.translatesAutoresizingMaskIntoConstraints = false;
     return self;
+}
+
+- (void)removeAllSubviews {
+    [[self subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+       [obj removeFromSuperview];
+    }];
 }
 
 @end
