@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)defaultManager;
 @property NSArray <KBMediaAsset *> *media;
 @property NSInteger playbackIndex;
+@property BOOL loopVideo;
 - (void)killCurrentPlayer;
 + (NSArray *)approvedExtensions;
 + (NSArray *)defaultCompatFiles;

@@ -39,6 +39,14 @@
     [[SDImageCache sharedImageCache] storeImage:currentImage forKey:media.url.path.lastPathComponent];
 }
 
+- (void)performLongPressActionForSelectedRow {
+    [KBVideoPlaybackManager defaultManager].loopVideo = true;
+    UIFocusSystem *fs = [UIFocusSystem focusSystemForEnvironment:self];
+    UITableViewCell *cell = (UITableViewCell*)[fs focusedItem];
+    self.savedIndexPath = [self.tableView indexPathForCell:cell];
+    [self playFile];
+}
+
 - (void)showSampleBulletin {
     KBBulletinView *bv = [KBBulletinView bulletinWithTitle:@"Test Title" description:@"Test Description" image:[UIImage imageNamed:@"video-icon"]];
     NSString *famName = [[UIFont familyNames] firstObject];

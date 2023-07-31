@@ -20,6 +20,7 @@
 #import "KBAction.h"
 #import "KBMenu.h"
 #import "KBContextMenuRepresentation.h"
+#import "KBVideoPlaybackManager.h"
 
 @interface VLCViewController () <KBButtonMenuDelegate> {
     NSURL *_mediaURL;
@@ -193,6 +194,7 @@
             [self.player play];
         } else {
             [_mediaPlayer stop];
+            [KBVideoPlaybackManager defaultManager].loopVideo = false;
             [self dismissViewControllerAnimated:true completion:nil];
         }
     }

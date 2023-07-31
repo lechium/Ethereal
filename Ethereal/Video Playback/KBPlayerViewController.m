@@ -7,6 +7,11 @@
 //
 
 #import "KBPlayerViewController.h"
+#import "KBVideoPlaybackManager.h"
+
+@interface AVPlayerViewController (private)
+-(void)_handleMenuTapGestureDismissal:(id)arg1;
+@end
 
 @implementation KBQueuePlayer
 @end
@@ -41,5 +46,10 @@
     // Do any additional setup after loading the view.
 }
 
+-(void)_handleMenuTapGestureDismissal:(id)arg1 {
+    LOG_FUNCTION;
+    [super _handleMenuTapGestureDismissal:arg1];
+    [KBVideoPlaybackManager defaultManager].loopVideo = false;
+}
 
 @end

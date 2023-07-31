@@ -232,6 +232,9 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     NSInteger nextIndex = self.playbackIndex+1;
+    if (self.loopVideo) {
+        nextIndex = self.playbackIndex;
+    }
     ELog(@"currentIndex: %lu media count: %lu nextIndex: %lu", self.playbackIndex, self.media.count, nextIndex);
     BOOL hasMore = false;
     if (nextIndex < self.media.count) {
