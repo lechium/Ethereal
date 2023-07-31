@@ -137,6 +137,8 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 - (void)fadeInIfNecessary;
 - (void)delayedResetScrubMode;
 - (void)resetHideTimer;
+- (UILabel*)subtitleLabel;
+- (UILabel*)titleLabel;
 @end
 
 

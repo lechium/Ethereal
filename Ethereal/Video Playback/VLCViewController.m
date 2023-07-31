@@ -257,6 +257,8 @@
     _audioButton.menuDelegate = self;
     [_audioButton.leftAnchor constraintEqualToAnchor:_subtitleButton.rightAnchor constant:0].active = true;
     
+    [_transportSlider.titleLabel.rightAnchor constraintLessThanOrEqualToAnchor:_subtitleButton.leftAnchor constant:-50].active = true;
+    [_transportSlider.subtitleLabel.rightAnchor constraintEqualToAnchor:_transportSlider.titleLabel.rightAnchor].active = true;
     @weakify(self);
     _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
         [self_weak_ dismissContextViewIfNecessary];
@@ -429,7 +431,6 @@
     _mediaURL = mediaURL;
     if (!_mediaPlayer) {
         _mediaPlayer = [VLCMediaPlayer new];
-        _mediaPlayer.drawable = _videoView;
     }
     _mediaPlayer.media = [VLCMedia mediaWithURL:mediaURL];
 }

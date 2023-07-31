@@ -191,6 +191,14 @@
 
 @implementation KBSlider
 
+- (UILabel *)subtitleLabel {
+    return _subtitleLabel;
+}
+
+- (UILabel *)titleLabel {
+    return _titleLabel;
+}
+
 - (BOOL)isScrubbing {
     return _isScrubbing;
 }
