@@ -187,7 +187,12 @@
 }
 
 -(UIViewController <KBVideoPlaybackProtocol> *)playerForCurrentIndex {
-    
+    LOG_FUNCTION;
+    if (_playbackIndex >= self.media.count) {
+        ELog(@"playback index: %lu is greater than media count: %lu, wtf???", _playbackIndex, self.media.count);
+        _playbackIndex--;
+        //return nil;
+    }
     KBMediaAsset *currentAsset = self.media[_playbackIndex];
     NSString *theFile = currentAsset.filePath;
     if (currentAsset.assetType == KBMediaAssetTypeVideoDefault){
@@ -286,7 +291,7 @@
 
 - (void)setMedia:(NSArray<MetaDataAsset *> *)media {
     _media = media;
-    NSLog(@"Media: %@", media);
+    ELog(@"Media: %@", media);
 }
 
 - (NSArray <MetaDataAsset *>*)media {

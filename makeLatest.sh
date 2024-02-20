@@ -12,7 +12,7 @@ CONTROL_FILE=control
 DPKG_DEBIAN_PATH="$LAYOUT"/DEBIAN
 
 usage() {
-    echo "usage: $0 [-s|--sealed-target]"
+    echo "usage: $0 [-s|--sealed-target][-t|--target-device]"
     trap - INT TERM EXIT
     exit 0
 }

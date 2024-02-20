@@ -3,8 +3,51 @@
 #endif
 
 #ifdef __OBJC__
+#import <Foundation/Foundation.h>
 #import "EXTScope.h"
 #define LOG_SELF        NSLog(@"[Ethereal] %@ %@", self, NSStringFromSelector(_cmd))
 #define LOG_FUNCTION    NSLog(@"[Ethereal] [%@ %@]", [self class], NSStringFromSelector(_cmd))
 #define ELog(format, ...) NSLog(@"[Ethereal] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
+
+static NSString * const buttonA = @"buttonA";
+static NSString * const buttonB = @"buttonB";
+static NSString * const buttonX = @"buttonX";
+static NSString * const buttonY = @"buttonY";
+static NSString * const leftShoulder = @"leftShoulder";
+static NSString * const rightShoulder = @"rightShoulder";
+static NSString * const leftTrigger = @"leftTrigger";
+static NSString * const rightTrigger = @"rightTrigger";
+static NSString * const leftThumbstickButton = @"leftThumbstickButton";
+static NSString * const rightThumbstickButton = @"rightThumbstickButton";
+static NSString * const buttonOptions = @"buttonOptions";
+static NSString * const buttonMenu = @"_buttonMenu";
+static NSString * const buttonHome = @"_buttonHome";
+static NSString * const invertLeftJoystick = @"invertLeftJoystick";
+static NSString * const invertRightJoystick = @"invertRightJoystick";
+
+typedef enum {
+    kNCGenericButton_B = 1,
+    kNCGenericButton_Y = 2,
+    kNCGenericButton_A = 3,
+    kNCGenericButton_X = 4,
+    kNCGenericButton_Up = 5,
+    kNCGenericButton_Down = 6,
+    kNCGenericButton_Left = 7,
+    kNCGenericButton_Right = 8,
+    kNCGenericButton_L1 = 9,
+    kNCGenericButton_R1 = 10,
+    kNCGenericButton_L2 = 11,
+    kNCGenericButton_R2 = 12,
+    kNCGenericButton_MENU = 13,
+    kNCGenericButton_LJ = 14,
+    kNCGenericButton_RJ = 15,
+    kNCGenericButton_SELECT = 16,
+    kNCGenericButton_START = 17,
+    kNCGenericButton_L3 = 18,
+    kNCGenericButton_R3 = 19,
+
+    
+} kNCGenericButton;
+
+
 #endif

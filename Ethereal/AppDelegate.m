@@ -15,6 +15,7 @@
 #import "NSObject+Additions.h"
 #import "SDWebImageManager.h"
 #import "KBVideoPlaybackManager.h"
+
 /*
 @interface InternalLicense: NSObject
 
@@ -34,6 +35,7 @@
 @end
 */
 @interface AppDelegate ()
+@property (nonatomic, strong) VLCMediaDiscoverer *discoverer;
 @end
 @implementation AppDelegate
 
@@ -45,6 +47,32 @@
 //never fires.. how the hell do u check for errors or file compat?? yeesh.
 - (void)itemReceivedError:(NSNotification *)n {
   ELog(@"itemReceivedError: %@", [n userInfo]);
+}
+
+- (void)mediaMetaDataDidChange:(VLCMedia *)aMedia {
+    ELog(@"mediaMetaDataDidChange: %@", aMedia);
+}
+
+- (void)mediaDidFinishParsing:(VLCMedia *)aMedia {
+    ELog(@"mediaDidFinishParsing: %@", aMedia);
+}
+
+- (void)testVLCMediaFinder {
+    self.discoverer = [[VLCMediaDiscoverer alloc] initWithName:@"Bonjour"];
+    [self.discoverer startDiscoverer];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //[weakSelf hideView];
+        VLCMediaList *discoveredMedia = [self.discoverer discoveredMedia];
+        if (discoveredMedia.count > 3){
+            VLCMedia *media = [discoveredMedia mediaAtIndex:3];
+            ELog(@"media: %@", media);
+            media.delegate = self;
+            [media parseWithOptions:VLCMediaDoInteract];
+        }
+    });
+    /*
+    NSArray *arrays = [VLCMediaDiscoverer availableMediaDiscovererForCategoryType:VLCMediaDiscovererCategoryTypeLAN];
+    ELog(@"arrays: %@", arrays);*/
 }
 
 //test video
@@ -103,6 +131,7 @@
     AVAudioSessionRouteDescription *d = [sesh currentRoute];
     
     ELog(@"routes: %@", d.outputs);
+    //[self testVLCMediaFinder];
     return YES;
 }
 

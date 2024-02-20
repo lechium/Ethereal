@@ -13,13 +13,11 @@
 #import "UIColor+Additions.h"
 //#import "KBAVInfoViewController.h"
 
-@interface UIPress (KBSynthetic)
-// A press is synthetic if it is a tap on the Siri remote touchpad
-// which is synthesized to an arrow press.
-- (BOOL)kb_isSynthetic;
-@end
-
 @implementation UIPress (KBSynthetic)
+
+- (BOOL)kb_isFromGameController {
+    return ([self _gameControllerComponent] > 0);
+}
 
 - (BOOL)kb_isSynthetic
 {

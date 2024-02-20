@@ -10,6 +10,7 @@
 #import <AVKit/AVKit.h>
 #import "KBVideoPlaybackProtocol.h"
 #import "KBContextMenuView.h"
+#import <GameController/GameController.h>
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VLCViewController : UIViewController <KBVideoPlaybackProtocol, UIGestureRecognizerDelegate, AVRoutePickerViewDelegate, KBContextMenuViewDelegate>

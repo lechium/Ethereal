@@ -104,6 +104,7 @@
 		32E0A8002793A36A006FB9B0 /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A7F72793A36A006FB9B0 /* KBTextPresentationViewController.m */; };
 		32E0A8062794C242006FB9B0 /* AVAsset+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = 32E0A8052794C242006FB9B0 /* AVAsset+Extras.m */; };
 		32FCD85527C21B2B00F614DF /* TVVLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32FCD85427C21B2B00F614DF /* TVVLCKit.framework */; };
+		4C3C23E92B82032E00F0EBCE /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3C23E82B82032E00F0EBCE /* GameController.framework */; };
 		4C9E46A527C841BD000487F2 /* KBMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9E46A427C841BD000487F2 /* KBMenu.m */; };
 		4C9E46A827C8420B000487F2 /* KBMenuElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9E46A727C8420B000487F2 /* KBMenuElement.m */; };
 		4C9E46AB27C84C3F000487F2 /* KBAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C9E46AA27C84C3F000487F2 /* KBAction.m */; };
@@ -309,6 +310,7 @@
 		32E2A55127970455001CB1AA /* tvhifi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tvhifi.h; sourceTree = "<group>"; };
 		32FCD85127C2162800F614DF /* TVVLCKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = TVVLCKit.tbd; sourceTree = "<group>"; };
 		32FCD85427C21B2B00F614DF /* TVVLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVVLCKit.framework; path = Library/Frameworks/TVVLCKit.framework; sourceTree = "<group>"; };
+		4C3C23E82B82032E00F0EBCE /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		4C9E46A327C841BD000487F2 /* KBMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBMenu.h; sourceTree = "<group>"; };
 		4C9E46A427C841BD000487F2 /* KBMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KBMenu.m; sourceTree = "<group>"; };
 		4C9E46A627C8420B000487F2 /* KBMenuElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KBMenuElement.h; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C3C23E92B82032E00F0EBCE /* GameController.framework in Frameworks */,
 				323B3E2727C0BB68001F8204 /* Security.framework in Frameworks */,
 				323B3E2527C0BB60001F8204 /* OpenGLES.framework in Frameworks */,
 				323B3E2327C0BB59001F8204 /* CFNetwork.framework in Frameworks */,
@@ -597,6 +600,7 @@
 		32AD39C22328B66E0085F579 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4C3C23E82B82032E00F0EBCE /* GameController.framework */,
 				32FCD85427C21B2B00F614DF /* TVVLCKit.framework */,
 				32FCD85127C2162800F614DF /* TVVLCKit.tbd */,
 				323B3E2627C0BB68001F8204 /* Security.framework */,

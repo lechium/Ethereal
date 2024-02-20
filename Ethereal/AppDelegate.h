@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+#import <TVVLCKit/TVVLCKit.h>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, VLCMediaDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

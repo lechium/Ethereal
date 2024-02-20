@@ -19,7 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIPress (KBSynthetic)
 // A press is synthetic if it is a tap on the Siri remote touchpad
 // which is synthesized to an arrow press.
+- (unsigned long long)_gameControllerComponent;
 - (BOOL)kb_isSynthetic;
+- (BOOL)kb_isFromGameController;
 @end
 
 

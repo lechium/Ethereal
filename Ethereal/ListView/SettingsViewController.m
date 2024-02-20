@@ -430,13 +430,20 @@
     
     self.savedIndexPath = indexPath;
     MetaDataAsset *currentAsset = self.items[indexPath.row];
+    BOOL sendsArgument = [[currentAsset selectorName] containsString:@":"];
+    ELog(@"%@ sendsArg: %d %@",[currentAsset selectorName],sendsArgument, currentAsset);
     SEL assetSelector = [currentAsset ourSelector];
     
     if ([self respondsToSelector:assetSelector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         //-Warc-performSelector-leaks
-        [self performSelector:assetSelector];
+        if (sendsArgument){
+            [self performSelector:assetSelector withObject:currentAsset];
+        } else {
+            [self performSelector:assetSelector];
+        }
+        
 #pragma clang diagnostic pop
     } else {
         NSLog(@"doesnt respond to selector: %@", currentAsset.selectorName);

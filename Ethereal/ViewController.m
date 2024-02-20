@@ -63,8 +63,22 @@
     [[self navigationController] pushViewController:vc animated:true];
 }
 
+- (void)playFile:(MetaDataAsset *)asset {
+    KBVideoPlaybackManager *man = [KBVideoPlaybackManager defaultManager];
+    [man setPlaybackIndex:[man.media indexOfObject:asset]];
+    UIViewController *playerController = [man playerForCurrentIndex];
+    [KBVideoPlaybackManager defaultManager].videoDidFinishPlaying = ^(BOOL moreLeft) {
+        NSLog(@"video did finish playing! more left: %d", moreLeft);
+        if (!moreLeft) {
+            [self dismissViewControllerAnimated:true completion:nil];
+        }
+    };
+    [self safePresentViewController:playerController animated:true completion:nil];
+}
+
 - (void)playFile {
     KBVideoPlaybackManager *man = [KBVideoPlaybackManager defaultManager];
+    ELog(@"indexPathRow: %lu", self.savedIndexPath.row);
     [man setPlaybackIndex:self.savedIndexPath.row];
     UIViewController *playerController = [man playerForCurrentIndex];
     [KBVideoPlaybackManager defaultManager].videoDidFinishPlaying = ^(BOOL moreLeft) {
@@ -117,7 +131,7 @@
                 currentAsset.metaDictionary = @{@"File Size": fileSizeString, @"Created": creationDate.description};
                 __block UIImage *currentImage = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:currentAsset.name];
                 
-                NSLog(@"image from cache: %@", currentImage);
+                //NSLog(@"image from cache: %@", currentImage);
                 
                 if (!currentImage){
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
@@ -138,7 +152,7 @@
                          */
                     });
                 }
-                currentAsset.selectorName = @"playFile";
+                currentAsset.selectorName = @"playFile:"; //adding the colon means it will send the current asset item as an argument.
                 currentAsset.defaultImageName = @"video-icon";
                 currentAsset.accessory = false;
             }

@@ -45,6 +45,7 @@
 @property KBAVInfoViewController *avInfoViewController;
 @property UITapGestureRecognizer *leftTap;
 @property UITapGestureRecognizer *rightTap;
+@property (nonatomic, strong) GCController *currentController;
 @end
 
 @implementation VLCViewController
@@ -77,8 +78,15 @@
     return _mediaPlayer;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+- (void)gameControllerTest {
+    self.currentController = [[GCController controllers] firstObject];
+    @weakify(self);
+    self.currentController.extendedGamepad.valueChangedHandler = ^(GCExtendedGamepad * _Nonnull gamepad, GCControllerElement * _Nonnull element) {
+        [self_weak_ didUpdateElement:element inGamepad:gamepad];
+    };
+}
+
+- (void)doMediaSetup {
     @weakify(self);
     if (_mediaURL) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -92,10 +100,21 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(timeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
     [self handleSubtitleOptions];
     [self updateSubtitleButtonState];
-    _subtitleButton.menu = [self createAudioMenu];
+    _subtitleButton.menu = [self createSubtitleMenu];
     _subtitleButton.menuDelegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateChanged:) name:VLCMediaPlayerStateChanged object:nil];
+    //[self gameControllerTest];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     //[_mediaPlayer play];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self doMediaSetup];
 }
 
 - (void)stateChanged:(NSNotification *)n {
@@ -165,6 +184,7 @@
 }
 
 - (void)showAVInfoView {
+    LOG_FUNCTION;
     if (self.avInfoPanelShowing) return;
     if (!_avInfoViewController){
         _avInfoViewController = [KBAVInfoViewController new];
@@ -424,6 +444,125 @@
     return true;
 }
 
+#define buttonPressed(e,g,t) (e == [g valueForKey:t] && [[g valueForKey:t] isPressed])
+#define print_if_pressed(e,g,t) if (buttonPressed(e,g,t)) { ELog(@"%@", t); }
+
+- (NSInteger)firstUpdatedElement:(GCControllerElement *)element inGamepad:(GCExtendedGamepad *)gamepad {
+    
+    if ([element respondsToSelector:@selector(isPressed)]){
+       
+        /*
+         print_if_pressed(element, gamepad, buttonA);
+         print_if_pressed(element, gamepad, buttonB);
+         print_if_pressed(element, gamepad, buttonX);
+         print_if_pressed(element, gamepad, buttonY);
+         print_if_pressed(element, gamepad, leftShoulder);
+         print_if_pressed(element, gamepad, rightShoulder);
+         print_if_pressed(element, gamepad, leftThumbstickButton);
+         print_if_pressed(element, gamepad, rightThumbstickButton);
+         print_if_pressed(element, gamepad, rightTrigger);
+         print_if_pressed(element, gamepad, leftTrigger);
+         print_if_pressed(element, gamepad, buttonMenu);
+         */
+        
+        
+        if (buttonPressed(element, gamepad, buttonA)){
+            return kNCGenericButton_A;
+        }  else if (buttonPressed(element, gamepad, buttonB)){
+            return kNCGenericButton_B;
+        } else if (buttonPressed(element, gamepad, buttonX)){
+            return kNCGenericButton_X;
+        } else if (buttonPressed(element, gamepad, buttonY)){
+            return kNCGenericButton_Y;
+        } else if (buttonPressed(element, gamepad, leftShoulder)){
+            return kNCGenericButton_L1;
+        } else if (buttonPressed(element, gamepad, rightShoulder)){
+            return kNCGenericButton_R1;
+        } else if (buttonPressed(element, gamepad, leftTrigger)){
+            return kNCGenericButton_L2;
+        } else if (buttonPressed(element, gamepad, rightTrigger)){
+            return kNCGenericButton_R2;
+        }
+        
+        
+        if ([gamepad respondsToSelector:@selector(buttonMenu)]){
+            if (buttonPressed(element, gamepad, buttonMenu)){
+                return kNCGenericButton_MENU;
+            }
+        }
+        
+        if ([gamepad respondsToSelector:@selector(leftThumbstickButton)]){
+            if (buttonPressed(element, gamepad, leftThumbstickButton)){
+                return kNCGenericButton_L3;
+            } else if (buttonPressed(element, gamepad, rightThumbstickButton)){
+                return kNCGenericButton_R3;
+            }
+        }
+        
+        if ([gamepad respondsToSelector:@selector(buttonOptions)]){
+        
+            print_if_pressed(element, gamepad, buttonMenu);
+            print_if_pressed(element, gamepad, buttonOptions);
+            print_if_pressed(element, gamepad, buttonHome);
+            
+            if (buttonPressed(element, gamepad, buttonOptions)){
+                return kNCGenericButton_START;
+            } else if (buttonPressed(element, gamepad, buttonHome)){
+                return kNCGenericButton_SELECT;
+            }
+        }
+        
+        
+    } if (element == gamepad.dpad){
+        if(gamepad.dpad.xAxis.value < 0) return kNCGenericButton_Left;
+        else if(gamepad.dpad.xAxis.value > 0) return kNCGenericButton_Right;
+        if(gamepad.dpad.yAxis.value < 0) return kNCGenericButton_Down;
+        else if(gamepad.dpad.yAxis.value > 0) return kNCGenericButton_Up;
+    } else if (element == gamepad.leftThumbstick) {
+        return kNCGenericButton_LJ;
+    } else if (element == gamepad.rightThumbstick) {
+        return kNCGenericButton_RJ;
+    }
+    return -1;
+}
+
+- (NSString *)keyForType:(NSInteger)type {
+    
+    switch (type) {
+        case kNCGenericButton_B: return @"B";
+        case kNCGenericButton_Y: return @"Y";
+        case kNCGenericButton_A: return @"A";
+        case kNCGenericButton_X: return @"X";
+        case kNCGenericButton_Up: return @"Dpad Up";
+        case kNCGenericButton_Down: return @"Dpad Down";
+        case kNCGenericButton_Left: return @"Dpad Left";
+        case kNCGenericButton_Right: return @"Dpad Right";
+        case kNCGenericButton_L1: return @"L1";
+        case kNCGenericButton_L2: return @"L2";
+        case kNCGenericButton_L3: return @"L3";
+        case kNCGenericButton_R1: return @"R1";
+        case kNCGenericButton_R2: return @"R2";
+        case kNCGenericButton_R3: return @"R3";
+        case kNCGenericButton_RJ: return @"Right Joystick";
+        case kNCGenericButton_LJ: return @"Left Joystick";
+        case kNCGenericButton_SELECT: return @"Select Button";
+        case kNCGenericButton_START: return @"Start Button";
+        case kNCGenericButton_MENU: return @"Menu Button";
+    }
+    return nil;
+}
+
+- (void)didUpdateElement:(GCControllerElement*)element inGamepad:(GCExtendedGamepad*)gamepad {
+    
+    NSInteger detectedButton = [self firstUpdatedElement:element inGamepad:gamepad];
+    __block NSString *firstOriginal = nil;
+    if (detectedButton != -1){
+        ELog(@"detected button: %ld of type: %@", (long)detectedButton, [self keyForType:detectedButton]);
+        //NSString *detectedKey = [NSString stringWithInteger:detectedButton];
+    }
+}
+
+
 - (void)timeChanged:(NSNotification *)n {
     //ELog(@"time changed: %@", n);
     self.transportSlider.currentTime = self.mediaPlayer.time.intValue / 1000;
@@ -458,14 +597,14 @@
 - (void)refreshSubtitleDetails {
     NSArray *subNames = [_mediaPlayer videoSubTitlesNames];
     NSArray *subIndices = [_mediaPlayer videoSubTitlesIndexes];
-    //ELog(@"subNames: %@ indices: %@", subNames, subIndices);
+    ELog(@"subNames: %@ indices: %@", subNames, subIndices);
     __block NSMutableArray *dicts = [NSMutableArray new];
     [subNames enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary *dict = @{@"language": obj, @"index": subIndices[idx]};
         [dicts addObject:dict];
     }];
     if(dicts.count > 0){
-        //ELog(@"setting subtitle data: %@", dicts);
+        ELog(@"setting subtitle data: %@", dicts);
         [_avInfoViewController setVlcSubtitleData:dicts];
         [self updateSubtitleButtonState];
     }
@@ -816,6 +955,7 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
     //ELog(@"shouldReceivePress: %@", gestureRecognizer);
+    ELog(@"kb_isFromGameController: %d", [press kb_isFromGameController]);
     if (gestureRecognizer == _leftTap || gestureRecognizer == _rightTap){
         if ([press kb_isSynthetic]){
             //ELog(@"no synth for you!");
@@ -881,11 +1021,13 @@
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     //ELog(@"pressesEnded: %@", presses);
     //AVPlayerState currentState = _avplayController.playerState;
+    ELog(@"kb_isFromGameController: %d", [[[presses allObjects] firstObject] kb_isFromGameController]);
     for (UIPress *press in presses) {
-        if ([press kb_isSynthetic]) {
+        ELog(@"presstype: %lu", press.type);
+        if ([press kb_isSynthetic] && ![press kb_isFromGameController]) {
+            ELog(@"synthetic?? and NOT from a GC");
             return;
         }
-        //ELog(@"presstype: %lu", press.type);
         switch (press.type){
                 
             case UIPressTypeMenu:
